@@ -5,25 +5,37 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+        <title>{{ config('app.name', 'Amicta') }}</title>
 
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
-
-        <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans text-gray-900 antialiased">
-        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
-            <div>
-                <a href="/">
-                    <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
+    <body class="bg-background text-foreground">
+        <div class="min-h-dvh grid md:grid-cols-2">
+            <div class="relative hidden md:flex flex-col justify-between bg-primary text-white p-10 overflow-hidden">
+                <div data-parallax class="absolute -top-20 -left-20 w-72 h-72 rounded-full bg-white/10 blur-3xl pointer-events-none"></div>
+                <div data-parallax class="absolute bottom-10 right-0 w-56 h-56 rounded-full bg-accent/20 blur-3xl pointer-events-none"></div>
+
+                <a href="{{ route('home') }}" class="relative flex items-center gap-2 font-heading font-bold text-xl">
+                    <x-icon.motorcycle class="w-7 h-7"/> Amicta
                 </a>
+                <div class="relative">
+                    <p class="text-2xl font-heading font-semibold leading-snug">
+                        Rawat motor tanpa lupa,<br>berbasis jarak tempuh asli.
+                    </p>
+                    <p class="mt-3 text-white/80 max-w-sm">
+                        Rekam perjalanan lewat GPS, dapat pengingat servis otomatis, kelola banyak motor sekaligus.
+                    </p>
+                </div>
+                <p class="relative text-sm text-white/60">&copy; {{ date('Y') }} Amicta</p>
             </div>
 
-            <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg">
-                {{ $slot }}
+            <div class="flex flex-col justify-center items-center px-6 py-12">
+                <a href="{{ route('home') }}" class="md:hidden flex items-center gap-2 font-heading font-bold text-lg text-primary mb-8">
+                    <x-icon.motorcycle class="w-6 h-6"/> Amicta
+                </a>
+                <div class="w-full max-w-sm">
+                    {{ $slot }}
+                </div>
             </div>
         </div>
     </body>
