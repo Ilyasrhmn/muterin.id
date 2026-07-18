@@ -4,6 +4,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\MotorcycleController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\TripController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -23,6 +24,9 @@ Route::middleware('auth')->group(function () {
 
     Route::post('maintenance_items/{item}/complete', [MaintenanceController::class, 'complete'])
         ->name('maintenance.complete');
+
+    Route::get('riding', [TripController::class, 'create'])->name('riding');
+    Route::post('trips', [TripController::class, 'store'])->name('trips.store');
 });
 
 require __DIR__.'/auth.php';
