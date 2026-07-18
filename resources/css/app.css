@@ -1,3 +1,36 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --color-primary: #0284C7;
+  --color-primary-hover: #0369A1;
+  --color-secondary: #0891B2;
+  --color-accent: #DC2626;
+  --color-accent-hover: #B91C1C;
+  --color-background: #F0F9FF;
+  --color-surface: #FFFFFF;
+  --color-foreground: #0F172A;
+  --color-muted: #EFF7FB;
+  --color-muted-fg: #475569;
+  --color-border: #E0F0F8;
+  --color-green: #22C55E;
+  --color-yellow: #F59E0B;
+  --color-red: #EF4444;
+  --radius: 0.75rem;
+}
+
+@layer base {
+  body { @apply bg-background text-foreground font-sans antialiased; }
+  h1, h2, h3, h4 { @apply font-heading; }
+  :focus-visible { @apply outline-none ring-2 ring-primary ring-offset-2 ring-offset-background; }
+}
+
+@layer utilities {
+  [data-reveal] { opacity: 0; transform: translateY(24px); }
+  [data-reveal].is-visible { opacity: 1; transform: none; transition: opacity .6s ease-out, transform .6s ease-out; }
+  @media (prefers-reduced-motion: reduce) {
+    [data-reveal] { opacity: 1 !important; transform: none !important; transition: none !important; }
+  }
+}
