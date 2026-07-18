@@ -13,6 +13,10 @@ class Motorcycle extends Model
         'initial_odometer_km', 'current_odometer_km', 'is_active',
     ];
 
+    protected $casts = [
+        'is_active' => 'boolean',
+    ];
+
     public const DEFAULT_ITEMS = [
         ['name' => 'Oli Mesin', 'interval_km' => 2500],
         ['name' => 'Ban', 'interval_km' => 12000],
@@ -23,11 +27,12 @@ class Motorcycle extends Model
     protected static function booted(): void
     {
         static::created(function (Motorcycle $motor) {
+            $startOdometer = $motor->current_odometer_km ?? 0;
             foreach (self::DEFAULT_ITEMS as $item) {
                 $motor->maintenanceItems()->create([
                     'name' => $item['name'],
                     'interval_km' => $item['interval_km'],
-                    'last_service_odometer_km' => $motor->current_odometer_km,
+                    'last_service_odometer_km' => $startOdometer,
                 ]);
             }
         });
