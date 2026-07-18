@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\MotorcycleController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -19,6 +20,9 @@ Route::middleware('auth')->group(function () {
     Route::resource('motorcycles', MotorcycleController::class);
     Route::post('motorcycles/{motorcycle}/activate', [MotorcycleController::class, 'activate'])
         ->name('motorcycles.activate');
+
+    Route::post('maintenance_items/{item}/complete', [MaintenanceController::class, 'complete'])
+        ->name('maintenance.complete');
 });
 
 require __DIR__.'/auth.php';

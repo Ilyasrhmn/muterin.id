@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Motorcycle;
+use App\Services\MaintenanceStatusService;
 use Illuminate\Http\Request;
 
 class MotorcycleController extends Controller
@@ -28,12 +29,17 @@ class MotorcycleController extends Controller
         return redirect()->route('motorcycles.index')->with('status', 'Motor ditambahkan.');
     }
 
-    public function show(Motorcycle $motorcycle)
+    public function show(Motorcycle $motorcycle, MaintenanceStatusService $status)
     {
         $this->authorizeOwner($motorcycle);
         $motorcycle->load('maintenanceItems.logs');
 
-        return view('motorcycles.show', compact('motorcycle'));
+        $items = $motorcycle->maintenanceItems->map(fn ($item) => [
+            'item' => $item,
+            'status' => $status->forItem($item, $motorcycle->current_odometer_km),
+        ]);
+
+        return view('motorcycles.show', compact('motorcycle', 'items'));
     }
 
     public function edit(Motorcycle $motorcycle)

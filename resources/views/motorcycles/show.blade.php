@@ -9,10 +9,16 @@
             <a href="{{ route('motorcycles.edit', $motorcycle) }}" class="text-sm text-blue-600">Edit</a>
         </div>
         <div class="space-y-4">
-            @foreach ($motorcycle->maintenanceItems as $item)
-                <div class="border rounded p-3">
-                    <p class="font-medium">{{ $item->name }}</p>
-                    <p class="text-sm text-gray-500">Interval: {{ number_format($item->interval_km) }} km &middot; Terakhir di: {{ number_format($item->last_service_odometer_km) }} km</p>
+            @foreach ($items as $i)
+                <div class="border rounded p-3 space-y-2" x-data="{ open: false }">
+                    <x-status-bar :item="$i['item']" :status="$i['status']" />
+                    <button @click="open = !open" class="text-sm text-blue-600">Tandai "{{ $i['item']->name }}" selesai</button>
+                    <form x-show="open" method="POST" action="{{ route('maintenance.complete', $i['item']) }}" class="mt-2 space-y-2">
+                        @csrf
+                        <input type="number" name="cost" placeholder="Biaya (opsional)" class="border rounded p-1 w-full">
+                        <input type="date" name="serviced_at" value="{{ now()->toDateString() }}" class="border rounded p-1 w-full" required>
+                        <button class="px-3 py-1 bg-green-600 text-white rounded text-sm">Simpan</button>
+                    </form>
                 </div>
             @endforeach
         </div>
