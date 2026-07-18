@@ -2,30 +2,28 @@
     <x-slot name="header">Motor Saya</x-slot>
 
     <div class="p-4 sm:p-6 lg:p-8 max-w-[1400px] mx-auto space-y-6">
-        <div class="flex items-center justify-between">
-            <div>
-                <h1 class="font-heading font-bold text-xl text-foreground">Motor Saya</h1>
-                <p class="text-sm text-muted-fg mt-0.5">Kelola motor dan pilih yang sedang dipakai.</p>
-            </div>
-            <x-ui.button variant="primary" href="{{ route('motorcycles.create') }}">
-                <x-icon.plus class="w-4 h-4"/> Tambah Motor
-            </x-ui.button>
-        </div>
+
+        <x-ui.hero badge="{{ $motorcycles->count() }} motor terdaftar" title="Motor Saya"
+                    subtitle="Kelola semua motormu di sini dan pilih mana yang sedang kamu pakai riding.">
+            <x-slot:side>
+                <x-ui.button variant="white" href="{{ route('motorcycles.create') }}">Tambah Motor</x-ui.button>
+            </x-slot:side>
+        </x-ui.hero>
 
         @if (session('status'))
-            <div class="p-3 rounded-token bg-status-green/10 text-status-green text-sm font-medium">{{ session('status') }}</div>
+            <div class="p-3 rounded-xl bg-emerald-50 text-emerald-700 text-sm font-medium">{{ session('status') }}</div>
         @endif
 
         <div data-reveal-group class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             @forelse ($motorcycles as $motor)
-                <div data-reveal class="bg-surface border border-border rounded-2xl shadow-soft hover:-translate-y-0.5 hover:shadow-lift transition duration-300 overflow-hidden {{ $motor->is_active ? 'ring-2 ring-primary' : '' }}">
+                <div data-reveal class="bg-surface border rounded-2xl overflow-hidden {{ $motor->is_active ? 'border-primary/40' : 'border-border' }}">
                     <div class="p-5">
                         <div class="flex items-start justify-between mb-3">
-                            <div class="size-11 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                            <div class="size-11 rounded-xl bg-primary-soft text-primary flex items-center justify-center">
                                 <x-icon.motorcycle class="w-6 h-6"/>
                             </div>
                             @if ($motor->is_active)
-                                <x-ui.badge variant="green">Aktif</x-ui.badge>
+                                <span class="text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700">Aktif</span>
                             @endif
                         </div>
                         <a href="{{ route('motorcycles.show', $motor) }}" class="font-heading font-bold text-foreground hover:text-primary">{{ $motor->nickname }}</a>
@@ -46,15 +44,13 @@
                     </div>
                 </div>
             @empty
-                <div class="col-span-full bg-surface border border-border rounded-2xl shadow-soft text-center py-14">
-                    <div class="size-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mx-auto mb-4">
+                <div class="col-span-full bg-surface border border-border rounded-2xl text-center py-14">
+                    <div class="size-14 rounded-2xl bg-primary-soft text-primary flex items-center justify-center mx-auto mb-4">
                         <x-icon.motorcycle class="w-7 h-7"/>
                     </div>
                     <p class="font-heading font-semibold text-foreground mb-1">Belum ada motor</p>
                     <p class="text-sm text-muted-fg mb-5">Tambahkan satu untuk mulai.</p>
-                    <x-ui.button variant="primary" href="{{ route('motorcycles.create') }}">
-                        <x-icon.plus class="w-4 h-4"/> Tambah Motor
-                    </x-ui.button>
+                    <x-ui.button variant="primary" href="{{ route('motorcycles.create') }}">Tambah Motor</x-ui.button>
                 </div>
             @endforelse
         </div>

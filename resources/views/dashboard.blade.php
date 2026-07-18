@@ -5,55 +5,53 @@
 
     <div class="p-4 sm:p-6 lg:p-8 max-w-[1400px] mx-auto space-y-6">
 
-        {{-- Hero banner --}}
-        <div class="relative overflow-hidden rounded-[24px] bg-gradient-to-br from-primary via-primary to-secondary shadow-lift">
-            <div class="absolute inset-0 hero-grid opacity-60"></div>
-            <div class="absolute -right-6 -top-8 text-white/10 pointer-events-none">
-                <x-icon.motorcycle class="w-48 h-48"/>
-            </div>
-            <div class="relative p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
-                <div class="space-y-3">
-                    <span class="inline-flex items-center gap-2 bg-white/15 text-white border border-white/20 font-bold uppercase tracking-[0.15em] text-[10px] px-3 py-1 rounded-full backdrop-blur-sm">
-                        <span class="size-1.5 rounded-full bg-emerald-soft animate-pulse"></span>
-                        {{ $activeMotor ? $activeMotor->nickname . ' aktif' : 'Belum ada motor aktif' }}
-                    </span>
-                    <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Halo, {{ Auth::user()->name }} 👋</h1>
-                    <p class="text-white/80 text-sm max-w-lg leading-relaxed">
-                        Pantau kondisi perawatan motormu berdasarkan jarak tempuh asli. Semua terhitung otomatis dari GPS saat kamu riding.
-                    </p>
-                </div>
-                @if ($activeMotor)
-                    <div class="flex bg-black/15 backdrop-blur-md rounded-2xl border border-white/10 p-4 gap-6 shrink-0">
+        <x-ui.hero :badge="$activeMotor ? $activeMotor->nickname.' aktif' : 'Belum ada motor aktif'"
+                   title="Halo, {{ Auth::user()->name }}"
+                   subtitle="Pantau kondisi perawatan motormu berdasarkan jarak tempuh asli, dihitung otomatis dari GPS saat riding.">
+            @if ($activeMotor)
+                <x-slot:side>
+                    <div class="flex bg-black/15 backdrop-blur-md rounded-2xl border border-white/10 p-4 gap-6">
                         <div>
-                            <p class="text-[10px] font-bold text-white/70 uppercase tracking-[0.15em]">Odometer</p>
+                            <p class="text-[10px] font-bold text-teal-200 uppercase tracking-[0.15em]">Odometer</p>
                             <p class="text-white font-bold mt-1 tabular-nums">{{ number_format($activeMotor->current_odometer_km) }} km</p>
                         </div>
                         <div class="w-px bg-white/15"></div>
                         <div>
-                            <p class="text-[10px] font-bold text-white/70 uppercase tracking-[0.15em]">Motor</p>
+                            <p class="text-[10px] font-bold text-teal-200 uppercase tracking-[0.15em]">Motor</p>
                             <p class="text-white font-bold mt-1">{{ $activeMotor->brand ?: $activeMotor->nickname }}</p>
                         </div>
                     </div>
-                @endif
-            </div>
-        </div>
+                </x-slot:side>
+            @endif
+        </x-ui.hero>
 
-        {{-- Bento stats --}}
+        {{-- Stat cards --}}
         <div data-reveal-group class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div data-reveal class="bg-primary-soft border border-primary/15 rounded-2xl p-5">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="size-10 rounded-xl bg-white text-primary flex items-center justify-center">
+                        <x-icon.motorcycle class="w-5 h-5"/>
+                    </div>
+                </div>
+                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-[0.15em]">Total Motor</p>
+                <p class="text-2xl font-heading font-extrabold text-foreground mt-1 tracking-tight"><span data-countup="{{ $kpi['motor_count'] }}">0</span></p>
+            </div>
+
             @php
                 $stats = [
-                    ['label' => 'Total Motor', 'value' => $kpi['motor_count'], 'suffix' => '', 'icon' => 'motorcycle', 'chip' => 'bg-blue-50 text-primary'],
-                    ['label' => 'Total KM Ditempuh', 'value' => $kpi['total_km'], 'suffix' => ' km', 'icon' => 'gauge', 'chip' => 'bg-cyan-50 text-secondary'],
-                    ['label' => 'Perlu Perhatian', 'value' => $kpi['attention'], 'suffix' => '', 'icon' => 'bell', 'chip' => 'bg-amber-50 text-status-yellow'],
-                    ['label' => 'Total Biaya Servis', 'value' => $kpi['total_cost'], 'suffix' => '', 'icon' => 'wallet', 'chip' => 'bg-emerald-50 text-emerald-soft', 'prefix' => 'Rp '],
+                    ['label' => 'Total KM Ditempuh', 'value' => $kpi['total_km'], 'suffix' => ' km', 'icon' => 'gauge', 'chip' => 'bg-blue-50 text-blue-600'],
+                    ['label' => 'Perlu Perhatian', 'value' => $kpi['attention'], 'suffix' => '', 'icon' => 'bell', 'chip' => 'bg-amber-50 text-amber-600'],
+                    ['label' => 'Total Biaya Servis', 'value' => $kpi['total_cost'], 'suffix' => '', 'prefix' => 'Rp ', 'icon' => 'wallet', 'chip' => 'bg-primary-soft text-primary'],
                 ];
             @endphp
             @foreach ($stats as $s)
-                <div data-reveal class="bg-surface border border-border rounded-2xl p-5 shadow-soft hover:-translate-y-0.5 hover:shadow-lift transition duration-300">
-                    <div class="size-10 rounded-xl flex items-center justify-center mb-4 {{ $s['chip'] }}">
-                        <x-dynamic-component :component="'icon.'.$s['icon']" class="w-5 h-5"/>
+                <div data-reveal class="bg-surface border border-border rounded-2xl p-5">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="size-10 rounded-xl flex items-center justify-center {{ $s['chip'] }}">
+                            <x-dynamic-component :component="'icon.'.$s['icon']" class="w-5 h-5"/>
+                        </div>
                     </div>
-                    <p class="text-[10px] font-bold text-muted-fg uppercase tracking-[0.15em]">{{ $s['label'] }}</p>
+                    <p class="text-[10px] font-bold text-slate-500 uppercase tracking-[0.15em]">{{ $s['label'] }}</p>
                     <p class="text-2xl font-heading font-extrabold text-foreground mt-1 tracking-tight">{{ $s['prefix'] ?? '' }}<span data-countup="{{ $s['value'] }}">0</span>{{ $s['suffix'] }}</p>
                 </div>
             @endforeach
@@ -62,30 +60,28 @@
         {{-- Motor cards --}}
         <div class="space-y-4">
             <div class="flex items-center justify-between">
-                <h2 class="font-heading font-bold text-lg text-foreground">Status Perawatan Motor</h2>
-                <a href="{{ route('motorcycles.create') }}" class="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline">
-                    <x-icon.plus class="w-4 h-4"/> Tambah
-                </a>
+                <h2 class="font-heading font-bold text-base text-foreground">Status Perawatan Motor</h2>
+                <a href="{{ route('motorcycles.create') }}" class="text-sm font-semibold text-primary hover:underline">Tambah motor</a>
             </div>
 
             <div data-reveal-group class="grid gap-4 lg:grid-cols-2">
                 @forelse ($dashboard as $row)
                     @php $needsAttention = $row['items']->contains(fn ($i) => $i['status']['color'] !== 'green'); @endphp
-                    <div data-reveal class="bg-surface border border-border rounded-2xl shadow-soft hover:-translate-y-0.5 hover:shadow-lift transition duration-300 overflow-hidden">
+                    <div data-reveal class="bg-surface border border-border rounded-2xl overflow-hidden">
                         <div class="flex items-center justify-between p-5 border-b border-border bg-muted/40">
                             <div class="flex items-center gap-3">
-                                <div class="size-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                                <div class="size-10 rounded-xl bg-primary-soft text-primary flex items-center justify-center">
                                     <x-icon.motorcycle class="w-5 h-5"/>
                                 </div>
                                 <div>
-                                    <p class="font-heading font-bold text-foreground">{{ $row['motor']->nickname }}</p>
+                                    <p class="font-heading font-bold text-foreground text-sm">{{ $row['motor']->nickname }}</p>
                                     <p class="text-[11px] text-muted-fg tabular-nums">{{ number_format($row['motor']->current_odometer_km) }} km</p>
                                 </div>
                             </div>
                             @if ($needsAttention)
-                                <x-ui.badge variant="red">Perlu perhatian</x-ui.badge>
+                                <span class="text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-lg bg-red-50 text-red-600">Perhatian</span>
                             @else
-                                <x-ui.badge variant="green">Aman</x-ui.badge>
+                                <span class="text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700">Aman</span>
                             @endif
                         </div>
                         <div class="p-5 space-y-3">
@@ -99,20 +95,18 @@
                                 </div>
                             @endforeach
                             <a href="{{ route('motorcycles.show', $row['motor']) }}" class="inline-flex items-center gap-1 text-sm text-primary font-semibold hover:underline pt-1">
-                                Detail & tandai servis <span aria-hidden="true">&rarr;</span>
+                                Detail &amp; tandai servis <span aria-hidden="true">&rarr;</span>
                             </a>
                         </div>
                     </div>
                 @empty
-                    <div class="lg:col-span-2 bg-surface border border-border rounded-2xl shadow-soft text-center py-14">
-                        <div class="size-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mx-auto mb-4">
+                    <div class="lg:col-span-2 bg-surface border border-border rounded-2xl text-center py-14">
+                        <div class="size-14 rounded-2xl bg-primary-soft text-primary flex items-center justify-center mx-auto mb-4">
                             <x-icon.motorcycle class="w-7 h-7"/>
                         </div>
                         <p class="font-heading font-semibold text-foreground mb-1">Belum ada motor</p>
                         <p class="text-sm text-muted-fg mb-5">Tambahkan motor pertamamu untuk mulai memantau.</p>
-                        <x-ui.button variant="primary" href="{{ route('motorcycles.create') }}">
-                            <x-icon.plus class="w-4 h-4"/> Tambah Motor
-                        </x-ui.button>
+                        <x-ui.button variant="primary" href="{{ route('motorcycles.create') }}">Tambah Motor</x-ui.button>
                     </div>
                 @endforelse
             </div>

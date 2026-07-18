@@ -11,7 +11,7 @@ window.AmictaMap = {
     return document.querySelector('input[name="_token"]').value;
   },
   categoryColor(cat) {
-    return { moment: '#2563EB', hazard: '#EF4444', quiet: '#22C55E' }[cat] || '#64748B';
+    return { moment: '#0F766E', hazard: '#DC2626', quiet: '#D97706' }[cat] || '#64748B';
   },
   fitTo(map, latlngs) {
     if (latlngs.length) map.fitBounds(L.latLngBounds(latlngs), { padding: [40, 40] });

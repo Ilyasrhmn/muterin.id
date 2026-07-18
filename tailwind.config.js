@@ -12,17 +12,16 @@ export default {
     theme: {
         extend: {
             colors: {
-                primary: { DEFAULT: '#2563EB', hover: '#1D4ED8' },
-                secondary: '#0891B2',
-                accent: { DEFAULT: '#DC2626', hover: '#B91C1C' },
-                emerald: { soft: '#10B981' },
-                background: '#F0F3F7',
+                primary: { DEFAULT: '#0F766E', hover: '#0B5D57', soft: '#F0FDFA' },
+                hero: '#134E4A',
+                background: '#F4F7FA',
                 surface: '#FFFFFF',
                 foreground: '#0F172A',
                 muted: '#F1F5F9',
                 'muted-fg': '#64748B',
                 border: '#E2E8F0',
-                status: { green: '#22C55E', yellow: '#F59E0B', red: '#EF4444' },
+                accent: { DEFAULT: '#DC2626', hover: '#B91C1C' },
+                status: { green: '#059669', yellow: '#D97706', red: '#DC2626' },
             },
             fontFamily: {
                 heading: ['Poppins', ...defaultTheme.fontFamily.sans],
@@ -32,8 +31,8 @@ export default {
                 token: '0.75rem',
             },
             boxShadow: {
-                soft: '0 4px 20px -2px rgba(37,99,235,0.08)',
-                lift: '0 10px 25px -5px rgba(37,99,235,0.12), 0 8px 10px -6px rgba(37,99,235,0.08)',
+                soft: '0 1px 2px rgba(15,23,42,0.04), 0 4px 12px -2px rgba(15,23,42,0.06)',
+                lift: '0 10px 25px -5px rgba(15,23,42,0.10), 0 8px 10px -6px rgba(15,23,42,0.06)',
             },
         },
     },

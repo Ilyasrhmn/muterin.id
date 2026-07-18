@@ -9,12 +9,12 @@
 
   function drawPoints() {
     if (line) line.setLatLngs(points);
-    else if (points.length) line = L.polyline(points, { color: '#2563EB', weight: 4 }).addTo(map);
+    else if (points.length) line = L.polyline(points, { color: '#0F766E', weight: 4 }).addTo(map);
   }
 
   map.on('click', (e) => {
     points.push([e.latlng.lat, e.latlng.lng]);
-    L.circleMarker([e.latlng.lat, e.latlng.lng], { color: '#2563EB', radius: 5, fillOpacity: 1 }).addTo(map);
+    L.circleMarker([e.latlng.lat, e.latlng.lng], { color: '#0F766E', radius: 5, fillOpacity: 1 }).addTo(map);
     drawPoints();
   });
 

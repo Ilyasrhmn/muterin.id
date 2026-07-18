@@ -7,7 +7,7 @@
     .then((d) => {
       d.trips.forEach((t) => {
         if (t.path_json && t.path_json.length) {
-          L.polyline(t.path_json, { color: '#2563EB', weight: 4, opacity: 0.8 }).addTo(map);
+          L.polyline(t.path_json, { color: '#0F766E', weight: 4, opacity: 0.8 }).addTo(map);
           t.path_json.forEach((p) => all.push(p));
         }
       });
