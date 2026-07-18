@@ -18,6 +18,9 @@
                     <x-nav-link :href="route('motorcycles.index')" :active="request()->routeIs('motorcycles.*')">
                         {{ __('Motor') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('riding')" :active="request()->routeIs('riding')">
+                        {{ __('Riding') }}
+                    </x-nav-link>
                 </div>
             </div>
 
@@ -75,6 +78,9 @@
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('motorcycles.index')" :active="request()->routeIs('motorcycles.*')">
                 {{ __('Motor') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('riding')" :active="request()->routeIs('riding')">
+                {{ __('Riding') }}
             </x-responsive-nav-link>
         </div>
 
