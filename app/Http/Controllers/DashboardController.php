@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\MaintenanceLog;
 use App\Services\MaintenanceStatusService;
 
 class DashboardController extends Controller
@@ -20,6 +21,13 @@ class DashboardController extends Controller
             ];
         });
 
-        return view('dashboard', ['dashboard' => $dashboard]);
+        $kpi = [
+            'motor_count' => $motorcycles->count(),
+            'total_km' => $motorcycles->sum('current_odometer_km'),
+            'attention' => $dashboard->sum(fn ($row) => $row['items']->filter(fn ($i) => $i['status']['color'] !== 'green')->count()),
+            'total_cost' => MaintenanceLog::whereHas('item.motorcycle', fn ($q) => $q->where('user_id', auth()->id()))->sum('cost'),
+        ];
+
+        return view('dashboard', ['dashboard' => $dashboard, 'kpi' => $kpi]);
     }
 }

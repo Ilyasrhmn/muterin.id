@@ -1,5 +1,5 @@
 @props(['label', 'value', 'suffix' => ''])
-<x-ui.card class="flex items-center gap-4">
+<x-ui.card {{ $attributes->merge(['class' => 'flex items-center gap-4']) }}>
     @isset($icon)
         <div class="shrink-0 w-11 h-11 rounded-token bg-primary/10 text-primary flex items-center justify-center">
             {{ $icon }}
