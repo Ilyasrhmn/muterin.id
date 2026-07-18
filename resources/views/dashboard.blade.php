@@ -19,4 +19,5 @@
             <p>Belum ada motor. <a href="{{ route('motorcycles.create') }}" class="text-blue-600">Tambah motor</a>.</p>
         @endforelse
     </div>
+    <script src="{{ asset('js/notify.js') }}"></script>
 </x-app-layout>
