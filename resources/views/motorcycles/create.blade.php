@@ -1,30 +1,16 @@
 <x-app-layout>
-    <x-slot name="header"><h2 class="font-semibold text-xl">Tambah Motor</h2></x-slot>
-    <div class="max-w-lg mx-auto p-4">
-        <form method="POST" action="{{ route('motorcycles.store') }}" class="space-y-3">
-            @csrf
-            <div>
-                <label>Nama/Nickname</label>
-                <input name="nickname" value="{{ old('nickname') }}" class="w-full border rounded p-2" required>
-            </div>
-            <div>
-                <label>Merk</label>
-                <input name="brand" value="{{ old('brand') }}" class="w-full border rounded p-2">
-            </div>
-            <div>
-                <label>Tipe</label>
-                <input name="model" value="{{ old('model') }}" class="w-full border rounded p-2">
-            </div>
-            <div>
-                <label>Tahun</label>
-                <input type="number" name="year" value="{{ old('year') }}" class="w-full border rounded p-2">
-            </div>
-            <div>
-                <label>Odometer saat ini (km)</label>
-                <input type="number" name="initial_odometer_km" value="{{ old('initial_odometer_km', 0) }}" class="w-full border rounded p-2" required>
-            </div>
-            @error('nickname')<p class="text-red-600 text-sm">{{ $message }}</p>@enderror
-            <button class="px-4 py-2 bg-blue-600 text-white rounded">Simpan</button>
-        </form>
+    <x-slot name="header"><h2 class="text-xl">Tambah Motor</h2></x-slot>
+    <div class="max-w-lg mx-auto p-4 md:p-6">
+        <x-ui.card>
+            <form method="POST" action="{{ route('motorcycles.store') }}" class="space-y-5">
+                @csrf
+                <x-ui.input name="nickname" label="Nama/Nickname" :value="old('nickname')" placeholder="Beat Merah" required />
+                <x-ui.input name="brand" label="Merk" :value="old('brand')" placeholder="Honda" />
+                <x-ui.input name="model" label="Tipe" :value="old('model')" placeholder="Beat" />
+                <x-ui.input name="year" label="Tahun" type="number" :value="old('year')" placeholder="2022" />
+                <x-ui.input name="initial_odometer_km" label="Odometer saat ini (km)" type="number" :value="old('initial_odometer_km', 0)" required />
+                <x-ui.button variant="primary" type="submit" class="w-full">Simpan</x-ui.button>
+            </form>
+        </x-ui.card>
     </div>
 </x-app-layout>

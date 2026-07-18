@@ -1,28 +1,47 @@
 <x-app-layout>
-    <x-slot name="header"><h2 class="font-semibold text-xl">{{ $motorcycle->nickname }}</h2></x-slot>
-    <div class="max-w-2xl mx-auto p-4 space-y-4">
-        @if (session('status'))
-            <div class="p-3 bg-green-100 rounded">{{ session('status') }}</div>
-        @endif
+    <x-slot name="header">
         <div class="flex justify-between items-center">
-            <p class="text-gray-600">{{ $motorcycle->brand }} {{ $motorcycle->model }} &mdash; {{ number_format($motorcycle->current_odometer_km) }} km</p>
-            <a href="{{ route('motorcycles.edit', $motorcycle) }}" class="text-sm text-blue-600">Edit</a>
+            <h2 class="text-xl">{{ $motorcycle->nickname }}</h2>
+            <x-ui.button variant="outline" size="sm" href="{{ route('motorcycles.edit', $motorcycle) }}">Edit</x-ui.button>
         </div>
-        <div class="space-y-4">
+    </x-slot>
+
+    <div class="max-w-2xl mx-auto p-4 md:p-6 space-y-4">
+        @if (session('status'))
+            <div class="p-3 rounded-token bg-status-green/10 text-status-green text-sm">{{ session('status') }}</div>
+        @endif
+
+        <p class="text-muted-fg flex items-center gap-1.5">
+            <x-icon.gauge class="w-4 h-4"/> {{ $motorcycle->brand }} {{ $motorcycle->model }} &mdash; {{ number_format($motorcycle->current_odometer_km) }} km
+        </p>
+
+        <div data-reveal-group class="space-y-4">
             @foreach ($items as $i)
-                <div class="border rounded p-3 space-y-2" x-data="{ open: false }">
-                    <x-status-bar :item="$i['item']" :status="$i['status']" />
+                <x-ui.card data-reveal x-data="{ open: false }" class="space-y-3">
+                    <div class="flex justify-between text-sm">
+                        <span class="font-medium text-foreground">{{ $i['item']->name }}</span>
+                        <span class="text-muted-fg">{{ $i['status']['used'] }} / {{ $i['item']->interval_km }} km ({{ $i['status']['percent'] }}%)</span>
+                    </div>
+                    <x-ui.progress :percent="$i['status']['percent']" :color="$i['status']['color']" />
+
                     @if ($i['status']['color'] === 'red')
-                        <a href="https://www.google.com/maps/search/bengkel+motor+terdekat/" target="_blank" rel="noopener" class="inline-block text-sm text-red-600 underline">Cari Bengkel Terdekat &rarr;</a>
+                        <x-ui.button variant="accent" size="sm" href="https://www.google.com/maps/search/bengkel+motor+terdekat/" target="_blank" rel="noopener">
+                            <x-icon.map-pin class="w-4 h-4"/> Cari Bengkel Terdekat
+                        </x-ui.button>
                     @endif
-                    <button @click="open = !open" class="text-sm text-blue-600">Tandai "{{ $i['item']->name }}" selesai</button>
-                    <form x-show="open" method="POST" action="{{ route('maintenance.complete', $i['item']) }}" class="mt-2 space-y-2">
+
+                    <button @click="open = !open" type="button" class="text-sm text-primary font-medium hover:underline">
+                        Tandai "{{ $i['item']->name }}" selesai
+                    </button>
+                    <form x-show="open" x-cloak method="POST" action="{{ route('maintenance.complete', $i['item']) }}" class="space-y-3 pt-2 border-t border-border">
                         @csrf
-                        <input type="number" name="cost" placeholder="Biaya (opsional)" class="border rounded p-1 w-full">
-                        <input type="date" name="serviced_at" value="{{ now()->toDateString() }}" class="border rounded p-1 w-full" required>
-                        <button class="px-3 py-1 bg-green-600 text-white rounded text-sm">Simpan</button>
+                        <x-ui.input name="cost" label="Biaya (opsional)" type="number" placeholder="0" />
+                        <x-ui.input name="serviced_at" label="Tanggal" type="date" :value="now()->toDateString()" required />
+                        <x-ui.button variant="primary" size="sm" type="submit">
+                            <x-icon.check class="w-4 h-4"/> Simpan
+                        </x-ui.button>
                     </form>
-                </div>
+                </x-ui.card>
             @endforeach
         </div>
     </div>
