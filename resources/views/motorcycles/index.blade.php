@@ -1,50 +1,61 @@
 <x-app-layout>
-    <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="text-xl">Motor Saya</h2>
-            <x-ui.button variant="primary" size="sm" href="{{ route('motorcycles.create') }}">
+    <x-slot name="header">Motor Saya</x-slot>
+
+    <div class="p-4 sm:p-6 lg:p-8 max-w-[1400px] mx-auto space-y-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="font-heading font-bold text-xl text-foreground">Motor Saya</h1>
+                <p class="text-sm text-muted-fg mt-0.5">Kelola motor dan pilih yang sedang dipakai.</p>
+            </div>
+            <x-ui.button variant="primary" href="{{ route('motorcycles.create') }}">
                 <x-icon.plus class="w-4 h-4"/> Tambah Motor
             </x-ui.button>
         </div>
-    </x-slot>
 
-    <div class="max-w-6xl mx-auto p-4 md:p-6 space-y-4">
         @if (session('status'))
-            <div class="p-3 rounded-token bg-status-green/10 text-status-green text-sm">{{ session('status') }}</div>
+            <div class="p-3 rounded-token bg-status-green/10 text-status-green text-sm font-medium">{{ session('status') }}</div>
         @endif
 
         <div data-reveal-group class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             @forelse ($motorcycles as $motor)
-                <x-ui.card hover data-reveal class="{{ $motor->is_active ? 'ring-2 ring-primary' : '' }}">
-                    <div class="flex justify-between items-start mb-2">
-                        <div>
-                            <a href="{{ route('motorcycles.show', $motor) }}" class="font-heading font-semibold text-foreground hover:text-primary">
-                                {{ $motor->nickname }}
-                            </a>
-                            <p class="text-sm text-muted-fg">{{ $motor->brand }} {{ $motor->model }}</p>
+                <div data-reveal class="bg-surface border border-border rounded-2xl shadow-soft hover:-translate-y-0.5 hover:shadow-lift transition duration-300 overflow-hidden {{ $motor->is_active ? 'ring-2 ring-primary' : '' }}">
+                    <div class="p-5">
+                        <div class="flex items-start justify-between mb-3">
+                            <div class="size-11 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                                <x-icon.motorcycle class="w-6 h-6"/>
+                            </div>
+                            @if ($motor->is_active)
+                                <x-ui.badge variant="green">Aktif</x-ui.badge>
+                            @endif
                         </div>
-                        @if ($motor->is_active)
-                            <x-ui.badge variant="green">Aktif</x-ui.badge>
-                        @endif
+                        <a href="{{ route('motorcycles.show', $motor) }}" class="font-heading font-bold text-foreground hover:text-primary">{{ $motor->nickname }}</a>
+                        <p class="text-sm text-muted-fg">{{ $motor->brand }} {{ $motor->model }}</p>
+                        <p class="text-xs text-muted-fg flex items-center gap-1.5 mt-3 tabular-nums">
+                            <x-icon.gauge class="w-4 h-4"/> {{ number_format($motor->current_odometer_km) }} km
+                        </p>
                     </div>
-                    <p class="text-sm text-muted-fg flex items-center gap-1.5 mb-4">
-                        <x-icon.gauge class="w-4 h-4"/> {{ number_format($motor->current_odometer_km) }} km
-                    </p>
-                    @unless ($motor->is_active)
-                        <form method="POST" action="{{ route('motorcycles.activate', $motor) }}">
-                            @csrf
-                            <x-ui.button variant="outline" size="sm" type="submit" class="w-full">Jadikan Aktif</x-ui.button>
-                        </form>
-                    @endunless
-                </x-ui.card>
+                    <div class="px-5 pb-5">
+                        @unless ($motor->is_active)
+                            <form method="POST" action="{{ route('motorcycles.activate', $motor) }}">
+                                @csrf
+                                <x-ui.button variant="outline" size="sm" type="submit" class="w-full">Jadikan Aktif</x-ui.button>
+                            </form>
+                        @else
+                            <x-ui.button variant="ghost" size="sm" href="{{ route('motorcycles.show', $motor) }}" class="w-full">Lihat Detail</x-ui.button>
+                        @endunless
+                    </div>
+                </div>
             @empty
-                <x-ui.card class="col-span-full text-center py-12">
-                    <x-icon.motorcycle class="w-10 h-10 text-muted-fg mx-auto mb-3"/>
-                    <p class="text-muted-fg mb-4">Belum ada motor. Tambahkan satu.</p>
+                <div class="col-span-full bg-surface border border-border rounded-2xl shadow-soft text-center py-14">
+                    <div class="size-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mx-auto mb-4">
+                        <x-icon.motorcycle class="w-7 h-7"/>
+                    </div>
+                    <p class="font-heading font-semibold text-foreground mb-1">Belum ada motor</p>
+                    <p class="text-sm text-muted-fg mb-5">Tambahkan satu untuk mulai.</p>
                     <x-ui.button variant="primary" href="{{ route('motorcycles.create') }}">
                         <x-icon.plus class="w-4 h-4"/> Tambah Motor
                     </x-ui.button>
-                </x-ui.card>
+                </div>
             @endforelse
         </div>
     </div>

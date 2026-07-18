@@ -1,6 +1,6 @@
 <x-app-layout>
-    <x-slot name="header"><h2 class="text-xl">Riding</h2></x-slot>
-    <div class="max-w-lg mx-auto p-4 md:p-6" id="riding-app">
+    <x-slot name="header">Riding</x-slot>
+    <div class="max-w-lg mx-auto p-4 sm:p-6 lg:p-8" id="riding-app">
         @if ($motorcycles->isEmpty())
             <x-ui.card class="text-center py-12">
                 <x-icon.motorcycle class="w-10 h-10 text-muted-fg mx-auto mb-3"/>

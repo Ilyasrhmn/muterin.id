@@ -1,19 +1,23 @@
 <x-app-layout>
-    <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="text-xl">{{ $motorcycle->nickname }}</h2>
-            <x-ui.button variant="outline" size="sm" href="{{ route('motorcycles.edit', $motorcycle) }}">Edit</x-ui.button>
-        </div>
-    </x-slot>
+    <x-slot name="header">{{ $motorcycle->nickname }}</x-slot>
 
-    <div class="max-w-2xl mx-auto p-4 md:p-6 space-y-4">
+    <div class="max-w-2xl mx-auto p-4 sm:p-6 lg:p-8 space-y-4">
         @if (session('status'))
-            <div class="p-3 rounded-token bg-status-green/10 text-status-green text-sm">{{ session('status') }}</div>
+            <div class="p-3 rounded-token bg-status-green/10 text-status-green text-sm font-medium">{{ session('status') }}</div>
         @endif
 
-        <p class="text-muted-fg flex items-center gap-1.5">
-            <x-icon.gauge class="w-4 h-4"/> {{ $motorcycle->brand }} {{ $motorcycle->model }} &mdash; {{ number_format($motorcycle->current_odometer_km) }} km
-        </p>
+        <div class="flex items-center justify-between bg-surface border border-border rounded-2xl shadow-soft p-5">
+            <div class="flex items-center gap-3">
+                <div class="size-11 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                    <x-icon.motorcycle class="w-6 h-6"/>
+                </div>
+                <div>
+                    <p class="font-heading font-bold text-foreground">{{ $motorcycle->nickname }}</p>
+                    <p class="text-sm text-muted-fg tabular-nums">{{ $motorcycle->brand }} {{ $motorcycle->model }} &middot; {{ number_format($motorcycle->current_odometer_km) }} km</p>
+                </div>
+            </div>
+            <x-ui.button variant="outline" size="sm" href="{{ route('motorcycles.edit', $motorcycle) }}">Edit</x-ui.button>
+        </div>
 
         <div data-reveal-group class="space-y-4">
             @foreach ($items as $i)

@@ -9,9 +9,32 @@ use Illuminate\Http\Request;
 
 class MapController extends Controller
 {
-    public function index()
+    // --- Peta Rute: read-only view of recorded trip paths ---
+    public function routesPage()
     {
-        return view('map.index');
+        $trips = Trip::whereHas('motorcycle', fn ($q) => $q->where('user_id', auth()->id()))
+            ->whereNotNull('path_json')
+            ->with('motorcycle')
+            ->latest('ended_at')
+            ->get();
+
+        return view('map.routes', compact('trips'));
+    }
+
+    // --- Titik Saya: manage moment/hazard/quiet pins ---
+    public function pinsPage()
+    {
+        $pins = auth()->user()->mapPins()->latest()->get();
+
+        return view('map.pins', compact('pins'));
+    }
+
+    // --- Rencana Rute: build & manage saved route plans ---
+    public function plansPage()
+    {
+        $plans = auth()->user()->routePlans()->latest()->get();
+
+        return view('map.plans', compact('plans'));
     }
 
     public function data()
@@ -60,5 +83,13 @@ class MapController extends Controller
         ]);
 
         return response()->json($plan, 201);
+    }
+
+    public function destroyPlan(RoutePlan $plan)
+    {
+        abort_unless($plan->user_id === auth()->id(), 403);
+        $plan->delete();
+
+        return response()->json(['ok' => true]);
     }
 }

@@ -1,7 +1,7 @@
 <x-app-layout>
-    <x-slot name="header"><h2 class="text-xl">Riwayat</h2></x-slot>
+    <x-slot name="header">Riwayat</x-slot>
 
-    <div class="max-w-5xl mx-auto p-4 md:p-6 space-y-6">
+    <div class="max-w-5xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
         <x-ui.stat-tile label="Total Biaya Perawatan" :value="$totalCost" suffix=" Rp" class="max-w-sm">
             <x-slot:icon><x-icon.wallet class="w-6 h-6"/></x-slot:icon>
         </x-ui.stat-tile>

@@ -33,11 +33,16 @@ Route::middleware('auth')->group(function () {
     Route::get('history', HistoryController::class)->name('history');
     Route::get('history/export', [HistoryController::class, 'exportPdf'])->name('history.export');
 
-    Route::get('map', [MapController::class, 'index'])->name('map');
+    // Peta dipecah jadi tiga fitur terpisah
+    Route::get('peta/rute', [MapController::class, 'routesPage'])->name('map.routes');
+    Route::get('peta/titik', [MapController::class, 'pinsPage'])->name('map.pins');
+    Route::get('peta/rencana', [MapController::class, 'plansPage'])->name('map.plans');
+
     Route::get('map/data', [MapController::class, 'data'])->name('map.data');
     Route::post('map/pins', [MapController::class, 'storePin'])->name('map.pins.store');
     Route::delete('map/pins/{pin}', [MapController::class, 'destroyPin'])->name('map.pins.destroy');
     Route::post('map/plans', [MapController::class, 'storePlan'])->name('map.plans.store');
+    Route::delete('map/plans/{plan}', [MapController::class, 'destroyPlan'])->name('map.plans.destroy');
 });
 
 require __DIR__.'/auth.php';

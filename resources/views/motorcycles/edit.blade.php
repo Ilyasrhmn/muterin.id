@@ -1,6 +1,6 @@
 <x-app-layout>
-    <x-slot name="header"><h2 class="text-xl">Edit Motor</h2></x-slot>
-    <div class="max-w-lg mx-auto p-4 md:p-6">
+    <x-slot name="header">Edit Motor</x-slot>
+    <div class="max-w-lg mx-auto p-4 sm:p-6 lg:p-8">
         <x-ui.card>
             <form method="POST" action="{{ route('motorcycles.update', $motorcycle) }}" class="space-y-5">
                 @csrf
