@@ -24,6 +24,9 @@
                     <x-nav-link :href="route('history')" :active="request()->routeIs('history')">
                         {{ __('Riwayat') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('map')" :active="request()->routeIs('map')">
+                        {{ __('Peta') }}
+                    </x-nav-link>
                 </div>
             </div>
 
@@ -87,6 +90,9 @@
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('history')" :active="request()->routeIs('history')">
                 {{ __('Riwayat') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('map')" :active="request()->routeIs('map')">
+                {{ __('Peta') }}
             </x-responsive-nav-link>
         </div>
 

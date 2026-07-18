@@ -3,6 +3,7 @@
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\MaintenanceController;
+use App\Http\Controllers\MapController;
 use App\Http\Controllers\MotorcycleController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TripController;
@@ -30,6 +31,12 @@ Route::middleware('auth')->group(function () {
     Route::post('trips', [TripController::class, 'store'])->name('trips.store');
 
     Route::get('history', HistoryController::class)->name('history');
+
+    Route::get('map', [MapController::class, 'index'])->name('map');
+    Route::get('map/data', [MapController::class, 'data'])->name('map.data');
+    Route::post('map/pins', [MapController::class, 'storePin'])->name('map.pins.store');
+    Route::delete('map/pins/{pin}', [MapController::class, 'destroyPin'])->name('map.pins.destroy');
+    Route::post('map/plans', [MapController::class, 'storePlan'])->name('map.plans.store');
 });
 
 require __DIR__.'/auth.php';
