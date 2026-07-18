@@ -13,7 +13,10 @@
             @endforelse
         </div>
         <div>
-            <h3 class="font-bold mb-2">Perawatan <span class="text-sm text-gray-500">(total Rp{{ number_format($totalCost) }})</span></h3>
+            <div class="flex justify-between items-center mb-2">
+                <h3 class="font-bold">Perawatan <span class="text-sm text-gray-500">(total Rp{{ number_format($totalCost) }})</span></h3>
+                <a href="{{ route('history.export') }}" class="text-sm text-blue-600">Export PDF</a>
+            </div>
             @forelse ($logs as $l)
                 <div class="border rounded p-3 mb-2 text-sm">
                     <div class="font-medium">{{ $l->item->name }} &mdash; {{ $l->item->motorcycle->nickname }}</div>

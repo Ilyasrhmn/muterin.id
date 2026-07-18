@@ -31,6 +31,7 @@ Route::middleware('auth')->group(function () {
     Route::post('trips', [TripController::class, 'store'])->name('trips.store');
 
     Route::get('history', HistoryController::class)->name('history');
+    Route::get('history/export', [HistoryController::class, 'exportPdf'])->name('history.export');
 
     Route::get('map', [MapController::class, 'index'])->name('map');
     Route::get('map/data', [MapController::class, 'data'])->name('map.data');

@@ -12,6 +12,9 @@
             @foreach ($items as $i)
                 <div class="border rounded p-3 space-y-2" x-data="{ open: false }">
                     <x-status-bar :item="$i['item']" :status="$i['status']" />
+                    @if ($i['status']['color'] === 'red')
+                        <a href="https://www.google.com/maps/search/bengkel+motor+terdekat/" target="_blank" rel="noopener" class="inline-block text-sm text-red-600 underline">Cari Bengkel Terdekat &rarr;</a>
+                    @endif
                     <button @click="open = !open" class="text-sm text-blue-600">Tandai "{{ $i['item']->name }}" selesai</button>
                     <form x-show="open" method="POST" action="{{ route('maintenance.complete', $i['item']) }}" class="mt-2 space-y-2">
                         @csrf
