@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\MotorcycleController;
 use App\Http\Controllers\ProfileController;
@@ -27,6 +28,8 @@ Route::middleware('auth')->group(function () {
 
     Route::get('riding', [TripController::class, 'create'])->name('riding');
     Route::post('trips', [TripController::class, 'store'])->name('trips.store');
+
+    Route::get('history', HistoryController::class)->name('history');
 });
 
 require __DIR__.'/auth.php';

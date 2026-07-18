@@ -21,6 +21,9 @@
                     <x-nav-link :href="route('riding')" :active="request()->routeIs('riding')">
                         {{ __('Riding') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('history')" :active="request()->routeIs('history')">
+                        {{ __('Riwayat') }}
+                    </x-nav-link>
                 </div>
             </div>
 
@@ -81,6 +84,9 @@
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('riding')" :active="request()->routeIs('riding')">
                 {{ __('Riding') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('history')" :active="request()->routeIs('history')">
+                {{ __('Riwayat') }}
             </x-responsive-nav-link>
         </div>
 
