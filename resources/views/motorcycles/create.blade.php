@@ -5,6 +5,7 @@
             <form method="POST" action="{{ route('motorcycles.store') }}" class="space-y-5">
                 @csrf
                 <x-ui.input name="nickname" label="Nama/Nickname" :value="old('nickname')" placeholder="Beat Merah" required />
+                <x-ui.input name="plat_nomor" label="Plat Nomor" :value="old('plat_nomor')" placeholder="B 3421 XYZ" required />
                 <x-ui.input name="brand" label="Merk" :value="old('brand')" placeholder="Honda" />
                 <x-ui.input name="model" label="Tipe" :value="old('model')" placeholder="Beat" />
                 <x-ui.input name="year" label="Tahun" type="number" :value="old('year')" placeholder="2022" />

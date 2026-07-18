@@ -6,6 +6,7 @@
                 @csrf
                 @method('PUT')
                 <x-ui.input name="nickname" label="Nama/Nickname" :value="old('nickname', $motorcycle->nickname)" required />
+                <x-ui.input name="plat_nomor" label="Plat Nomor" :value="old('plat_nomor', $motorcycle->plat_nomor)" required />
                 <x-ui.input name="brand" label="Merk" :value="old('brand', $motorcycle->brand)" />
                 <x-ui.input name="model" label="Tipe" :value="old('model', $motorcycle->model)" />
                 <x-ui.input name="year" label="Tahun" type="number" :value="old('year', $motorcycle->year)" />

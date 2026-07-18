@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Motorcycle extends Model
 {
     protected $fillable = [
-        'user_id', 'nickname', 'brand', 'model', 'year',
+        'user_id', 'nickname', 'plat_nomor', 'brand', 'model', 'year',
         'initial_odometer_km', 'current_odometer_km', 'is_active',
     ];
 

@@ -75,7 +75,7 @@
                                 </div>
                                 <div>
                                     <p class="font-heading font-bold text-foreground text-sm">{{ $row['motor']->nickname }}</p>
-                                    <p class="text-[11px] text-muted-fg tabular-nums">{{ number_format($row['motor']->current_odometer_km) }} km</p>
+                                    <p class="text-[11px] text-muted-fg tabular-nums">{{ $row['motor']->plat_nomor }} &middot; {{ number_format($row['motor']->current_odometer_km) }} km</p>
                                 </div>
                             </div>
                             @if ($needsAttention)

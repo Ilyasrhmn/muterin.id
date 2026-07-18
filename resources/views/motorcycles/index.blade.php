@@ -28,6 +28,9 @@
                         </div>
                         <a href="{{ route('motorcycles.show', $motor) }}" class="font-heading font-bold text-foreground hover:text-primary">{{ $motor->nickname }}</a>
                         <p class="text-sm text-muted-fg">{{ $motor->brand }} {{ $motor->model }}</p>
+                        @if ($motor->plat_nomor)
+                            <span class="inline-block mt-2 text-[11px] font-bold font-heading tracking-wider text-foreground bg-muted px-2 py-1 rounded-md border border-border">{{ $motor->plat_nomor }}</span>
+                        @endif
                         <p class="text-xs text-muted-fg flex items-center gap-1.5 mt-3 tabular-nums">
                             <x-icon.gauge class="w-4 h-4"/> {{ number_format($motor->current_odometer_km) }} km
                         </p>

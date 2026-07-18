@@ -78,6 +78,7 @@ class MotorcycleController extends Controller
     {
         return $request->validate([
             'nickname' => 'required|string|max:255',
+            'plat_nomor' => 'required|string|max:20',
             'brand' => 'nullable|string|max:255',
             'model' => 'nullable|string|max:255',
             'year' => 'nullable|integer|min:1980|max:2100',

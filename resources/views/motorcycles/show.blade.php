@@ -12,7 +12,12 @@
                     <x-icon.motorcycle class="w-6 h-6"/>
                 </div>
                 <div>
-                    <p class="font-heading font-bold text-foreground">{{ $motorcycle->nickname }}</p>
+                    <div class="flex items-center gap-2">
+                        <p class="font-heading font-bold text-foreground">{{ $motorcycle->nickname }}</p>
+                        @if ($motorcycle->plat_nomor)
+                            <span class="text-[11px] font-bold font-heading tracking-wider text-foreground bg-muted px-2 py-0.5 rounded-md border border-border">{{ $motorcycle->plat_nomor }}</span>
+                        @endif
+                    </div>
                     <p class="text-sm text-muted-fg tabular-nums">{{ $motorcycle->brand }} {{ $motorcycle->model }} &middot; {{ number_format($motorcycle->current_odometer_km) }} km</p>
                 </div>
             </div>
