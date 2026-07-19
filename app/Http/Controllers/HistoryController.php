@@ -23,10 +23,11 @@ class HistoryController extends Controller
 
         $breakdown = $logs->groupBy(fn ($log) => $log->item->name)
             ->map(fn ($group) => $group->sum('cost'))
-            ->merge(
+            ->mergeRecursive(
                 $otherExpenses->groupBy(fn ($e) => \App\Models\OtherExpense::CATEGORY_LABELS[$e->category])
                     ->map(fn ($group) => $group->sum('amount'))
             )
+            ->map(fn ($value) => is_array($value) ? array_sum($value) : $value)
             ->sortDesc();
 
         return view('history.index', compact('logs', 'otherExpenses', 'totalCost', 'servicedCount', 'avgCost', 'thisMonthCost', 'breakdown'));

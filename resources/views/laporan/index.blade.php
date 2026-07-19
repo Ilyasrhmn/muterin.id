@@ -52,7 +52,7 @@
                 <p class="text-xs text-muted-fg mt-0.5">BBM vs servis, 6 bulan terakhir.</p>
             </div>
             <div class="p-5">
-                @if ($trend->sum('fuel') + $trend->sum('service') === 0)
+                @if ($trend->sum('fuel') + $trend->sum('service') + $trend->sum('other') === 0)
                     <p class="text-sm text-muted-fg text-center py-10">Belum ada data pengeluaran.</p>
                 @else
                     <canvas id="trend-chart" height="220" role="img" aria-label="Grafik tren pengeluaran bulanan BBM dan servis"></canvas>
@@ -73,10 +73,10 @@
         @endif
     </div>
 
-    @if ($trend->sum('fuel') + $trend->sum('service') > 0 || $efficiencySeries->flatten(1)->isNotEmpty())
+    @if ($trend->sum('fuel') + $trend->sum('service') + $trend->sum('other') > 0 || $efficiencySeries->flatten(1)->isNotEmpty())
         <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
         <script>
-            @if ($trend->sum('fuel') + $trend->sum('service') > 0)
+            @if ($trend->sum('fuel') + $trend->sum('service') + $trend->sum('other') > 0)
             new Chart(document.getElementById('trend-chart'), {
                 type: 'bar',
                 data: {
