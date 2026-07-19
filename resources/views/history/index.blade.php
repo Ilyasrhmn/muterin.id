@@ -86,6 +86,7 @@
                                 <th class="px-5 py-3">Item</th>
                                 <th class="px-5 py-3 text-right">KM</th>
                                 <th class="px-5 py-3 text-right">Biaya</th>
+                                <th class="px-5 py-3">Nota</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-border">
@@ -94,12 +95,24 @@
                                     class="hover:bg-muted/40 transition">
                                     <td class="px-5 py-3 text-muted-fg tabular-nums whitespace-nowrap">{{ $log->serviced_at->format('d M Y') }}</td>
                                     <td class="px-5 py-3 font-medium text-foreground whitespace-nowrap">{{ $log->item->motorcycle->nickname }}</td>
-                                    <td class="px-5 py-3 text-foreground whitespace-nowrap">{{ $log->item->name }}</td>
+                                    <td class="px-5 py-3 text-foreground whitespace-nowrap">
+                                        {{ $log->item->name }}
+                                        @if ($log->workshop_name)
+                                            <span class="block text-[11px] text-muted-fg font-normal">{{ $log->workshop_name }}</span>
+                                        @endif
+                                    </td>
                                     <td class="px-5 py-3 text-right text-muted-fg tabular-nums whitespace-nowrap">{{ number_format($log->serviced_at_odometer_km) }}</td>
                                     <td class="px-5 py-3 text-right font-bold text-foreground tabular-nums whitespace-nowrap">Rp{{ number_format($log->cost) }}</td>
+                                    <td class="px-5 py-3">
+                                        @if ($log->receipt_path)
+                                            <a href="{{ asset('storage/'.$log->receipt_path) }}" target="_blank" rel="noopener" class="inline-block size-8 rounded-lg overflow-hidden border border-border">
+                                                <img src="{{ asset('storage/'.$log->receipt_path) }}" alt="Nota" class="w-full h-full object-cover">
+                                            </a>
+                                        @endif
+                                    </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="5" class="px-5 py-10 text-center text-muted-fg">Belum ada riwayat servis.</td></tr>
+                                <tr><td colspan="6" class="px-5 py-10 text-center text-muted-fg">Belum ada riwayat servis.</td></tr>
                             @endforelse
                         </tbody>
                     </table>

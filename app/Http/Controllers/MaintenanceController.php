@@ -15,7 +15,14 @@ class MaintenanceController extends Controller
             'cost' => 'nullable|integer|min:0',
             'serviced_at' => 'required|date',
             'note' => 'nullable|string|max:255',
+            'workshop_name' => 'nullable|string|max:255',
+            'parts' => 'nullable|string|max:255',
+            'receipt' => 'nullable|image|max:2048',
         ]);
+
+        $receiptPath = $request->hasFile('receipt')
+            ? $request->file('receipt')->store('receipts', 'public')
+            : null;
 
         $odometer = $item->motorcycle->current_odometer_km;
         $item->logs()->create([
@@ -23,6 +30,9 @@ class MaintenanceController extends Controller
             'cost' => $data['cost'] ?? null,
             'serviced_at' => $data['serviced_at'],
             'note' => $data['note'] ?? null,
+            'workshop_name' => $data['workshop_name'] ?? null,
+            'parts' => $data['parts'] ?? null,
+            'receipt_path' => $receiptPath,
         ]);
         $item->update(['last_service_odometer_km' => $odometer]);
 

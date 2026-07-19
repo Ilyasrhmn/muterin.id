@@ -7,7 +7,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class MaintenanceLog extends Model
 {
-    protected $fillable = ['maintenance_item_id', 'serviced_at_odometer_km', 'cost', 'serviced_at', 'note'];
+    protected $fillable = [
+        'maintenance_item_id', 'serviced_at_odometer_km', 'cost', 'serviced_at', 'note',
+        'workshop_name', 'parts', 'receipt_path',
+    ];
 
     protected $casts = ['serviced_at' => 'date'];
 

@@ -41,4 +41,50 @@ class MaintenanceTest extends TestCase
             'serviced_at' => '2026-07-19',
         ])->assertForbidden();
     }
+
+    public function test_completing_item_with_workshop_parts_and_receipt(): void
+    {
+        \Illuminate\Support\Facades\Storage::fake('public');
+
+        $user = \App\Models\User::factory()->create();
+        $motor = \App\Models\Motorcycle::create([
+            'user_id' => $user->id, 'nickname' => 'A',
+            'initial_odometer_km' => 0, 'current_odometer_km' => 3000,
+        ]);
+        $oli = $motor->maintenanceItems()->where('name', 'Oli Mesin')->first();
+
+        // ponytail: this GD build lacks JPEG support (no imagejpeg), use png so the fake image actually renders
+        $file = \Illuminate\Http\UploadedFile::fake()->image('nota.png');
+
+        $this->actingAs($user)->post(route('maintenance.complete', $oli), [
+            'serviced_at' => '2026-07-19',
+            'cost' => 50000,
+            'workshop_name' => 'Bengkel Jaya Motor',
+            'parts' => 'Oli Federal 0.8L, filter oli',
+            'receipt' => $file,
+        ])->assertRedirect();
+
+        $log = $oli->logs()->latest()->first();
+        $this->assertEquals('Bengkel Jaya Motor', $log->workshop_name);
+        $this->assertEquals('Oli Federal 0.8L, filter oli', $log->parts);
+        \Illuminate\Support\Facades\Storage::disk('public')->assertExists($log->receipt_path);
+    }
+
+    public function test_receipt_upload_rejects_non_image(): void
+    {
+        \Illuminate\Support\Facades\Storage::fake('public');
+
+        $user = \App\Models\User::factory()->create();
+        $motor = \App\Models\Motorcycle::create([
+            'user_id' => $user->id, 'nickname' => 'A', 'current_odometer_km' => 1000,
+        ]);
+        $oli = $motor->maintenanceItems()->where('name', 'Oli Mesin')->first();
+
+        $file = \Illuminate\Http\UploadedFile::fake()->create('nota.pdf', 100);
+
+        $this->actingAs($user)->post(route('maintenance.complete', $oli), [
+            'serviced_at' => '2026-07-19',
+            'receipt' => $file,
+        ])->assertSessionHasErrors('receipt');
+    }
 }

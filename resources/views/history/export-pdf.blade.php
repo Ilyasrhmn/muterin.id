@@ -21,6 +21,8 @@
                 <th>Item</th>
                 <th>Odometer (km)</th>
                 <th>Biaya</th>
+                <th>Bengkel</th>
+                <th>Sparepart</th>
             </tr>
         </thead>
         <tbody>
@@ -31,9 +33,11 @@
                     <td>{{ $l->item->name }}</td>
                     <td>{{ number_format($l->serviced_at_odometer_km) }}</td>
                     <td>Rp{{ number_format($l->cost) }}</td>
+                    <td>{{ $l->workshop_name }}</td>
+                    <td>{{ $l->parts }}</td>
                 </tr>
             @empty
-                <tr><td colspan="5">Belum ada riwayat servis.</td></tr>
+                <tr><td colspan="7">Belum ada riwayat servis.</td></tr>
             @endforelse
         </tbody>
     </table>
