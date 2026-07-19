@@ -3,20 +3,31 @@
 namespace App\Http\Controllers;
 
 use App\Models\MaintenanceLog;
+use App\Services\AttentionService;
+use App\Services\HealthScoreService;
+use App\Services\MaintenancePredictionService;
 use App\Services\MaintenanceStatusService;
 
 class DashboardController extends Controller
 {
-    public function __invoke(MaintenanceStatusService $status)
-    {
+    public function __invoke(
+        MaintenanceStatusService $status,
+        MaintenancePredictionService $prediction,
+        HealthScoreService $healthScore,
+        AttentionService $attention
+    ) {
         $motorcycles = auth()->user()->motorcycles()->with('maintenanceItems')->get();
 
-        $dashboard = $motorcycles->map(function ($motor) use ($status) {
+        $dashboard = $motorcycles->map(function ($motor) use ($status, $prediction, $healthScore) {
+            $avgKmPerDay = $prediction->avgKmPerDay($motor);
+
             return [
                 'motor' => $motor,
+                'health' => $healthScore->forMotorcycle($motor),
                 'items' => $motor->maintenanceItems->map(fn ($item) => [
                     'item' => $item,
                     'status' => $status->forItem($item, $motor->current_odometer_km),
+                    'prediction' => $prediction->forItem($item, $motor->current_odometer_km, $avgKmPerDay),
                 ]),
             ];
         });
@@ -28,6 +39,8 @@ class DashboardController extends Controller
             'total_cost' => MaintenanceLog::whereHas('item.motorcycle', fn ($q) => $q->where('user_id', auth()->id()))->sum('cost'),
         ];
 
-        return view('dashboard', ['dashboard' => $dashboard, 'kpi' => $kpi]);
+        $attentionItems = $attention->forUser(auth()->user()->load('motorcycles.maintenanceItems'));
+
+        return view('dashboard', ['dashboard' => $dashboard, 'kpi' => $kpi, 'attentionItems' => $attentionItems]);
     }
 }

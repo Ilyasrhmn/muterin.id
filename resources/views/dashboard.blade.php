@@ -83,6 +83,10 @@
                             @else
                                 <span class="text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700">Aman</span>
                             @endif
+                            <span class="text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-lg
+                                {{ $row['health']['color'] === 'green' ? 'bg-emerald-50 text-emerald-700' : ($row['health']['color'] === 'yellow' ? 'bg-amber-50 text-amber-700' : 'bg-red-50 text-red-600') }}">
+                                Skor {{ $row['health']['score'] }}
+                            </span>
                         </div>
                         <div class="p-5 space-y-3">
                             @foreach ($row['items'] as $i)
@@ -92,6 +96,15 @@
                                         <span class="text-muted-fg tabular-nums">{{ $i['status']['used'] }} / {{ $i['item']->interval_km }} km</span>
                                     </div>
                                     <x-ui.progress :percent="$i['status']['percent']" :color="$i['status']['color']" />
+                                    @if ($i['prediction']['days_left'] !== null)
+                                        <p class="text-[11px] {{ $i['prediction']['days_left'] === 0 ? 'text-red-600 font-semibold' : ($i['prediction']['days_left'] <= 14 ? 'text-amber-600' : 'text-muted-fg') }}">
+                                            @if ($i['prediction']['days_left'] === 0)
+                                                Sudah lewat batas
+                                            @else
+                                                Estimasi ~{{ $i['prediction']['days_left'] }} hari lagi ({{ $i['prediction']['predicted_date']->translatedFormat('d M Y') }})
+                                            @endif
+                                        </p>
+                                    @endif
                                 </div>
                             @endforeach
                             <a href="{{ route('motorcycles.show', $row['motor']) }}" class="inline-flex items-center gap-1 text-sm text-primary font-semibold hover:underline pt-1">
@@ -107,6 +120,31 @@
                         <p class="font-heading font-semibold text-foreground mb-1">Belum ada motor</p>
                         <p class="text-sm text-muted-fg mb-5">Tambahkan motor pertamamu untuk mulai memantau.</p>
                         <x-ui.button variant="primary" href="{{ route('motorcycles.create') }}">Tambah Motor</x-ui.button>
+                    </div>
+                @endforelse
+            </div>
+        </div>
+
+        <div class="bg-surface border border-border rounded-2xl overflow-hidden">
+            <div class="p-5 border-b border-border bg-muted/40 flex items-center gap-2">
+                <x-icon.activity class="w-4 h-4 text-primary"/>
+                <h3 class="font-heading font-bold text-foreground text-sm">Pusat Perhatian</h3>
+            </div>
+            <div class="p-3 space-y-1">
+                @forelse ($attentionItems as $a)
+                    <a href="{{ $a['url'] }}" class="flex items-center gap-3 p-3 rounded-xl hover:bg-muted/60 transition">
+                        <div class="size-8 rounded-lg flex items-center justify-center shrink-0 {{ $a['severity'] === 'red' ? 'bg-red-50 text-red-600' : 'bg-amber-50 text-amber-600' }}">
+                            @if ($a['severity'] === 'red')
+                                <x-icon.alert-triangle class="w-4 h-4"/>
+                            @else
+                                <x-icon.clock class="w-4 h-4"/>
+                            @endif
+                        </div>
+                        <p class="text-sm text-foreground">{{ $a['text'] }}</p>
+                    </a>
+                @empty
+                    <div class="p-6 text-center">
+                        <p class="text-sm text-emerald-700 font-medium">Semua motor terkendali ✓</p>
                     </div>
                 @endforelse
             </div>
