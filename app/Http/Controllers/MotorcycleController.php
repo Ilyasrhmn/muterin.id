@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Motorcycle;
 use App\Services\MaintenanceStatusService;
+use App\Services\OdometerService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
 class MotorcycleController extends Controller
 {
@@ -20,11 +22,16 @@ class MotorcycleController extends Controller
         return view('motorcycles.create');
     }
 
-    public function store(Request $request)
+    public function store(Request $request, OdometerService $odometer)
     {
         $data = $this->validated($request);
+        $onboarding = $this->onboardingChecklist($request);
+
         $data['current_odometer_km'] = $data['initial_odometer_km'];
-        auth()->user()->motorcycles()->create($data);
+        $motorcycle = auth()->user()->motorcycles()->create($data);
+
+        $odometer->record($motorcycle, $data['initial_odometer_km'], Carbon::today(), 'initial');
+        $this->applyOnboardingChecklist($motorcycle, $onboarding);
 
         return redirect()->route('motorcycles.index')->with('status', 'Motor ditambahkan.');
     }
@@ -89,5 +96,33 @@ class MotorcycleController extends Controller
     private function authorizeOwner(Motorcycle $motorcycle): void
     {
         abort_unless($motorcycle->user_id === auth()->id(), 403);
+    }
+
+    private function onboardingChecklist(Request $request): array
+    {
+        return $request->validate([
+            'oli_last_km' => 'nullable|integer|min:0',
+            'ban_last_km' => 'nullable|integer|min:0',
+            'aki_last_km' => 'nullable|integer|min:0',
+            'servis_last_km' => 'nullable|integer|min:0',
+        ]);
+    }
+
+    private function applyOnboardingChecklist(Motorcycle $motorcycle, array $checklist): void
+    {
+        $map = [
+            'oli_last_km' => 'Oli Mesin',
+            'ban_last_km' => 'Ban',
+            'aki_last_km' => 'Aki',
+            'servis_last_km' => 'Servis Rutin',
+        ];
+
+        foreach ($map as $field => $itemName) {
+            if (!empty($checklist[$field])) {
+                $motorcycle->maintenanceItems()
+                    ->where('name', $itemName)
+                    ->update(['last_service_odometer_km' => $checklist[$field]]);
+            }
+        }
     }
 }

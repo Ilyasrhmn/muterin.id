@@ -52,4 +52,38 @@ class MotorcycleTest extends TestCase
         $this->assertFalse($a->fresh()->is_active);
         $this->assertTrue($b->fresh()->is_active);
     }
+
+    public function test_creating_motorcycle_records_initial_odometer_reading(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)->post(route('motorcycles.store'), [
+            'nickname' => 'Beat', 'plat_nomor' => 'B 1 XYZ', 'initial_odometer_km' => 8000,
+        ]);
+
+        $motor = Motorcycle::where('nickname', 'Beat')->first();
+        $this->assertDatabaseHas('odometer_readings', [
+            'motorcycle_id' => $motor->id, 'reading_km' => 8000, 'source' => 'initial',
+        ]);
+    }
+
+    public function test_creating_used_motorcycle_with_onboarding_checklist_sets_item_baselines(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)->post(route('motorcycles.store'), [
+            'nickname' => 'Beat Bekas', 'plat_nomor' => 'B 2 XYZ', 'initial_odometer_km' => 12000,
+            'oli_last_km' => 10500, 'ban_last_km' => 3000,
+        ]);
+
+        $motor = Motorcycle::where('nickname', 'Beat Bekas')->first();
+        $oli = $motor->maintenanceItems()->where('name', 'Oli Mesin')->first();
+        $ban = $motor->maintenanceItems()->where('name', 'Ban')->first();
+        $aki = $motor->maintenanceItems()->where('name', 'Aki')->first();
+
+        $this->assertEquals(10500, $oli->last_service_odometer_km);
+        $this->assertEquals(3000, $ban->last_service_odometer_km);
+        // Untouched field falls back to the default booted() behavior (current odometer).
+        $this->assertEquals(12000, $aki->last_service_odometer_km);
+    }
 }
