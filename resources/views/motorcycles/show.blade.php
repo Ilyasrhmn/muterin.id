@@ -24,6 +24,19 @@
             <x-ui.button variant="outline" size="sm" href="{{ route('motorcycles.edit', $motorcycle) }}">Edit</x-ui.button>
         </div>
 
+        <div x-data="{ open: false }" class="bg-surface border border-border rounded-2xl p-4">
+            <button type="button" id="update-km" @click="open = !open" class="text-sm font-semibold text-primary hover:underline">
+                Update KM
+            </button>
+            <form x-show="open" x-cloak method="POST" action="{{ route('odometer.store') }}" class="mt-3 space-y-3">
+                @csrf
+                <input type="hidden" name="motorcycle_id" value="{{ $motorcycle->id }}">
+                <x-ui.input name="reading_km" label="Odometer sekarang (km)" type="number" required />
+                <x-ui.input name="recorded_at" label="Tanggal" type="date" :value="now()->toDateString()" required />
+                <x-ui.button variant="primary" size="sm" type="submit">Simpan</x-ui.button>
+            </form>
+        </div>
+
         <div data-reveal-group class="space-y-4">
             @foreach ($items as $i)
                 <x-ui.card data-reveal x-data="{ open: false }" class="space-y-3">

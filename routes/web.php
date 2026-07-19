@@ -6,6 +6,7 @@ use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\MapController;
 use App\Http\Controllers\MotorcycleController;
+use App\Http\Controllers\OdometerReadingController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\TripController;
@@ -28,6 +29,8 @@ Route::middleware('auth')->group(function () {
 
     Route::post('maintenance_items/{item}/complete', [MaintenanceController::class, 'complete'])
         ->name('maintenance.complete');
+
+    Route::post('odometer', [OdometerReadingController::class, 'store'])->name('odometer.store');
 
     Route::get('riding', [TripController::class, 'create'])->name('riding');
     Route::post('trips', [TripController::class, 'store'])->name('trips.store');

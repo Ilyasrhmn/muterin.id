@@ -76,6 +76,7 @@
                                 <div>
                                     <p class="font-heading font-bold text-foreground text-sm">{{ $row['motor']->nickname }}</p>
                                     <p class="text-[11px] text-muted-fg tabular-nums">{{ $row['motor']->plat_nomor }} &middot; {{ number_format($row['motor']->current_odometer_km) }} km</p>
+                                    <a href="{{ route('motorcycles.show', $row['motor']) }}#update-km" class="text-[11px] text-primary font-semibold hover:underline">Update KM</a>
                                 </div>
                             </div>
                             @if ($needsAttention)
