@@ -29,7 +29,7 @@ class FuelControllerTest extends TestCase
         $this->assertDatabaseHas('fuel_logs', ['motorcycle_id' => $motor->id, 'total_cost' => 65000]);
     }
 
-    public function test_storing_fuel_log_does_not_lower_odometer(): void
+    public function test_storing_fuel_log_rejects_odometer_lower_than_current(): void
     {
         $user = User::factory()->create();
         $motor = Motorcycle::create(['user_id' => $user->id, 'nickname' => 'A', 'current_odometer_km' => 5000]);
@@ -40,9 +40,29 @@ class FuelControllerTest extends TestCase
             'odometer_km' => 4900,
             'liters' => 3.0,
             'total_cost' => 45000,
-        ]);
+        ])->assertSessionHasErrors('odometer_km');
 
         $this->assertEquals(5000, $motor->fresh()->current_odometer_km);
+        $this->assertDatabaseMissing('fuel_logs', ['motorcycle_id' => $motor->id, 'total_cost' => 45000]);
+    }
+
+    public function test_unrealistic_efficiency_flashes_a_warning(): void
+    {
+        $user = User::factory()->create();
+        $motor = Motorcycle::create(['user_id' => $user->id, 'nickname' => 'A', 'current_odometer_km' => 1000]);
+        $motor->fuelLogs()->create(['filled_at' => '2026-07-01', 'odometer_km' => 1000, 'liters' => 4, 'total_cost' => 60000, 'is_full_tank' => true]);
+
+        // 500km on 2 liters = 250 km/l, well past the 60 km/l sanity threshold
+        $response = $this->actingAs($user)->post(route('bbm.store'), [
+            'motorcycle_id' => $motor->id,
+            'filled_at' => '2026-07-10',
+            'odometer_km' => 1500,
+            'liters' => 2,
+            'total_cost' => 30000,
+            'is_full_tank' => '1',
+        ]);
+
+        $response->assertSessionHas('warning');
     }
 
     public function test_cannot_store_fuel_log_for_other_users_motorcycle(): void

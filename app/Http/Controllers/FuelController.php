@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\FuelLog;
 use App\Models\Motorcycle;
 use App\Services\FuelStatsService;
+use App\Services\OdometerService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
 class FuelController extends Controller
 {
@@ -35,7 +37,7 @@ class FuelController extends Controller
         return view('bbm.index', compact('motorcycles', 'logs', 'motorStats', 'totalCost'));
     }
 
-    public function store(Request $request)
+    public function store(Request $request, OdometerService $odometer, FuelStatsService $stats)
     {
         $data = $request->validate([
             'motorcycle_id' => 'required|exists:motorcycles,id',
@@ -51,13 +53,19 @@ class FuelController extends Controller
         abort_unless($motor->user_id === auth()->id(), 403);
 
         $data['is_full_tank'] = $request->boolean('is_full_tank', true);
+
+        $odometer->record($motor, $data['odometer_km'], Carbon::parse($data['filled_at']), 'fuel');
         $motor->fuelLogs()->create($data);
 
-        if ($data['odometer_km'] > $motor->current_odometer_km) {
-            $motor->update(['current_odometer_km' => $data['odometer_km']]);
+        $warning = null;
+        $latest = $stats->latestKmPerLiter($motor->fresh());
+        if ($latest !== null && $latest > 60) {
+            $warning = "Efisiensi {$latest} km/liter terlihat tidak biasa — cek kembali odometer atau jumlah liter yang diinput.";
         }
 
-        return redirect()->route('bbm.index')->with('status', 'Isi bensin dicatat.');
+        return redirect()->route('bbm.index')
+            ->with('status', 'Isi bensin dicatat.')
+            ->with('warning', $warning);
     }
 
     public function destroy(FuelLog $fuelLog)

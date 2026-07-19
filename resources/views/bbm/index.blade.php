@@ -14,6 +14,10 @@
             <div class="p-3 rounded-xl bg-status-green/10 text-status-green text-sm font-medium">{{ session('status') }}</div>
         @endif
 
+        @if (session('warning'))
+            <div class="p-3 rounded-xl bg-amber-50 text-amber-700 text-sm font-medium">{{ session('warning') }}</div>
+        @endif
+
         {{-- Per-motor efficiency stats --}}
         <div data-reveal-group class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             @forelse ($motorStats as $ms)
