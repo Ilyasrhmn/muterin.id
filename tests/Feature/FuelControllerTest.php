@@ -71,4 +71,16 @@ class FuelControllerTest extends TestCase
         $this->actingAs($user)->delete(route('bbm.destroy', $log))->assertRedirect();
         $this->assertDatabaseMissing('fuel_logs', ['id' => $log->id]);
     }
+
+    public function test_cannot_delete_other_users_fuel_log(): void
+    {
+        $owner = User::factory()->create();
+        $intruder = User::factory()->create();
+        $motor = Motorcycle::create(['user_id' => $owner->id, 'nickname' => 'A', 'current_odometer_km' => 1000]);
+        $log = $motor->fuelLogs()->create([
+            'filled_at' => '2026-07-01', 'odometer_km' => 1000, 'liters' => 4, 'total_cost' => 60000,
+        ]);
+
+        $this->actingAs($intruder)->delete(route('bbm.destroy', $log))->assertForbidden();
+    }
 }

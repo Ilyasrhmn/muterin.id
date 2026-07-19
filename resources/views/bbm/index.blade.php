@@ -11,7 +11,7 @@
         </x-ui.hero>
 
         @if (session('status'))
-            <div class="p-3 rounded-xl bg-emerald-50 text-emerald-700 text-sm font-medium">{{ session('status') }}</div>
+            <div class="p-3 rounded-xl bg-status-green/10 text-status-green text-sm font-medium">{{ session('status') }}</div>
         @endif
 
         {{-- Per-motor efficiency stats --}}
