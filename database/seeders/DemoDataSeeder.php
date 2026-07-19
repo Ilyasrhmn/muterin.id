@@ -63,6 +63,23 @@ class DemoDataSeeder extends Seeder
             ['filled_at' => '2026-07-05', 'odometer_km' => 9800, 'liters' => 4.5, 'total_cost' => 70000, 'is_full_tank' => true],
         ]);
 
+        $motor->update([
+            'stnk_due_date' => now()->subDays(3),   // overdue -> demonstrates red Pusat Perhatian item
+            'plat_due_date' => now()->addYears(2),
+        ]);
+
+        $motor->odometerReadings()->createMany([
+            ['reading_km' => 500, 'recorded_at' => '2026-01-01', 'source' => 'initial'],
+            ['reading_km' => 9800, 'recorded_at' => '2026-07-05', 'source' => 'fuel'],
+            ['reading_km' => 11200, 'recorded_at' => now()->subDays(10), 'source' => 'manual'],
+            ['reading_km' => 12450, 'recorded_at' => now()->subDays(2), 'source' => 'manual'],
+        ]);
+
+        $motor->otherExpenses()->createMany([
+            ['category' => 'asuransi', 'amount' => 450000, 'expense_date' => '2026-02-01', 'note' => 'Premi tahunan'],
+            ['category' => 'parkir', 'amount' => 15000, 'expense_date' => now()->subDays(4)->toDateString()],
+        ]);
+
         $this->trip($motor, '2026-07-10 07:30:00', 8.4, 1320, [[-6.200, 106.800], [-6.215, 106.812], [-6.223, 106.821]]);
         $this->trip($motor, '2026-07-14 08:00:00', 12.1, 1680, [[-6.223, 106.821], [-6.234, 106.833], [-6.241, 106.845]]);
         $this->trip($motor, '2026-07-17 17:15:00', 6.7, 960, [[-6.241, 106.845], [-6.232, 106.836], [-6.223, 106.821]]);
@@ -96,6 +113,20 @@ class DemoDataSeeder extends Seeder
         $motor->fuelLogs()->createMany([
             ['filled_at' => '2026-05-15', 'odometer_km' => 4000, 'liters' => 3.8, 'total_cost' => 59000, 'is_full_tank' => true],
             ['filled_at' => '2026-06-15', 'odometer_km' => 5200, 'liters' => 4.0, 'total_cost' => 62000, 'is_full_tank' => true],
+        ]);
+
+        $motor->update([
+            'stnk_due_date' => now()->addDays(20),  // due soon -> demonstrates yellow Pusat Perhatian item
+        ]);
+
+        $motor->odometerReadings()->createMany([
+            ['reading_km' => 0, 'recorded_at' => '2026-01-01', 'source' => 'initial'],
+            ['reading_km' => 5200, 'recorded_at' => '2026-06-15', 'source' => 'fuel'],
+            ['reading_km' => 6200, 'recorded_at' => now()->subDays(6), 'source' => 'manual'],
+        ]);
+
+        $motor->otherExpenses()->createMany([
+            ['category' => 'cuci_motor', 'amount' => 25000, 'expense_date' => now()->subDays(1)->toDateString()],
         ]);
 
         $this->trip($motor, '2026-07-12 09:00:00', 5.2, 780, [[-6.175, 106.827], [-6.182, 106.835]]);
