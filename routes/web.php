@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\FuelController;
 use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\MapController;
@@ -32,6 +33,10 @@ Route::middleware('auth')->group(function () {
 
     Route::get('history', HistoryController::class)->name('history');
     Route::get('history/export', [HistoryController::class, 'exportPdf'])->name('history.export');
+
+    Route::get('bbm', [FuelController::class, 'index'])->name('bbm.index');
+    Route::post('bbm', [FuelController::class, 'store'])->name('bbm.store');
+    Route::delete('bbm/{fuelLog}', [FuelController::class, 'destroy'])->name('bbm.destroy');
 
     // Peta dipecah jadi tiga fitur terpisah
     Route::get('peta/rute', [MapController::class, 'routesPage'])->name('map.routes');

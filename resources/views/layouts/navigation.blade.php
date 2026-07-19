@@ -4,6 +4,7 @@
         ['route' => 'motorcycles.index', 'pattern' => 'motorcycles.*', 'label' => 'Motor Saya', 'icon' => 'motorcycle'],
         ['route' => 'riding', 'pattern' => 'riding', 'label' => 'Riding', 'icon' => 'play'],
         ['route' => 'history', 'pattern' => 'history', 'label' => 'Biaya & Servis', 'icon' => 'wallet'],
+        ['route' => 'bbm.index', 'pattern' => 'bbm.*', 'label' => 'BBM', 'icon' => 'droplet'],
         ['route' => 'map.routes', 'pattern' => 'map.routes', 'label' => 'Peta Rute', 'icon' => 'route'],
         ['route' => 'map.pins', 'pattern' => 'map.pins', 'label' => 'Titik Saya', 'icon' => 'map-pin'],
         ['route' => 'map.plans', 'pattern' => 'map.plans', 'label' => 'Rencana Rute', 'icon' => 'navigation'],
