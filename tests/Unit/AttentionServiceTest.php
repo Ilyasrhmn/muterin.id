@@ -65,7 +65,7 @@ class AttentionServiceTest extends TestCase
         ]);
         $motor->odometerReadings()->create(['reading_km' => 2700, 'recorded_at' => now()->subDay(), 'source' => 'manual']);
         $motor->odometerReadings()->create(['reading_km' => 3000, 'recorded_at' => now(), 'source' => 'manual']);
-        // avg km/day ~100 -> Aki (interval 15000, remaining 12000) gives a large days_left,
+        // avg km/day ~10 (300km delta / fixed 30-day window) -> Aki (interval 15000, remaining 12000) gives a large days_left,
         // Oli Mesin is overdue -> red. Just assert first item (if any) is red when present.
 
         $items = $this->svc->forUser($user->fresh(['motorcycles.maintenanceItems'])->motorcycles);
