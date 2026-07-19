@@ -7,6 +7,7 @@
                     subtitle="Pantau pengeluaran perawatan semua motormu — oli, ban, aki, servis rutin — tercatat rapi di satu tempat.">
             <x-slot:side>
                 <x-ui.button variant="white" href="{{ route('history.export') }}">Unduh PDF</x-ui.button>
+                <x-ui.button variant="white" type="button" x-data @click="$dispatch('open-expense-form')">Catat Pengeluaran Lain</x-ui.button>
             </x-slot:side>
         </x-ui.hero>
 
@@ -117,6 +118,50 @@
                         </tbody>
                     </table>
                 </div>
+            </div>
+        </div>
+
+        <div x-data="{ open: false }" @open-expense-form.window="open = true" x-cloak class="bg-surface border border-border rounded-2xl overflow-hidden">
+            <button @click="open = !open" type="button" class="w-full p-5 flex items-center justify-between text-left border-b border-border bg-muted/40">
+                <h3 class="font-heading font-bold text-foreground text-sm">Pengeluaran Lain</h3>
+                <span class="text-primary text-sm font-semibold" x-text="open ? 'Tutup' : 'Tambah'"></span>
+            </button>
+            <form x-show="open" method="POST" action="{{ route('other-expenses.store') }}" class="p-5 grid sm:grid-cols-2 gap-4 border-b border-border">
+                @csrf
+                <label class="space-y-1.5">
+                    <span class="block text-sm font-medium text-foreground">Motor</span>
+                    <select name="motorcycle_id" required class="w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm focus:border-primary focus:ring-2 focus:ring-primary/20">
+                        @foreach (auth()->user()->motorcycles as $m)
+                            <option value="{{ $m->id }}" @selected($m->is_active)>{{ $m->nickname }}</option>
+                        @endforeach
+                    </select>
+                </label>
+                <label class="space-y-1.5">
+                    <span class="block text-sm font-medium text-foreground">Kategori</span>
+                    <select name="category" required class="w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm focus:border-primary focus:ring-2 focus:ring-primary/20">
+                        @foreach (\App\Models\OtherExpense::CATEGORY_LABELS as $value => $label)
+                            <option value="{{ $value }}">{{ $label }}</option>
+                        @endforeach
+                    </select>
+                </label>
+                <x-ui.input name="amount" label="Jumlah (Rp)" type="number" required />
+                <x-ui.input name="expense_date" label="Tanggal" type="date" :value="now()->toDateString()" required />
+                <div class="sm:col-span-2">
+                    <x-ui.button variant="primary" type="submit">Simpan</x-ui.button>
+                </div>
+            </form>
+            <div class="p-3 space-y-1 max-h-72 overflow-y-auto">
+                @forelse ($otherExpenses as $expense)
+                    <div class="flex items-center justify-between p-3 rounded-xl hover:bg-muted/40">
+                        <div>
+                            <p class="text-sm font-medium text-foreground">{{ \App\Models\OtherExpense::CATEGORY_LABELS[$expense->category] }} — {{ $expense->motorcycle->nickname }}</p>
+                            <p class="text-[11px] text-muted-fg">{{ $expense->expense_date->format('d M Y') }}</p>
+                        </div>
+                        <span class="text-sm font-bold text-foreground tabular-nums">Rp{{ number_format($expense->amount) }}</span>
+                    </div>
+                @empty
+                    <p class="text-sm text-muted-fg p-3">Belum ada pengeluaran lain.</p>
+                @endforelse
             </div>
         </div>
     </div>

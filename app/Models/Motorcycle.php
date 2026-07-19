@@ -66,4 +66,9 @@ class Motorcycle extends Model
     {
         return $this->hasMany(OdometerReading::class);
     }
+
+    public function otherExpenses(): HasMany
+    {
+        return $this->hasMany(OtherExpense::class);
+    }
 }

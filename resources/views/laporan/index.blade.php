@@ -6,7 +6,7 @@
         <x-ui.hero badge="Cost Report" title="Laporan Biaya Kepemilikan"
                     subtitle="Total biaya BBM + servis semua motormu, biaya per km, dan tren pengeluaran bulanan." />
 
-        <div data-reveal-group class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div data-reveal-group class="grid sm:grid-cols-2 lg:grid-cols-5 gap-4">
             <div data-reveal class="bg-primary-soft border border-primary/15 rounded-2xl p-5">
                 <div class="size-10 rounded-xl bg-white text-primary flex items-center justify-center mb-4">
                     <x-icon.wallet class="w-5 h-5"/>
@@ -36,6 +36,13 @@
                 </div>
                 <p class="text-[10px] font-bold text-slate-500 uppercase tracking-[0.15em]">Total Servis</p>
                 <p class="text-2xl font-heading font-extrabold text-foreground mt-1 tracking-tight">Rp <span data-countup="{{ $totalServiceCost }}">0</span></p>
+            </div>
+            <div data-reveal class="bg-surface border border-border rounded-2xl p-5">
+                <div class="size-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center mb-4">
+                    <x-icon.wallet class="w-5 h-5"/>
+                </div>
+                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-[0.15em]">Pengeluaran Lain</p>
+                <p class="text-2xl font-heading font-extrabold text-foreground mt-1 tracking-tight">Rp <span data-countup="{{ $totalOtherCost }}">0</span></p>
             </div>
         </div>
 
@@ -77,6 +84,7 @@
                     datasets: [
                         { label: 'BBM', data: {!! json_encode($trend->pluck('fuel')) !!}, backgroundColor: '#0F766E' },
                         { label: 'Servis', data: {!! json_encode($trend->pluck('service')) !!}, backgroundColor: '#D97706' },
+                        { label: 'Lainnya', data: {!! json_encode($trend->pluck('other')) !!}, backgroundColor: '#64748B' },
                     ],
                 },
                 options: { scales: { x: { stacked: true }, y: { stacked: true } } },
