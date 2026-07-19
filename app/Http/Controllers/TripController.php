@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Motorcycle;
+use App\Services\OdometerService;
 use Illuminate\Http\Request;
 
 class TripController extends Controller
@@ -33,7 +34,8 @@ class TripController extends Controller
             'started_at' => now()->subSeconds($data['duration_seconds']),
             'ended_at' => now(),
         ]);
-        $motor->increment('current_odometer_km', (int) round($data['distance_km']));
+        $newOdometer = $motor->current_odometer_km + (int) round($data['distance_km']);
+        app(OdometerService::class)->record($motor, $newOdometer, now(), 'trip');
 
         return response()->json(['ok' => true, 'trip_id' => $trip->id], 201);
     }

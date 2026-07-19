@@ -40,4 +40,23 @@ class TripTest extends TestCase
             'motorcycle_id' => $motor->id, 'distance_km' => 5, 'duration_seconds' => 60,
         ])->assertForbidden();
     }
+
+    public function test_finishing_trip_records_an_odometer_reading(): void
+    {
+        $user = User::factory()->create();
+        $motor = Motorcycle::create([
+            'user_id' => $user->id, 'nickname' => 'A',
+            'initial_odometer_km' => 1000, 'current_odometer_km' => 1000,
+        ]);
+
+        $this->actingAs($user)->postJson(route('trips.store'), [
+            'motorcycle_id' => $motor->id,
+            'distance_km' => 12.5,
+            'duration_seconds' => 1800,
+        ]);
+
+        $this->assertDatabaseHas('odometer_readings', [
+            'motorcycle_id' => $motor->id, 'reading_km' => 1013, 'source' => 'trip',
+        ]);
+    }
 }
