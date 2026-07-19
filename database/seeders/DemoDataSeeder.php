@@ -57,6 +57,12 @@ class DemoDataSeeder extends Seeder
             ['2026-05-20', 9000, 150000, 'Servis rutin + tune up'],
         ]);
 
+        $motor->fuelLogs()->createMany([
+            ['filled_at' => '2026-05-01', 'odometer_km' => 8000, 'liters' => 4.0, 'total_cost' => 62000, 'is_full_tank' => true],
+            ['filled_at' => '2026-06-01', 'odometer_km' => 8900, 'liters' => 4.2, 'total_cost' => 65000, 'is_full_tank' => true],
+            ['filled_at' => '2026-07-05', 'odometer_km' => 9800, 'liters' => 4.5, 'total_cost' => 70000, 'is_full_tank' => true],
+        ]);
+
         $this->trip($motor, '2026-07-10 07:30:00', 8.4, 1320, [[-6.200, 106.800], [-6.215, 106.812], [-6.223, 106.821]]);
         $this->trip($motor, '2026-07-14 08:00:00', 12.1, 1680, [[-6.223, 106.821], [-6.234, 106.833], [-6.241, 106.845]]);
         $this->trip($motor, '2026-07-17 17:15:00', 6.7, 960, [[-6.241, 106.845], [-6.232, 106.836], [-6.223, 106.821]]);
@@ -85,6 +91,11 @@ class DemoDataSeeder extends Seeder
         // Aki belum pernah diservis — tetap dari checkpoint awal (0 km).
         $this->serviceItem($motor, 'Servis Rutin', [
             ['2026-04-01', 3600, 140000, 'Servis rutin CVT'],
+        ]);
+
+        $motor->fuelLogs()->createMany([
+            ['filled_at' => '2026-05-15', 'odometer_km' => 4000, 'liters' => 3.8, 'total_cost' => 59000, 'is_full_tank' => true],
+            ['filled_at' => '2026-06-15', 'odometer_km' => 5200, 'liters' => 4.0, 'total_cost' => 62000, 'is_full_tank' => true],
         ]);
 
         $this->trip($motor, '2026-07-12 09:00:00', 5.2, 780, [[-6.175, 106.827], [-6.182, 106.835]]);
