@@ -39,7 +39,7 @@ class DashboardController extends Controller
             'total_cost' => MaintenanceLog::whereHas('item.motorcycle', fn ($q) => $q->where('user_id', auth()->id()))->sum('cost'),
         ];
 
-        $attentionItems = $attention->forUser(auth()->user()->load('motorcycles.maintenanceItems'));
+        $attentionItems = $attention->forUser($motorcycles);
 
         return view('dashboard', ['dashboard' => $dashboard, 'kpi' => $kpi, 'attentionItems' => $attentionItems]);
     }

@@ -19,12 +19,16 @@ class FuelController extends Controller
             ->orderByDesc('id')
             ->get();
 
-        $motorStats = $motorcycles->map(fn ($m) => [
-            'motor' => $m,
-            'avg_km_per_liter' => $stats->averageKmPerLiter($m),
-            'latest_km_per_liter' => $stats->latestKmPerLiter($m),
-            'cost_per_km' => $stats->costPerKm($m),
-        ]);
+        $motorStats = $motorcycles->map(function ($m) use ($stats) {
+            $efficiency = $stats->efficiencySummary($m);
+
+            return [
+                'motor' => $m,
+                'avg_km_per_liter' => $efficiency['average'],
+                'latest_km_per_liter' => $efficiency['latest'],
+                'cost_per_km' => $stats->costPerKm($m),
+            ];
+        });
 
         $totalCost = $logs->sum('total_cost');
 

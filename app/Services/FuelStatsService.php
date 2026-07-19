@@ -32,21 +32,31 @@ class FuelStatsService
         return $series;
     }
 
-    public function averageKmPerLiter(Motorcycle $motorcycle): ?float
+    /**
+     * Average + latest km/liter computed from a single consumptionSeries() call.
+     * Use this instead of calling averageKmPerLiter()+latestKmPerLiter() together.
+     */
+    public function efficiencySummary(Motorcycle $motorcycle): array
     {
         $series = $this->consumptionSeries($motorcycle);
         if (empty($series)) {
-            return null;
+            return ['average' => null, 'latest' => null];
         }
 
-        return round(array_sum(array_column($series, 'km_per_liter')) / count($series), 1);
+        return [
+            'average' => round(array_sum(array_column($series, 'km_per_liter')) / count($series), 1),
+            'latest' => end($series)['km_per_liter'],
+        ];
+    }
+
+    public function averageKmPerLiter(Motorcycle $motorcycle): ?float
+    {
+        return $this->efficiencySummary($motorcycle)['average'];
     }
 
     public function latestKmPerLiter(Motorcycle $motorcycle): ?float
     {
-        $series = $this->consumptionSeries($motorcycle);
-
-        return empty($series) ? null : end($series)['km_per_liter'];
+        return $this->efficiencySummary($motorcycle)['latest'];
     }
 
     public function costPerKm(Motorcycle $motorcycle): ?float

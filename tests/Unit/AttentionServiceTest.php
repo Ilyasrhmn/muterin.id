@@ -36,7 +36,7 @@ class AttentionServiceTest extends TestCase
         ]);
         // Oli Mesin: interval 2500, used 3000 -> overdue
 
-        $items = $this->svc->forUser($user->fresh(['motorcycles.maintenanceItems']));
+        $items = $this->svc->forUser($user->fresh(['motorcycles.maintenanceItems'])->motorcycles);
 
         $redItems = array_filter($items, fn ($i) => $i['severity'] === 'red');
         $this->assertNotEmpty($redItems);
@@ -51,7 +51,7 @@ class AttentionServiceTest extends TestCase
         ]);
         // All items at 0% used, no trips -> no red (not overdue) and no yellow (no prediction data)
 
-        $items = $this->svc->forUser($user->fresh(['motorcycles.maintenanceItems']));
+        $items = $this->svc->forUser($user->fresh(['motorcycles.maintenanceItems'])->motorcycles);
 
         $this->assertEmpty($items);
     }
@@ -70,7 +70,7 @@ class AttentionServiceTest extends TestCase
         // avg km/day ~10 -> Aki (interval 15000, remaining 12000) gives a large days_left,
         // Oli Mesin is overdue -> red. Just assert first item (if any) is red when present.
 
-        $items = $this->svc->forUser($user->fresh(['motorcycles.maintenanceItems']));
+        $items = $this->svc->forUser($user->fresh(['motorcycles.maintenanceItems'])->motorcycles);
 
         if (count($items) > 1) {
             $severities = array_column($items, 'severity');

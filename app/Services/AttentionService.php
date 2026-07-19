@@ -2,8 +2,6 @@
 
 namespace App\Services;
 
-use App\Models\User;
-
 class AttentionService
 {
     public function __construct(
@@ -15,12 +13,16 @@ class AttentionService
 
     /**
      * ponytail: 14-day "coming due soon" threshold is a tuning knob.
+     *
+     * @param  iterable<\App\Models\Motorcycle>  $motorcycles  Already loaded with maintenanceItems —
+     *   callers should pass a collection they've already fetched instead of a User, to avoid
+     *   re-querying motorcycles+items the caller already has in hand.
      */
-    public function forUser(User $user): array
+    public function forUser(iterable $motorcycles): array
     {
         $items = [];
 
-        foreach ($user->motorcycles as $motor) {
+        foreach ($motorcycles as $motor) {
             $avgKmPerDay = $this->predictionService->avgKmPerDay($motor);
 
             foreach ($motor->maintenanceItems as $item) {
@@ -45,8 +47,9 @@ class AttentionService
                 }
             }
 
-            $avg = $this->fuelStatsService->averageKmPerLiter($motor);
-            $latest = $this->fuelStatsService->latestKmPerLiter($motor);
+            $efficiency = $this->fuelStatsService->efficiencySummary($motor);
+            $avg = $efficiency['average'];
+            $latest = $efficiency['latest'];
             if ($avg && $latest && $latest < 0.85 * $avg) {
                 $items[] = [
                     'severity' => 'yellow',

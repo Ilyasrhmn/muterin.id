@@ -32,8 +32,9 @@ class HealthScoreService
             }
         }
 
-        $avg = $this->fuelStatsService->averageKmPerLiter($motorcycle);
-        $latest = $this->fuelStatsService->latestKmPerLiter($motorcycle);
+        $efficiency = $this->fuelStatsService->efficiencySummary($motorcycle);
+        $avg = $efficiency['average'];
+        $latest = $efficiency['latest'];
         if ($avg && $latest && $latest < 0.85 * $avg) {
             $score -= 10;
         }
