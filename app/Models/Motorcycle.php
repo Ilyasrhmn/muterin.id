@@ -27,7 +27,7 @@ class Motorcycle extends Model
     protected static function booted(): void
     {
         static::created(function (Motorcycle $motor) {
-            $startOdometer = $motor->current_odometer_km ?? 0;
+            $startOdometer = $motor->initial_odometer_km ?? 0;
             foreach (self::DEFAULT_ITEMS as $item) {
                 $motor->maintenanceItems()->create([
                     'name' => $item['name'],
