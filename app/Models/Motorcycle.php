@@ -11,10 +11,14 @@ class Motorcycle extends Model
     protected $fillable = [
         'user_id', 'nickname', 'plat_nomor', 'brand', 'model', 'year',
         'initial_odometer_km', 'current_odometer_km', 'is_active',
+        'stnk_due_date', 'plat_due_date', 'insurance_due_date',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
+        'stnk_due_date' => 'date',
+        'plat_due_date' => 'date',
+        'insurance_due_date' => 'date',
     ];
 
     public const DEFAULT_ITEMS = [

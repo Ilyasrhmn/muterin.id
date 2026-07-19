@@ -8,6 +8,7 @@ use App\Services\AttentionService;
 use App\Services\FuelStatsService;
 use App\Services\MaintenancePredictionService;
 use App\Services\MaintenanceStatusService;
+use App\Services\VehicleDocumentService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -24,6 +25,7 @@ class AttentionServiceTest extends TestCase
             new MaintenanceStatusService(),
             new MaintenancePredictionService(),
             new FuelStatsService(),
+            new VehicleDocumentService(),
         );
     }
 

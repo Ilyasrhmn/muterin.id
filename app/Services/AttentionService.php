@@ -8,6 +8,7 @@ class AttentionService
         private MaintenanceStatusService $statusService,
         private MaintenancePredictionService $predictionService,
         private FuelStatsService $fuelStatsService,
+        private VehicleDocumentService $documentService,
     ) {
     }
 
@@ -56,6 +57,23 @@ class AttentionService
                     'text' => "Konsumsi BBM {$motor->nickname} turun, cek kondisi mesin",
                     'url' => route('bbm.index'),
                 ];
+            }
+
+            foreach ($this->documentService->forMotorcycle($motor) as $doc) {
+                if ($doc['color'] === 'red') {
+                    $overdueText = $doc['days_left'] === 0 ? 'hari ini' : abs($doc['days_left']).' hari lalu';
+                    $items[] = [
+                        'severity' => 'red',
+                        'text' => "Segera bayar {$doc['label']} — {$motor->nickname}, jatuh tempo {$overdueText}",
+                        'url' => route('motorcycles.show', $motor),
+                    ];
+                } elseif ($doc['color'] === 'yellow') {
+                    $items[] = [
+                        'severity' => 'yellow',
+                        'text' => "{$doc['label']} {$motor->nickname} jatuh tempo {$doc['days_left']} hari lagi",
+                        'url' => route('motorcycles.show', $motor),
+                    ];
+                }
             }
         }
 

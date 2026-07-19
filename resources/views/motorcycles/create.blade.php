@@ -24,6 +24,17 @@
                     </div>
                 </div>
 
+                <div x-data="{ open: false }" class="border-t border-border pt-4">
+                    <button type="button" @click="open = !open" class="text-sm text-primary font-medium hover:underline">
+                        Dokumen Kendaraan (opsional)
+                    </button>
+                    <div x-show="open" x-cloak class="grid sm:grid-cols-3 gap-4 mt-3">
+                        <x-ui.input name="stnk_due_date" label="Jatuh Tempo Pajak STNK" type="date" />
+                        <x-ui.input name="plat_due_date" label="Jatuh Tempo Ganti Plat (5th)" type="date" />
+                        <x-ui.input name="insurance_due_date" label="Jatuh Tempo Asuransi" type="date" />
+                    </div>
+                </div>
+
                 <x-ui.button variant="primary" type="submit" class="w-full">Simpan</x-ui.button>
             </form>
         </x-ui.card>

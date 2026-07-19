@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Motorcycle;
 use App\Services\MaintenanceStatusService;
 use App\Services\OdometerService;
+use App\Services\VehicleDocumentService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
@@ -36,7 +37,7 @@ class MotorcycleController extends Controller
         return redirect()->route('motorcycles.index')->with('status', 'Motor ditambahkan.');
     }
 
-    public function show(Motorcycle $motorcycle, MaintenanceStatusService $status)
+    public function show(Motorcycle $motorcycle, MaintenanceStatusService $status, VehicleDocumentService $documents)
     {
         $this->authorizeOwner($motorcycle);
         $motorcycle->load('maintenanceItems.logs');
@@ -46,7 +47,9 @@ class MotorcycleController extends Controller
             'status' => $status->forItem($item, $motorcycle->current_odometer_km),
         ]);
 
-        return view('motorcycles.show', compact('motorcycle', 'items'));
+        $documentItems = $documents->forMotorcycle($motorcycle);
+
+        return view('motorcycles.show', compact('motorcycle', 'items', 'documentItems'));
     }
 
     public function edit(Motorcycle $motorcycle)
@@ -90,6 +93,9 @@ class MotorcycleController extends Controller
             'model' => 'nullable|string|max:255',
             'year' => 'nullable|integer|min:1980|max:2100',
             'initial_odometer_km' => 'required|integer|min:0',
+            'stnk_due_date' => 'nullable|date',
+            'plat_due_date' => 'nullable|date',
+            'insurance_due_date' => 'nullable|date',
         ]);
     }
 

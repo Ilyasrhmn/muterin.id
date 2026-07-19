@@ -37,6 +37,32 @@
             </form>
         </div>
 
+        @if (count($documentItems))
+            <div class="bg-surface border border-border rounded-2xl overflow-hidden">
+                <div class="p-5 border-b border-border bg-muted/40 flex items-center gap-2">
+                    <x-icon.calendar class="w-4 h-4 text-primary"/>
+                    <h3 class="font-heading font-bold text-foreground text-sm">Dokumen</h3>
+                </div>
+                <div class="p-3 space-y-1">
+                    @foreach ($documentItems as $doc)
+                        <div class="flex items-center justify-between p-3 rounded-xl">
+                            <span class="text-sm text-foreground">{{ $doc['label'] }}</span>
+                            <span class="text-xs font-semibold px-2.5 py-1 rounded-lg
+                                {{ $doc['color'] === 'red' ? 'bg-red-50 text-red-600' : ($doc['color'] === 'yellow' ? 'bg-amber-50 text-amber-700' : 'bg-emerald-50 text-emerald-700') }}">
+                                @if ($doc['days_left'] < 0)
+                                    Lewat {{ abs($doc['days_left']) }} hari
+                                @elseif ($doc['days_left'] === 0)
+                                    Jatuh tempo hari ini
+                                @else
+                                    {{ $doc['days_left'] }} hari lagi
+                                @endif
+                            </span>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        @endif
+
         <div data-reveal-group class="space-y-4">
             @foreach ($items as $i)
                 <x-ui.card data-reveal x-data="{ open: false }" class="space-y-3">
