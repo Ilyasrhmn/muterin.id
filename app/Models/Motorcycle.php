@@ -52,4 +52,9 @@ class Motorcycle extends Model
     {
         return $this->hasMany(Trip::class);
     }
+
+    public function fuelLogs(): HasMany
+    {
+        return $this->hasMany(FuelLog::class);
+    }
 }
