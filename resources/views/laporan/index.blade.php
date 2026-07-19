@@ -84,15 +84,25 @@
             @endif
 
             @if ($efficiencySeries->flatten(1)->isNotEmpty())
+            @php
+                // ponytail: align each series to the shared label list here (in PHP) so the
+                // Chart.js config below stays plain JSON — no per-dataset lookup logic in JS.
+                $efficiencyAligned = $efficiencySeries->map(
+                    fn ($series) => $efficiencyLabels->map(
+                        fn ($date) => optional(collect($series)->firstWhere('date', $date))['km_per_liter']
+                    )->values()
+                );
+            @endphp
             new Chart(document.getElementById('efficiency-chart'), {
                 type: 'line',
                 data: {
+                    labels: {!! json_encode($efficiencyLabels) !!},
                     datasets: [
-                        @foreach ($efficiencySeries as $name => $series)
-                            @if (count($series))
+                        @foreach ($efficiencyAligned as $name => $data)
+                            @if (count($efficiencySeries[$name]))
                             {
                                 label: {!! json_encode($name) !!},
-                                data: {!! json_encode(array_map(fn($p) => ['x' => $p['date'], 'y' => $p['km_per_liter']], $series)) !!},
+                                data: {!! json_encode($data) !!},
                                 borderColor: '#0F766E',
                                 tension: 0.3,
                             },

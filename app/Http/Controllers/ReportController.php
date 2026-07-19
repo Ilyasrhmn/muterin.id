@@ -35,8 +35,10 @@ class ReportController extends Controller
 
         $efficiencySeries = $motorcycles->mapWithKeys(fn ($m) => [$m->nickname => $fuelStats->consumptionSeries($m)]);
 
+        $efficiencyLabels = $efficiencySeries->flatten(1)->pluck('date')->sort()->unique()->values();
+
         return view('laporan.index', compact(
-            'totalFuelCost', 'totalServiceCost', 'tco', 'costPerKm', 'trend', 'efficiencySeries'
+            'totalFuelCost', 'totalServiceCost', 'tco', 'costPerKm', 'trend', 'efficiencySeries', 'efficiencyLabels'
         ));
     }
 }
