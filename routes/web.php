@@ -7,6 +7,7 @@ use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\MapController;
 use App\Http\Controllers\MotorcycleController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\TripController;
 use Illuminate\Support\Facades\Route;
 
@@ -33,6 +34,8 @@ Route::middleware('auth')->group(function () {
 
     Route::get('history', HistoryController::class)->name('history');
     Route::get('history/export', [HistoryController::class, 'exportPdf'])->name('history.export');
+
+    Route::get('laporan', ReportController::class)->name('laporan');
 
     Route::get('bbm', [FuelController::class, 'index'])->name('bbm.index');
     Route::post('bbm', [FuelController::class, 'store'])->name('bbm.store');
