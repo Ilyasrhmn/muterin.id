@@ -21,17 +21,15 @@ class MaintenancePredictionServiceTest extends TestCase
         $this->svc = new MaintenancePredictionService();
     }
 
-    public function test_avg_km_per_day_from_recent_trips(): void
+    public function test_avg_km_per_day_from_recent_odometer_readings(): void
     {
         $user = User::factory()->create();
         $motor = Motorcycle::create(['user_id' => $user->id, 'nickname' => 'A', 'current_odometer_km' => 1000]);
 
-        $motor->trips()->create([
-            'distance_km' => 60, 'duration_seconds' => 3600,
-            'started_at' => now()->subDays(5), 'ended_at' => now()->subDays(5),
-        ]);
+        $motor->odometerReadings()->create(['reading_km' => 940, 'recorded_at' => now()->subDays(10), 'source' => 'manual']);
+        $motor->odometerReadings()->create(['reading_km' => 1000, 'recorded_at' => now()->subDays(5), 'source' => 'manual']);
 
-        // 60 km total over the fixed 30-day window = 2.0 km/day
+        // delta 60 km over the fixed 30-day window -> 2.0 km/day
         $this->assertEquals(2.0, $this->svc->avgKmPerDay($motor));
     }
 

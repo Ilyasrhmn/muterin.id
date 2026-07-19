@@ -63,11 +63,9 @@ class AttentionServiceTest extends TestCase
             'user_id' => $user->id, 'nickname' => 'Beat',
             'initial_odometer_km' => 0, 'current_odometer_km' => 3000,
         ]);
-        $motor->trips()->create([
-            'distance_km' => 300, 'duration_seconds' => 60,
-            'started_at' => now()->subDay(), 'ended_at' => now()->subDay(),
-        ]);
-        // avg km/day ~10 -> Aki (interval 15000, remaining 12000) gives a large days_left,
+        $motor->odometerReadings()->create(['reading_km' => 2700, 'recorded_at' => now()->subDay(), 'source' => 'manual']);
+        $motor->odometerReadings()->create(['reading_km' => 3000, 'recorded_at' => now(), 'source' => 'manual']);
+        // avg km/day ~100 -> Aki (interval 15000, remaining 12000) gives a large days_left,
         // Oli Mesin is overdue -> red. Just assert first item (if any) is red when present.
 
         $items = $this->svc->forUser($user->fresh(['motorcycles.maintenanceItems'])->motorcycles);
