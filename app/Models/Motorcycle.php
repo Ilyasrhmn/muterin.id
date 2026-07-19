@@ -57,4 +57,9 @@ class Motorcycle extends Model
     {
         return $this->hasMany(FuelLog::class);
     }
+
+    public function odometerReadings(): HasMany
+    {
+        return $this->hasMany(OdometerReading::class);
+    }
 }
