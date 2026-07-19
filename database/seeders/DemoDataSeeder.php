@@ -122,6 +122,7 @@ class DemoDataSeeder extends Seeder
         $motor->odometerReadings()->createMany([
             ['reading_km' => 0, 'recorded_at' => '2026-01-01', 'source' => 'initial'],
             ['reading_km' => 5200, 'recorded_at' => '2026-06-15', 'source' => 'fuel'],
+            ['reading_km' => 5700, 'recorded_at' => now()->subDays(20), 'source' => 'manual'],
             ['reading_km' => 6200, 'recorded_at' => now()->subDays(6), 'source' => 'manual'],
         ]);
 
