@@ -18,4 +18,13 @@ class LandingPageTest extends TestCase
         $response->assertSee('#faq', false);
         $response->assertSee('Buka menu', false);
     }
+
+    public function test_footer_has_nav_columns_and_wordmark(): void
+    {
+        $response = $this->get('/');
+
+        $response->assertOk();
+        $response->assertSee('Navigasi', false);
+        $response->assertSee('AMICTA', false);
+    }
 }
