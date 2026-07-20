@@ -58,4 +58,14 @@ class LandingPageTest extends TestCase
         $response->assertSee('Kontrol Biaya Penuh');
         $response->assertSee('Riding &amp; Peta Pribadi', false);
     }
+
+    public function test_dashboard_preview_section_shows_both_demo_motorcycles(): void
+    {
+        $response = $this->get('/');
+
+        $response->assertOk();
+        $response->assertSee('Lihat sendiri tampilannya');
+        $response->assertSee('Skor 75');
+        $response->assertSee('Skor 100');
+    }
 }

@@ -187,6 +187,88 @@
         </div>
     </section>
 
+    {{-- Dashboard Preview --}}
+    <section class="bg-muted py-16 md:py-24">
+        <div class="max-w-6xl mx-auto px-4 grid lg:grid-cols-5 gap-12 items-center">
+            <div data-reveal class="lg:col-span-2">
+                <h2 class="text-2xl md:text-3xl font-heading font-bold mb-4">Lihat sendiri tampilannya</h2>
+                <ul class="space-y-4 mb-8">
+                    <li class="flex items-start gap-3">
+                        <x-icon.check class="w-5 h-5 text-status-green shrink-0 mt-0.5"/>
+                        <span class="text-sm text-muted-fg">Status warna tiap komponen, sekali lihat langsung paham.</span>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <x-icon.check class="w-5 h-5 text-status-green shrink-0 mt-0.5"/>
+                        <span class="text-sm text-muted-fg">Skor Kesehatan Motor merangkum semua jadi satu angka.</span>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <x-icon.check class="w-5 h-5 text-status-green shrink-0 mt-0.5"/>
+                        <span class="text-sm text-muted-fg">Pusat Perhatian ngasih tau kalau ada yang mendesak.</span>
+                    </li>
+                </ul>
+                <x-ui.button variant="primary" size="lg" href="{{ route('register') }}">Coba Sekarang</x-ui.button>
+            </div>
+
+            <div data-reveal class="lg:col-span-3" x-data="{ motor: 'beat' }">
+                <div class="bg-surface border border-border rounded-2xl shadow-lift overflow-hidden">
+                    <div class="border-b border-border px-5 py-3 flex items-center justify-between">
+                        <div class="flex gap-1.5">
+                            <span class="w-2.5 h-2.5 rounded-full bg-border"></span>
+                            <span class="w-2.5 h-2.5 rounded-full bg-border"></span>
+                            <span class="w-2.5 h-2.5 rounded-full bg-border"></span>
+                        </div>
+                        <div class="flex gap-1 bg-muted p-1 rounded-lg">
+                            <button type="button" @click="motor = 'beat'" :class="motor === 'beat' ? 'bg-surface shadow-sm text-primary' : 'text-muted-fg'" class="text-xs font-semibold px-3 py-1.5 rounded-md transition-colors">Beat Ilyas</button>
+                            <button type="button" @click="motor = 'nmax'" :class="motor === 'nmax' ? 'bg-surface shadow-sm text-primary' : 'text-muted-fg'" class="text-xs font-semibold px-3 py-1.5 rounded-md transition-colors">NMAX Kantor</button>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div x-show="motor === 'beat'">
+                            <div class="flex items-center justify-between mb-4">
+                                <p class="font-heading font-semibold">Beat Ilyas</p>
+                                <x-ui.badge variant="yellow">Perhatian &middot; Skor 75</x-ui.badge>
+                            </div>
+                            <div class="space-y-3">
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1"><span>Oli Mesin</span><span>106%</span></div>
+                                    <x-ui.progress :percent="106" color="red"/>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1"><span>Ban</span><span>87%</span></div>
+                                    <x-ui.progress :percent="87" color="yellow"/>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1"><span>Aki</span><span>80%</span></div>
+                                    <x-ui.progress :percent="80" color="yellow"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div x-show="motor === 'nmax'" x-cloak>
+                            <div class="flex items-center justify-between mb-4">
+                                <p class="font-heading font-semibold">NMAX Kantor</p>
+                                <x-ui.badge variant="green">Aman &middot; Skor 100</x-ui.badge>
+                            </div>
+                            <div class="space-y-3">
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1"><span>Oli Mesin</span><span>16%</span></div>
+                                    <x-ui.progress :percent="16" color="green"/>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1"><span>Ban</span><span>51%</span></div>
+                                    <x-ui.progress :percent="51" color="yellow"/>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1"><span>Aki</span><span>41%</span></div>
+                                    <x-ui.progress :percent="41" color="green"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     {{-- How it works --}}
     <section class="max-w-6xl mx-auto px-4 py-16 md:py-24">
         <h2 data-reveal class="text-2xl md:text-3xl font-heading font-bold text-center mb-12">Cara kerjanya</h2>
