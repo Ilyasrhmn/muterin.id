@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\RouteNotFoundException;
 use App\Models\MapPin;
 use App\Models\RoutePlan;
 use App\Models\Trip;
+use App\Services\RouteService;
 use Illuminate\Http\Request;
 
 class MapController extends Controller
@@ -47,6 +49,22 @@ class MapController extends Controller
             'trips' => Trip::whereHas('motorcycle', fn ($q) => $q->where('user_id', $userId))
                 ->whereNotNull('path_json')->get(['id', 'path_json']),
         ]);
+    }
+
+    public function previewRoute(Request $request, RouteService $routing)
+    {
+        $data = $request->validate([
+            'waypoints' => 'required|array|min:2',
+            'waypoints.*' => 'required|array|size:2',
+            'waypoints.*.0' => 'required|numeric|between:-90,90',
+            'waypoints.*.1' => 'required|numeric|between:-180,180',
+        ]);
+
+        try {
+            return response()->json($routing->route($data['waypoints']));
+        } catch (RouteNotFoundException $e) {
+            return response()->json(['error' => $e->getMessage()], 422);
+        }
     }
 
     public function storePin(Request $request)

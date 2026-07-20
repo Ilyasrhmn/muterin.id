@@ -54,6 +54,7 @@ Route::middleware('auth')->group(function () {
     Route::get('peta/rencana', [MapController::class, 'plansPage'])->name('map.plans');
 
     Route::get('map/data', [MapController::class, 'data'])->name('map.data');
+    Route::post('map/route', [MapController::class, 'previewRoute'])->name('map.route');
     Route::post('map/pins', [MapController::class, 'storePin'])->name('map.pins.store');
     Route::delete('map/pins/{pin}', [MapController::class, 'destroyPin'])->name('map.pins.destroy');
     Route::post('map/plans', [MapController::class, 'storePlan'])->name('map.plans.store');

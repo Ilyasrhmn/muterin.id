@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
 class MapTest extends TestCase
@@ -48,5 +49,52 @@ class MapTest extends TestCase
         $this->actingAs($user)->postJson('/map/plans', [
             'name' => 'Rute pendek', 'points' => [[-6.2, 106.8]],
         ])->assertStatus(422);
+    }
+
+    public function test_preview_route_returns_geometry_for_authenticated_user(): void
+    {
+        Http::fake([
+            'api.openrouteservice.org/*' => Http::response([
+                'features' => [[
+                    'geometry' => ['coordinates' => [[106.8, -6.2], [106.82, -6.22]]],
+                    'properties' => ['summary' => ['distance' => 1000.0, 'duration' => 200.0]],
+                ]],
+            ], 200),
+        ]);
+
+        $user = User::factory()->create();
+        $this->actingAs($user)->postJson('/map/route', [
+            'waypoints' => [[-6.2, 106.8], [-6.22, 106.82]],
+        ])->assertOk()->assertJson([
+            'distance_km' => 1.0,
+            'duration_minutes' => 3,
+        ]);
+    }
+
+    public function test_preview_route_requires_at_least_two_waypoints(): void
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user)->postJson('/map/route', [
+            'waypoints' => [[-6.2, 106.8]],
+        ])->assertStatus(422);
+    }
+
+    public function test_preview_route_returns_422_when_routing_fails(): void
+    {
+        Http::fake([
+            'api.openrouteservice.org/*' => Http::response(['error' => 'no route'], 404),
+        ]);
+
+        $user = User::factory()->create();
+        $this->actingAs($user)->postJson('/map/route', [
+            'waypoints' => [[-6.2, 106.8], [-6.22, 106.82]],
+        ])->assertStatus(422)->assertJsonStructure(['error']);
+    }
+
+    public function test_preview_route_requires_authentication(): void
+    {
+        $this->postJson('/map/route', [
+            'waypoints' => [[-6.2, 106.8], [-6.22, 106.82]],
+        ])->assertStatus(401);
     }
 }
