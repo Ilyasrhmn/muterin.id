@@ -1,5 +1,7 @@
 <x-app-layout>
     <x-slot name="header">Riding</x-slot>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
     <div class="max-w-lg mx-auto p-4 sm:p-6 lg:p-8" id="riding-app">
         @if ($motorcycles->isEmpty())
             <x-ui.card class="text-center py-12">
@@ -20,6 +22,8 @@
                     </select>
                 </label>
 
+                <div id="ride-map" class="rounded-token overflow-hidden border border-border" style="height: 40vh"></div>
+
                 <div class="text-center py-10 rounded-token bg-muted">
                     <p class="text-6xl font-heading font-bold text-primary tabular-nums"><span id="distance">0.00</span></p>
                     <p class="text-sm text-muted-fg mt-1">km</p>
@@ -38,6 +42,8 @@
     </div>
     @csrf
     @if ($motorcycles->isNotEmpty())
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+        <script src="{{ asset('js/map-common.js') }}"></script>
         <script src="{{ asset('js/trip-recorder.js') }}"></script>
     @endif
 </x-app-layout>

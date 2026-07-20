@@ -5,6 +5,14 @@
   const MAX_JUMP_KM = 1;                // ponytail: buang lonjakan >1km antar update (outlier GPS)
 
   let watchId = null, last = null, distance = 0, startTs = 0, path = [], idleTimer = null, tick = null;
+  let marker = null, liveLine = null;
+
+  const map = window.AmictaMap.init('ride-map');
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition((pos) => {
+      map.setView([pos.coords.latitude, pos.coords.longitude], 15);
+    });
+  }
 
   function haversine(a, b) {
     const R = 6371, toRad = (d) => d * Math.PI / 180;
@@ -29,6 +37,11 @@
     }
     last = p;
     path.push(p);
+    if (marker) marker.setLatLng(p);
+    else marker = L.circleMarker(p, { color: '#0F766E', radius: 7, fillOpacity: 1 }).addTo(map);
+    if (liveLine) liveLine.addLatLng(p);
+    else liveLine = L.polyline([p], { color: '#0F766E', weight: 4 }).addTo(map);
+    map.panTo(p);
     resetIdle();
   }
 
@@ -48,6 +61,8 @@
       path = [];
       startTs = Date.now();
       $('distance').textContent = '0.00';
+      if (liveLine) { liveLine.remove(); liveLine = null; }
+      if (marker) { marker.remove(); marker = null; }
       watchId = navigator.geolocation.watchPosition(onPos, onErr, { enableHighAccuracy: true, maximumAge: 0 });
       tick = setInterval(() => {
         $('duration').textContent = fmtDur(Math.floor((Date.now() - startTs) / 1000));
