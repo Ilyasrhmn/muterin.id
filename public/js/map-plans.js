@@ -2,9 +2,9 @@
   const map = window.AmictaMap.init('map');
   const token = window.AmictaMap.token();
   let points = [];
-  let markers = [];
   let routeLine = null;
   let lastRoute = null;
+  let requestSeq = 0;
 
   const saved = JSON.parse(document.getElementById('plans-data').textContent || '[]');
   const statusEl = document.getElementById('route-status');
@@ -17,6 +17,7 @@
 
   function computeRoute() {
     if (points.length < 2) return;
+    const seq = ++requestSeq;
     setStatus('Menghitung rute...', false);
     fetch('/map/route', {
       method: 'POST',
@@ -25,6 +26,7 @@
     })
       .then((r) => r.json().then((body) => ({ ok: r.ok, body })))
       .then(({ ok, body }) => {
+        if (seq !== requestSeq) return; // a newer click already superseded this request
         if (!ok) {
           setStatus(body.error || 'Gagal menghitung rute jalan. Coba lagi sebentar.', true);
           lastRoute = null;
@@ -36,6 +38,7 @@
         setStatus(`${body.distance_km} km · ${body.duration_minutes} menit`, false);
       })
       .catch(() => {
+        if (seq !== requestSeq) return;
         setStatus('Gagal menghitung rute jalan. Coba lagi sebentar.', true);
         lastRoute = null;
       });
@@ -45,8 +48,7 @@
     const p = [e.latlng.lat, e.latlng.lng];
     points.push(p);
     const isFirst = points.length === 1;
-    const marker = L.circleMarker(p, { color: isFirst ? '#059669' : '#DC2626', radius: 6, fillOpacity: 1 }).addTo(map);
-    markers.push(marker);
+    L.circleMarker(p, { color: isFirst ? '#059669' : '#DC2626', radius: 6, fillOpacity: 1 }).addTo(map);
     computeRoute();
   });
 
