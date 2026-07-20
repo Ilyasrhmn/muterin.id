@@ -171,7 +171,7 @@
                                     <span x-text="open ? 'Sembunyikan detail' : 'Lihat detail'"></span>
                                     <x-icon.chevron-down class="w-4 h-4 transition-transform" x-bind:class="open ? 'rotate-180' : ''"/>
                                 </button>
-                                <ul x-show="open" x-cloak x-transition class="mt-3 space-y-2">
+                                <ul x-show="open" x-cloak class="mt-3 space-y-2">
                                     @foreach ($pillar['points'] as $point)
                                         <li class="flex items-start gap-2 text-sm text-muted-fg">
                                             <x-icon.check class="w-4 h-4 text-status-green shrink-0 mt-0.5"/>
@@ -308,7 +308,7 @@
                         <span class="font-heading font-semibold text-sm">{{ $faq['q'] }}</span>
                         <x-icon.chevron-down class="w-4 h-4 text-muted-fg shrink-0 transition-transform" x-bind:class="open === {{ $i }} ? 'rotate-180' : ''"/>
                     </button>
-                    <div x-show="open === {{ $i }}" x-cloak x-transition class="px-5 pb-5 text-sm text-muted-fg">
+                    <div x-show="open === {{ $i }}" x-cloak class="px-5 pb-5 text-sm text-muted-fg">
                         {{ $faq['a'] }}
                     </div>
                 </div>

@@ -28,7 +28,7 @@
                 <x-icon.x x-show="mobileOpen" x-cloak class="w-6 h-6"/>
             </button>
         </div>
-        <div x-show="mobileOpen" x-cloak x-transition class="md:hidden bg-surface border-t border-border px-4 py-4 space-y-1">
+        <div x-show="mobileOpen" x-cloak class="md:hidden bg-surface border-t border-border px-4 py-4 space-y-1">
             <a href="#fitur" @click="mobileOpen = false" class="block text-sm font-medium text-foreground py-2">Fitur</a>
             <a href="#cara-kerja" @click="mobileOpen = false" class="block text-sm font-medium text-foreground py-2">Cara Kerja</a>
             <a href="#faq" @click="mobileOpen = false" class="block text-sm font-medium text-foreground py-2">FAQ</a>
