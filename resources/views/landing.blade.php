@@ -2,16 +2,17 @@
 
     {{-- Hero --}}
     <section class="relative overflow-hidden pt-32 pb-20 md:pt-40 md:pb-28">
+        <div class="absolute inset-0 bg-gradient-to-br from-primary/15 via-transparent to-hero/10 pointer-events-none"></div>
         <div data-parallax class="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-primary/10 blur-3xl pointer-events-none"></div>
-        <div data-parallax class="absolute top-40 -left-24 w-72 h-72 rounded-full bg-accent/10 blur-3xl pointer-events-none"></div>
+        <div data-parallax class="absolute top-40 -left-24 w-72 h-72 rounded-full bg-hero/10 blur-3xl pointer-events-none"></div>
 
         <div class="max-w-6xl mx-auto px-4 grid md:grid-cols-2 gap-12 items-center relative">
             <div>
                 <h1 data-reveal class="text-4xl md:text-5xl font-heading font-bold leading-tight text-foreground">
-                    Rawat motor tanpa lupa,<br class="hidden md:block"> berbasis <span class="text-primary">jarak tempuh asli</span>.
+                    Rawat motor tanpa lupa,<br class="hidden md:block"> berbasis <span class="text-primary">km yang benar-benar akurat</span>.
                 </h1>
                 <p data-reveal class="mt-5 text-lg text-muted-fg max-w-lg">
-                    Amicta merekam perjalananmu lewat GPS dan otomatis mengingatkan kapan oli, ban, aki, atau servis rutin motor perlu diganti — bukan tebak-tebakan.
+                    Amicta mencatat jarak tempuh motormu dari sumber mana saja — manual, isi bensin, servis, atau riding — lalu otomatis mengingatkan kapan oli, ban, aki, atau servis rutin perlu diganti.
                 </p>
                 <div data-reveal class="mt-8 flex flex-wrap gap-3">
                     <x-ui.button variant="accent" size="lg" href="{{ route('register') }}">
@@ -24,21 +25,21 @@
             <div data-reveal class="relative">
                 <x-ui.card class="shadow-lift">
                     <div class="flex items-center justify-between mb-4">
-                        <p class="font-heading font-semibold">Beat Merah</p>
-                        <x-ui.badge variant="yellow">Mendekati batas</x-ui.badge>
+                        <p class="font-heading font-semibold">Beat Ilyas</p>
+                        <x-ui.badge variant="yellow">Perlu Perhatian</x-ui.badge>
                     </div>
                     <div class="space-y-4">
                         <div>
-                            <div class="flex justify-between text-sm mb-1"><span>Oli Mesin</span><span>2.100 / 2.500 km</span></div>
-                            <x-ui.progress :percent="84" color="yellow"/>
+                            <div class="flex justify-between text-sm mb-1"><span>Oli Mesin</span><span>2.650 / 2.500 km</span></div>
+                            <x-ui.progress :percent="106" color="red"/>
                         </div>
                         <div>
-                            <div class="flex justify-between text-sm mb-1"><span>Ban</span><span>4.200 / 12.000 km</span></div>
-                            <x-ui.progress :percent="35" color="green"/>
+                            <div class="flex justify-between text-sm mb-1"><span>Ban</span><span>10.450 / 12.000 km</span></div>
+                            <x-ui.progress :percent="87" color="yellow"/>
                         </div>
                         <div>
-                            <div class="flex justify-between text-sm mb-1"><span>Aki</span><span>3.000 / 15.000 km</span></div>
-                            <x-ui.progress :percent="20" color="green"/>
+                            <div class="flex justify-between text-sm mb-1"><span>Aki</span><span>11.950 / 15.000 km</span></div>
+                            <x-ui.progress :percent="80" color="yellow"/>
                         </div>
                     </div>
                 </x-ui.card>
