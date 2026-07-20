@@ -9,6 +9,11 @@ export default {
         './resources/views/**/*.blade.php',
     ],
 
+    // is-visible is only ever added via classList.add() in resources/js/reveal.js,
+    // never literally written in a .blade.php file, so Tailwind's content scanner
+    // never "sees" it and drops the [data-reveal].is-visible rule from the build.
+    safelist: ['is-visible'],
+
     theme: {
         extend: {
             colors: {
