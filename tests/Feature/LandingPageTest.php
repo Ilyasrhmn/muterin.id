@@ -36,4 +36,15 @@ class LandingPageTest extends TestCase
         $response->assertSee('km yang benar-benar akurat');
         $response->assertDontSee('Amicta merekam perjalananmu lewat GPS');
     }
+
+    public function test_problem_and_stats_reflect_real_capabilities(): void
+    {
+        $response = $this->get('/');
+
+        $response->assertOk();
+        $response->assertSee('nilai jual lebih tinggi');
+        $response->assertSee('Sumber pencatatan km');
+        $response->assertSee('Modul lengkap dalam satu aplikasi');
+        $response->assertDontSee('Berbasis km asli via GPS');
+    }
 }

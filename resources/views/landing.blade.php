@@ -72,7 +72,7 @@
                     <x-icon.wrench class="w-6 h-6"/>
                 </div>
                 <p data-reveal class="font-heading font-semibold mb-1">Tidak ada riwayat servis</p>
-                <p data-reveal class="text-sm text-muted-fg">Sulit dilacak kapan terakhir ganti apa, di km berapa, biayanya.</p>
+                <p data-reveal class="text-sm text-muted-fg">Motor dengan riwayat servis lengkap dan tercatat rapi punya nilai jual lebih tinggi saat dijual — tapi kebanyakan orang gak pernah mencatatnya dari awal.</p>
             </x-ui.card>
         </div>
     </section>
@@ -82,15 +82,15 @@
         <div data-reveal-group class="max-w-6xl mx-auto px-4 grid grid-cols-3 gap-6 text-center">
             <div data-reveal>
                 <p class="text-4xl font-heading font-bold"><span data-countup="4">0</span></p>
-                <p class="text-sm text-white/80 mt-1">Komponen dipantau</p>
+                <p class="text-sm text-white/80 mt-1">Sumber pencatatan km</p>
             </div>
             <div data-reveal>
-                <p class="text-4xl font-heading font-bold"><span data-countup="100">0</span>%</p>
-                <p class="text-sm text-white/80 mt-1">Berbasis km asli via GPS</p>
+                <p class="text-4xl font-heading font-bold"><span data-countup="9">0</span></p>
+                <p class="text-sm text-white/80 mt-1">Modul lengkap dalam satu aplikasi</p>
             </div>
             <div data-reveal>
                 <p class="text-4xl font-heading font-bold"><span data-countup="0">0</span></p>
-                <p class="text-sm text-white/80 mt-1">Odometer manual dicatat</p>
+                <p class="text-sm text-white/80 mt-1">Tebak-tebakan jadwal servis</p>
             </div>
         </div>
     </section>
