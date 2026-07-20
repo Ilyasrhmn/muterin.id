@@ -97,4 +97,21 @@ class MapTest extends TestCase
             'waypoints' => [[-6.2, 106.8], [-6.22, 106.82]],
         ])->assertStatus(401);
     }
+
+    public function test_saving_route_plan_stores_geometry_distance_and_duration(): void
+    {
+        $user = User::factory()->create();
+        $response = $this->actingAs($user)->postJson('/map/plans', [
+            'name' => 'Rute pagi',
+            'points' => [[-6.2, 106.8], [-6.22, 106.82]],
+            'route_geometry' => [[-6.2, 106.8], [-6.21, 106.81], [-6.22, 106.82]],
+            'distance_km' => 3.5,
+            'duration_minutes' => 12,
+        ]);
+
+        $response->assertCreated();
+        $this->assertDatabaseHas('route_plans', [
+            'name' => 'Rute pagi', 'distance_km' => 3.5, 'duration_minutes' => 12,
+        ]);
+    }
 }

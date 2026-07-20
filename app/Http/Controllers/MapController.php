@@ -94,10 +94,16 @@ class MapController extends Controller
         $data = $request->validate([
             'name' => 'required|string|max:255',
             'points' => 'required|array|min:2',
+            'route_geometry' => 'required|array|min:2',
+            'distance_km' => 'required|numeric|min:0',
+            'duration_minutes' => 'required|integer|min:0',
         ]);
         $plan = auth()->user()->routePlans()->create([
             'name' => $data['name'],
             'points_json' => $data['points'],
+            'route_geometry_json' => $data['route_geometry'],
+            'distance_km' => $data['distance_km'],
+            'duration_minutes' => $data['duration_minutes'],
         ]);
 
         return response()->json($plan, 201);
