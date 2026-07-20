@@ -78,4 +78,13 @@ class LandingPageTest extends TestCase
         $response->assertSee('Pertanyaan yang sering ditanyakan');
         $response->assertSee('Riwayat Awal');
     }
+
+    public function test_cta_has_trust_badges(): void
+    {
+        $response = $this->get('/');
+
+        $response->assertOk();
+        $response->assertSee('Gratis selamanya');
+        $response->assertSee('Setup di bawah 2 menit');
+    }
 }

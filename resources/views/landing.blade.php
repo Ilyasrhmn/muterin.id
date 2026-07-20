@@ -318,10 +318,15 @@
 
     {{-- CTA --}}
     <section class="max-w-6xl mx-auto px-4 pb-24">
-        <div data-reveal class="bg-primary rounded-token px-8 py-14 text-center text-white">
+        <div data-reveal class="bg-hero rounded-token px-8 py-14 text-center text-white">
             <h2 class="text-2xl md:text-3xl font-heading font-bold mb-3">Siap motor kamu selalu prima?</h2>
             <p class="text-white/85 mb-8 max-w-md mx-auto">Gratis, tanpa kartu kredit. Daftar sekarang dan tambahkan motor pertamamu.</p>
             <x-ui.button variant="accent" size="lg" href="{{ route('register') }}">Buat Akun Gratis</x-ui.button>
+            <div class="flex flex-wrap justify-center gap-x-6 gap-y-2 mt-8 text-xs font-medium text-white/70">
+                <span class="flex items-center gap-1.5"><x-icon.check class="w-3.5 h-3.5"/> Gratis selamanya</span>
+                <span class="flex items-center gap-1.5"><x-icon.check class="w-3.5 h-3.5"/> Tanpa kartu kredit</span>
+                <span class="flex items-center gap-1.5"><x-icon.check class="w-3.5 h-3.5"/> Setup di bawah 2 menit</span>
+            </div>
         </div>
     </section>
 
