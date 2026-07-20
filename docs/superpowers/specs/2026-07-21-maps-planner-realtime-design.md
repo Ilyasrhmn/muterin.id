@@ -154,7 +154,7 @@ Logic GPS/Haversine/peta live yang sudah ada dipertahankan. Yang ditambah: pangg
 - Tidak ada "Prefer Curvy" / "Avoid Highways/Tolls" toggle (fitur Kurviger berbayar; di luar scope — ORS profil `cycling-regular` sudah menghindari tol/jalan bebas-motor secara default).
 - Tidak ada import/export GPX.
 - Tidak ada data POI/event di panel info (itu data proprietary Ridelink; kita hanya reverse-geocode alamat).
-- Tidak ada live-sharing posisi ke user lain saat riding (real-time hanya untuk persistence milik sendiri).
+- Tidak ada live-sharing posisi ke user lain saat riding — untuk sekarang real-time hanya untuk persistence milik sendiri. **Catatan roadmap:** fitur sosial internal ala Strava (berbagi rute/ride ke sesama pengguna Amicta, feed, dsb.) direncanakan sebagai pengembangan bertahap di masa depan; desain persistence trip di Part D sengaja dibuat bersih (satu trip = satu record `completed` dengan path lengkap) supaya jadi fondasi yang siap dibangun untuk fitur sosial nanti, tanpa harus dibangun sekarang.
 - Tidak ada peta live "follow" untuk Peta Rute (tetap galeri riwayat trip `completed`).
 
 ## Risiko
