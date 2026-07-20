@@ -270,13 +270,13 @@
     </section>
 
     {{-- How it works --}}
-    <section class="max-w-6xl mx-auto px-4 py-16 md:py-24">
+    <section id="cara-kerja" class="max-w-6xl mx-auto px-4 py-16 md:py-24">
         <h2 data-reveal class="text-2xl md:text-3xl font-heading font-bold text-center mb-12">Cara kerjanya</h2>
         <div data-reveal-group class="grid md:grid-cols-3 gap-8">
             @foreach ([
-                ['n' => '1', 't' => 'Daftar motor', 'd' => 'Masukkan data motor & odometer awal, sekali saja.'],
-                ['n' => '2', 't' => 'Nyalakan saat riding', 'd' => 'Tekan mulai sebelum jalan, selesai saat sampai.'],
-                ['n' => '3', 't' => 'Dapat pengingat', 'd' => 'Amicta kasih tahu kapan waktunya servis.'],
+                ['n' => '1', 't' => 'Daftar motor', 'd' => 'Masukkan data motor & odometer awal. Motor bekas? Isi form Riwayat Awal sekali saja biar prediksi langsung akurat.'],
+                ['n' => '2', 't' => 'Catat km dari mana saja', 'd' => 'Manual, pas isi bensin, pas servis, atau nyalakan GPS pas riding — bebas pilih, semua otomatis nyambung.'],
+                ['n' => '3', 't' => 'Amicta yang mantau', 'd' => 'Status warna, skor kesehatan, dan Pusat Perhatian otomatis update, kamu tinggal cek kalau ada notifikasi.'],
             ] as $step)
                 <div data-reveal class="text-center">
                     <div class="w-12 h-12 rounded-full bg-primary text-white font-heading font-bold flex items-center justify-center mx-auto mb-4">
@@ -284,6 +284,33 @@
                     </div>
                     <p class="font-heading font-semibold mb-1">{{ $step['t'] }}</p>
                     <p class="text-sm text-muted-fg">{{ $step['d'] }}</p>
+                </div>
+            @endforeach
+        </div>
+    </section>
+
+    {{-- FAQ --}}
+    <section id="faq" class="max-w-3xl mx-auto px-4 py-16 md:py-24">
+        <h2 data-reveal class="text-2xl md:text-3xl font-heading font-bold text-center mb-12">Pertanyaan yang sering ditanyakan</h2>
+        <div data-reveal-group class="space-y-3" x-data="{ open: null }">
+            @php
+                $faqs = [
+                    ['q' => 'Apakah saya harus selalu pakai GPS?', 'a' => 'Tidak. GPS cuma salah satu dari 4 cara mencatat km — manual, isi bensin, dan servis juga otomatis update odometer.'],
+                    ['q' => 'Bisa buat lebih dari satu motor?', 'a' => 'Bisa, kelola semua motor dalam satu akun, gampang pindah motor aktif.'],
+                    ['q' => 'Amicta gratis?', 'a' => 'Gratis, tanpa kartu kredit, daftar langsung bisa dipakai.'],
+                    ['q' => 'Motor saya bekas, riwayat servisnya udah lama, gimana?', 'a' => 'Ada form "Riwayat Awal" opsional pas daftar motor — isi terakhir ganti oli/ban/aki/servis di km berapa, prediksi langsung akurat dari hari pertama.'],
+                    ['q' => 'Data saya aman?', 'a' => 'Data motor & riwayatnya cuma bisa diakses dari akunmu sendiri, gak dibagikan ke pihak lain.'],
+                ];
+            @endphp
+            @foreach ($faqs as $i => $faq)
+                <div data-reveal class="bg-surface border border-border rounded-2xl overflow-hidden">
+                    <button type="button" @click="open = open === {{ $i }} ? null : {{ $i }}" class="w-full flex items-center justify-between gap-4 p-5 text-left">
+                        <span class="font-heading font-semibold text-sm">{{ $faq['q'] }}</span>
+                        <x-icon.chevron-down class="w-4 h-4 text-muted-fg shrink-0 transition-transform" x-bind:class="open === {{ $i }} ? 'rotate-180' : ''"/>
+                    </button>
+                    <div x-show="open === {{ $i }}" x-cloak x-transition class="px-5 pb-5 text-sm text-muted-fg">
+                        {{ $faq['a'] }}
+                    </div>
                 </div>
             @endforeach
         </div>

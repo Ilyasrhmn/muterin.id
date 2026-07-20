@@ -68,4 +68,14 @@ class LandingPageTest extends TestCase
         $response->assertSee('Skor 75');
         $response->assertSee('Skor 100');
     }
+
+    public function test_how_it_works_and_faq_reflect_multi_source_flow(): void
+    {
+        $response = $this->get('/');
+
+        $response->assertOk();
+        $response->assertSee('Catat km dari mana saja');
+        $response->assertSee('Pertanyaan yang sering ditanyakan');
+        $response->assertSee('Riwayat Awal');
+    }
 }
