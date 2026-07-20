@@ -102,7 +102,7 @@
                                 <td class="px-5 py-3 text-right text-muted-fg tabular-nums">{{ $log->liters }}</td>
                                 <td class="px-5 py-3 text-right font-bold text-foreground tabular-nums">Rp{{ number_format($log->total_cost) }}</td>
                                 <td class="px-5 py-3 text-right">
-                                    <form method="POST" action="{{ route('bbm.destroy', $log) }}" onsubmit="return confirm('Hapus catatan ini?')">
+                                    <form method="POST" action="{{ route('bbm.destroy', $log) }}" data-confirm="Hapus catatan ini?">
                                         @csrf @method('DELETE')
                                         <button type="submit" class="p-1.5 rounded-lg text-muted-fg hover:text-accent hover:bg-accent/10 transition">
                                             <x-icon.trash class="w-4 h-4"/>
@@ -118,4 +118,18 @@
             </div>
         </div>
     </div>
+    <script>
+        document.querySelectorAll('form[data-confirm]').forEach((form) => {
+            form.addEventListener('submit', (e) => {
+                if (form.dataset.confirmed === 'yes') return;
+                e.preventDefault();
+                window.AmictaDialog.confirm(form.dataset.confirm, { danger: true, confirmText: 'Hapus' }).then((ok) => {
+                    if (ok) {
+                        form.dataset.confirmed = 'yes';
+                        form.submit();
+                    }
+                });
+            });
+        });
+    </script>
 </x-app-layout>

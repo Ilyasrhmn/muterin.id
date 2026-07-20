@@ -55,6 +55,8 @@ Route::middleware('auth')->group(function () {
 
     Route::get('map/data', [MapController::class, 'data'])->name('map.data');
     Route::post('map/route', [MapController::class, 'previewRoute'])->name('map.route');
+    Route::get('map/geocode/search', [MapController::class, 'geocodeSearch'])->name('map.geocode.search');
+    Route::get('map/geocode/reverse', [MapController::class, 'geocodeReverse'])->name('map.geocode.reverse');
     Route::post('map/pins', [MapController::class, 'storePin'])->name('map.pins.store');
     Route::delete('map/pins/{pin}', [MapController::class, 'destroyPin'])->name('map.pins.destroy');
     Route::post('map/plans', [MapController::class, 'storePlan'])->name('map.plans.store');

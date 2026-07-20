@@ -51,6 +51,61 @@ class MapTest extends TestCase
         ])->assertStatus(422);
     }
 
+    public function test_geocode_search_returns_results(): void
+    {
+        Http::fake([
+            'api.openrouteservice.org/geocode/search*' => Http::response([
+                'features' => [
+                    ['properties' => ['label' => 'Bintaro'], 'geometry' => ['coordinates' => [106.75, -6.27]]],
+                ],
+            ], 200),
+        ]);
+
+        $user = User::factory()->create();
+        $this->actingAs($user)->getJson('/map/geocode/search?q=bintaro')
+            ->assertOk()
+            ->assertJson(['results' => [['label' => 'Bintaro', 'lat' => -6.27, 'lng' => 106.75]]]);
+    }
+
+    public function test_geocode_search_requires_min_2_chars(): void
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user)->getJson('/map/geocode/search?q=a')->assertStatus(422);
+    }
+
+    public function test_geocode_search_returns_422_on_failure(): void
+    {
+        Http::fake(['api.openrouteservice.org/geocode/search*' => Http::response(['error' => 'quota'], 429)]);
+
+        $user = User::factory()->create();
+        $this->actingAs($user)->getJson('/map/geocode/search?q=bintaro')
+            ->assertStatus(422)->assertJsonStructure(['error']);
+    }
+
+    public function test_geocode_reverse_returns_label(): void
+    {
+        Http::fake([
+            'api.openrouteservice.org/geocode/reverse*' => Http::response([
+                'features' => [['properties' => ['label' => 'Jalan Merpati'], 'geometry' => ['coordinates' => [106.75, -6.27]]]],
+            ], 200),
+        ]);
+
+        $user = User::factory()->create();
+        $this->actingAs($user)->getJson('/map/geocode/reverse?lat=-6.27&lng=106.75')
+            ->assertOk()->assertJson(['label' => 'Jalan Merpati']);
+    }
+
+    public function test_geocode_reverse_validates_coordinates(): void
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user)->getJson('/map/geocode/reverse?lat=999&lng=106.75')->assertStatus(422);
+    }
+
+    public function test_geocode_requires_authentication(): void
+    {
+        $this->getJson('/map/geocode/search?q=bintaro')->assertStatus(401);
+    }
+
     public function test_preview_route_returns_geometry_for_authenticated_user(): void
     {
         Http::fake([
@@ -113,5 +168,37 @@ class MapTest extends TestCase
         $this->assertDatabaseHas('route_plans', [
             'name' => 'Rute pagi', 'distance_km' => 3.5, 'duration_minutes' => 12,
         ]);
+    }
+
+    public function test_saving_route_plan_stores_start_and_end_labels(): void
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user)->postJson('/map/plans', [
+            'name' => 'Rute berlabel',
+            'points' => [[-6.2, 106.8], [-6.22, 106.82]],
+            'route_geometry' => [[-6.2, 106.8], [-6.22, 106.82]],
+            'distance_km' => 2.0,
+            'duration_minutes' => 8,
+            'start_label' => 'Rumah',
+            'end_label' => 'Kantor',
+        ])->assertCreated();
+
+        $this->assertDatabaseHas('route_plans', [
+            'name' => 'Rute berlabel', 'start_label' => 'Rumah', 'end_label' => 'Kantor',
+        ]);
+    }
+
+    public function test_saving_route_plan_still_works_without_labels(): void
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user)->postJson('/map/plans', [
+            'name' => 'Tanpa label',
+            'points' => [[-6.2, 106.8], [-6.22, 106.82]],
+            'route_geometry' => [[-6.2, 106.8], [-6.22, 106.82]],
+            'distance_km' => 2.0,
+            'duration_minutes' => 8,
+        ])->assertCreated();
+
+        $this->assertDatabaseHas('route_plans', ['name' => 'Tanpa label', 'start_label' => null]);
     }
 }

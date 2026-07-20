@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class RoutePlan extends Model
 {
-    protected $fillable = ['user_id', 'name', 'points_json', 'route_geometry_json', 'distance_km', 'duration_minutes'];
+    protected $fillable = ['user_id', 'name', 'points_json', 'route_geometry_json', 'distance_km', 'duration_minutes', 'start_label', 'end_label'];
 
     protected $casts = ['points_json' => 'array', 'route_geometry_json' => 'array'];
 

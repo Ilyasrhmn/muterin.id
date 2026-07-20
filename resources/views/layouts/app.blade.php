@@ -44,5 +44,9 @@
                 </main>
             </div>
         </div>
+
+        <x-ui.dialog />
+        <script src="{{ asset('js/dialog.js') }}"></script>
     </body>
 </html>
+

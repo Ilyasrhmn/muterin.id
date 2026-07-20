@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\GeocodingException;
 use App\Exceptions\RouteNotFoundException;
 use App\Models\MapPin;
 use App\Models\RoutePlan;
 use App\Models\Trip;
+use App\Services\GeocodingService;
 use App\Services\RouteService;
 use Illuminate\Http\Request;
 
@@ -67,6 +69,37 @@ class MapController extends Controller
         }
     }
 
+    public function geocodeSearch(Request $request, GeocodingService $geocoding)
+    {
+        $data = $request->validate([
+            'q' => 'required|string|min:2',
+            'lat' => 'nullable|numeric|between:-90,90',
+            'lng' => 'nullable|numeric|between:-180,180',
+        ]);
+
+        try {
+            $results = $geocoding->search($data['q'], $data['lat'] ?? null, $data['lng'] ?? null);
+
+            return response()->json(['results' => $results]);
+        } catch (GeocodingException $e) {
+            return response()->json(['error' => $e->getMessage()], 422);
+        }
+    }
+
+    public function geocodeReverse(Request $request, GeocodingService $geocoding)
+    {
+        $data = $request->validate([
+            'lat' => 'required|numeric|between:-90,90',
+            'lng' => 'required|numeric|between:-180,180',
+        ]);
+
+        try {
+            return response()->json($geocoding->reverse($data['lat'], $data['lng']));
+        } catch (GeocodingException $e) {
+            return response()->json(['error' => $e->getMessage()], 422);
+        }
+    }
+
     public function storePin(Request $request)
     {
         $data = $request->validate([
@@ -97,6 +130,8 @@ class MapController extends Controller
             'route_geometry' => 'required|array|min:2',
             'distance_km' => 'required|numeric|min:0',
             'duration_minutes' => 'required|integer|min:0',
+            'start_label' => 'nullable|string|max:255',
+            'end_label' => 'nullable|string|max:255',
         ]);
         $plan = auth()->user()->routePlans()->create([
             'name' => $data['name'],
@@ -104,6 +139,8 @@ class MapController extends Controller
             'route_geometry_json' => $data['route_geometry'],
             'distance_km' => $data['distance_km'],
             'duration_minutes' => $data['duration_minutes'],
+            'start_label' => $data['start_label'] ?? null,
+            'end_label' => $data['end_label'] ?? null,
         ]);
 
         return response()->json($plan, 201);
