@@ -47,4 +47,15 @@ class LandingPageTest extends TestCase
         $response->assertSee('Modul lengkap dalam satu aplikasi');
         $response->assertDontSee('Berbasis km asli via GPS');
     }
+
+    public function test_features_section_has_four_expandable_pillars(): void
+    {
+        $response = $this->get('/');
+
+        $response->assertOk();
+        $response->assertSee('Pantau Kondisi Motor');
+        $response->assertSee('Jangan Ada yang Kelewat');
+        $response->assertSee('Kontrol Biaya Penuh');
+        $response->assertSee('Riding &amp; Peta Pribadi', false);
+    }
 }

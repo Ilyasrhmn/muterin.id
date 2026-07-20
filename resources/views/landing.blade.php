@@ -98,26 +98,91 @@
     {{-- Features --}}
     <section id="fitur" class="max-w-6xl mx-auto px-4 py-16 md:py-24">
         <h2 data-reveal class="text-2xl md:text-3xl font-heading font-bold text-center mb-4">Semua yang kamu butuh, satu aplikasi</h2>
-        <p data-reveal class="text-center text-muted-fg max-w-xl mx-auto mb-12">Dari pencatatan otomatis sampai peta rute pribadi.</p>
-        <div data-reveal-group class="grid md:grid-cols-3 gap-6">
+        <p data-reveal class="text-center text-muted-fg max-w-xl mx-auto mb-12">Empat pilar yang menyelesaikan masalah nyata pemilik motor — bukan sekadar pengingat.</p>
+        <div data-reveal-group class="grid md:grid-cols-2 gap-6">
             @php
-                $features = [
-                    ['icon' => 'gauge', 'title' => 'Trip Recording GPS', 'desc' => 'Nyalakan sebelum jalan, jarak tempuh terhitung otomatis lewat GPS.'],
-                    ['icon' => 'wrench', 'title' => 'Status Warna Perawatan', 'desc' => 'Hijau, kuning, merah — tahu kapan harus servis sekali lihat.'],
-                    ['icon' => 'motorcycle', 'title' => 'Multi-Motor', 'desc' => 'Kelola beberapa motor sekaligus dalam satu akun.'],
-                    ['icon' => 'wallet', 'title' => 'Catatan Biaya', 'desc' => 'Setiap servis bisa dicatat biayanya, terlihat total per motor.'],
-                    ['icon' => 'map-pin', 'title' => 'Peta Pribadi', 'desc' => 'Tandai jalan rawan, sepi, atau momen perjalananmu di peta.'],
-                    ['icon' => 'bell', 'title' => 'Pengingat Otomatis', 'desc' => 'Notifikasi begitu status mendekati atau melewati batas aman.'],
+                $pillars = [
+                    [
+                        'icon' => 'gauge',
+                        'title' => 'Pantau Kondisi Motor',
+                        'summary' => 'Odometer akurat dari sumber mana saja, status warna tiap komponen, dan skor kesehatan motor dalam satu angka.',
+                        'pills' => ['Odometer Backbone', 'Status Warna', 'Skor Kesehatan'],
+                        'points' => [
+                            'Odometer Backbone — km selalu update dari input manual, isi bensin, servis, atau riding, satu sumber kebenaran.',
+                            'Status warna per komponen (hijau/kuning/merah) untuk oli, ban, aki, servis rutin.',
+                            'Prediksi hari tersisa sebelum servis, berbasis rata-rata jarak harianmu.',
+                            'Skor Kesehatan Motor 0-100, ringkasan sekali lihat.',
+                            'Kelola beberapa motor sekaligus dalam satu akun.',
+                        ],
+                    ],
+                    [
+                        'icon' => 'bell',
+                        'title' => 'Jangan Ada yang Kelewat',
+                        'summary' => 'Semua yang butuh perhatianmu — servis, dokumen, sampai efisiensi BBM yang aneh — muncul di satu tempat.',
+                        'pills' => ['Pusat Perhatian', 'Dokumen Kendaraan', 'Efisiensi BBM'],
+                        'points' => [
+                            'Pusat Perhatian menyatukan semua pengingat jadi satu daftar prioritas.',
+                            'Reminder jatuh tempo Pajak STNK, Ganti Plat 5 Tahun, dan Asuransi.',
+                            'Peringatan otomatis kalau efisiensi BBM tercatat gak masuk akal (indikasi salah input).',
+                        ],
+                    ],
+                    [
+                        'icon' => 'wallet',
+                        'title' => 'Kontrol Biaya Penuh',
+                        'summary' => 'Dari isi bensin sampai premi asuransi tahunan, semua pengeluaran motor kecatat dan terlihat totalnya.',
+                        'pills' => ['BBM & Efisiensi', 'Riwayat Servis', 'Laporan TCO'],
+                        'points' => [
+                            'Catat isi bensin, hitung efisiensi km/liter otomatis.',
+                            'Riwayat servis lengkap dengan nama bengkel, part yang diganti, dan foto nota.',
+                            'Pengeluaran Lain — asuransi, parkir, cuci motor, aksesoris, dll.',
+                            'Laporan Biaya Kepemilikan (TCO): total, biaya per km, tren bulanan.',
+                        ],
+                    ],
+                    [
+                        'icon' => 'route',
+                        'title' => 'Riding & Peta Pribadi',
+                        'summary' => 'Rekam perjalananmu lewat GPS dan tandai titik-titik penting di peta pribadimu.',
+                        'pills' => ['GPS Trip', 'Peta Rute', 'Peta Titik'],
+                        'points' => [
+                            'Trip recording GPS — nyalakan sebelum jalan, jarak terhitung otomatis.',
+                            'Peta rute — lihat kembali jalur yang pernah dilalui.',
+                            'Peta titik — tandai lokasi penting (bengkel langganan, jalan rawan, dll).',
+                            'Peta rencana — rencanakan rute sebelum berangkat.',
+                        ],
+                    ],
                 ];
             @endphp
-            @foreach ($features as $f)
-                <x-ui.card hover data-reveal>
-                    <div class="w-11 h-11 rounded-token bg-primary/10 text-primary flex items-center justify-center mb-4">
-                        <x-dynamic-component :component="'icon.'.$f['icon']" class="w-6 h-6"/>
-                    </div>
-                    <p class="font-heading font-semibold mb-1">{{ $f['title'] }}</p>
-                    <p class="text-sm text-muted-fg">{{ $f['desc'] }}</p>
-                </x-ui.card>
+            @foreach ($pillars as $pillar)
+                <div data-reveal x-data="{ open: false }">
+                    <x-ui.card>
+                        <div class="flex items-start gap-4">
+                            <div class="w-11 h-11 shrink-0 rounded-token bg-primary/10 text-primary flex items-center justify-center">
+                                <x-dynamic-component :component="'icon.'.$pillar['icon']" class="w-6 h-6"/>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <p class="font-heading font-semibold mb-1">{{ $pillar['title'] }}</p>
+                                <p class="text-sm text-muted-fg mb-3">{{ $pillar['summary'] }}</p>
+                                <div class="flex flex-wrap gap-1.5 mb-3">
+                                    @foreach ($pillar['pills'] as $pill)
+                                        <x-ui.badge variant="neutral">{{ $pill }}</x-ui.badge>
+                                    @endforeach
+                                </div>
+                                <button type="button" @click="open = !open" class="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline">
+                                    <span x-text="open ? 'Sembunyikan detail' : 'Lihat detail'"></span>
+                                    <x-icon.chevron-down class="w-4 h-4 transition-transform" x-bind:class="open ? 'rotate-180' : ''"/>
+                                </button>
+                                <ul x-show="open" x-cloak x-transition class="mt-3 space-y-2">
+                                    @foreach ($pillar['points'] as $point)
+                                        <li class="flex items-start gap-2 text-sm text-muted-fg">
+                                            <x-icon.check class="w-4 h-4 text-status-green shrink-0 mt-0.5"/>
+                                            <span>{{ $point }}</span>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        </div>
+                    </x-ui.card>
+                </div>
             @endforeach
         </div>
     </section>
