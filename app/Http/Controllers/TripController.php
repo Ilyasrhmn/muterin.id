@@ -6,6 +6,7 @@ use App\Models\Motorcycle;
 use App\Models\Trip;
 use App\Services\OdometerService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class TripController extends Controller
 {
@@ -60,20 +61,26 @@ class TripController extends Controller
         $this->authorizeTrip($trip);
         $data = $this->validatedProgress($request);
 
-        // Guard: only move the odometer the first time a trip is finished.
-        if ($trip->status === 'recording') {
-            $trip->update([
-                'distance_km' => $data['distance_km'],
-                'duration_seconds' => $data['duration_seconds'],
-                'path_json' => $data['path'] ?? $trip->path_json,
-                'status' => 'completed',
-                'ended_at' => now(),
-            ]);
+        // ponytail: lockForUpdate makes the recording-check-then-write atomic against
+        // concurrent finish requests for the same trip (e.g. a retried request after a
+        // dropped response), so the odometer can never be double-counted.
+        DB::transaction(function () use ($trip, $data, $odometer) {
+            $locked = Trip::whereKey($trip->id)->lockForUpdate()->first();
 
-            $motor = $trip->motorcycle;
-            $newOdometer = $motor->current_odometer_km + (int) round($data['distance_km']);
-            $odometer->record($motor, $newOdometer, now(), 'trip');
-        }
+            if ($locked->status === 'recording') {
+                $locked->update([
+                    'distance_km' => $data['distance_km'],
+                    'duration_seconds' => $data['duration_seconds'],
+                    'path_json' => $data['path'] ?? $locked->path_json,
+                    'status' => 'completed',
+                    'ended_at' => now(),
+                ]);
+
+                $motor = $locked->motorcycle;
+                $newOdometer = $motor->current_odometer_km + (int) round($data['distance_km']);
+                $odometer->record($motor, $newOdometer, now(), 'trip');
+            }
+        });
 
         return response()->json(['ok' => true, 'trip_id' => $trip->id]);
     }
