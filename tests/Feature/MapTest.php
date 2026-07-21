@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+use App\Models\Motorcycle;
+use App\Models\Trip;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
@@ -200,5 +202,23 @@ class MapTest extends TestCase
         ])->assertCreated();
 
         $this->assertDatabaseHas('route_plans', ['name' => 'Tanpa label', 'start_label' => null]);
+    }
+
+    public function test_map_data_excludes_recording_trips(): void
+    {
+        $user = User::factory()->create();
+        $motor = Motorcycle::create(['user_id' => $user->id, 'nickname' => 'A']);
+        $motor->trips()->create([
+            'distance_km' => 5, 'duration_seconds' => 300, 'path_json' => [[-6.2, 106.8]],
+            'status' => 'completed', 'ended_at' => now(),
+        ]);
+        $motor->trips()->create([
+            'distance_km' => 1, 'duration_seconds' => 60, 'path_json' => [[-6.3, 106.9]],
+            'status' => 'recording',
+        ]);
+
+        $data = $this->actingAs($user)->getJson('/map/data')->json();
+
+        $this->assertCount(1, $data['trips']);
     }
 }

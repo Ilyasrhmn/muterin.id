@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Trip extends Model
 {
-    protected $fillable = ['motorcycle_id', 'distance_km', 'duration_seconds', 'path_json', 'started_at', 'ended_at'];
+    protected $fillable = ['motorcycle_id', 'distance_km', 'duration_seconds', 'status', 'path_json', 'started_at', 'ended_at'];
 
     protected $casts = [
         'path_json' => 'array',

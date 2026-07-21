@@ -17,6 +17,7 @@ class MapController extends Controller
     public function routesPage()
     {
         $trips = Trip::whereHas('motorcycle', fn ($q) => $q->where('user_id', auth()->id()))
+            ->where('status', 'completed')
             ->whereNotNull('path_json')
             ->with('motorcycle')
             ->latest('ended_at')
@@ -49,6 +50,7 @@ class MapController extends Controller
             'pins' => MapPin::where('user_id', $userId)->get(),
             'plans' => RoutePlan::where('user_id', $userId)->get(),
             'trips' => Trip::whereHas('motorcycle', fn ($q) => $q->where('user_id', $userId))
+                ->where('status', 'completed')
                 ->whereNotNull('path_json')->get(['id', 'path_json']),
         ]);
     }
