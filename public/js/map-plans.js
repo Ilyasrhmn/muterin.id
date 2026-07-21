@@ -1,21 +1,14 @@
 (function () {
   const map = window.AmictaMap.init('map');
-  map.zoomControl.setPosition('topright');
   const token = window.AmictaMap.token();
   const saved = JSON.parse(document.getElementById('plans-data').textContent || '[]');
-
   const $ = (id) => document.getElementById(id);
-  const statusEl = $('route-status');
-  const infoPanel = $('info-panel');
-  const routePanel = $('route-panel');
+
   const searchInput = $('search-input');
   const searchResults = $('search-results');
+  const statusEl = $('route-status');
 
-  [infoPanel, routePanel, searchResults, searchInput.closest('div')].forEach((el) => {
-    if (el) L.DomEvent.disableClickPropagation(el);
-  });
-
-  let start = null;
+  let start = null;      // {lat, lng, label}
   let end = null;
   let via = [];
   let startMarker = null;
@@ -24,7 +17,6 @@
   let routeLine = null;
   let lastRoute = null;
   let requestSeq = 0;
-  let pending = null;
 
   function setStatus(text, isError) {
     statusEl.textContent = text || '';
@@ -32,80 +24,140 @@
     statusEl.classList.toggle('text-muted-fg', !isError);
   }
 
-  function showInfo(loc) {
-    pending = loc;
-    routePanel.classList.add('hidden');
-    $('info-label').textContent = loc.label;
-    $('info-coords').textContent = `${loc.lat.toFixed(5)}, ${loc.lng.toFixed(5)}`;
-    $('btn-add-via').classList.toggle('hidden', !(start && end));
-    infoPanel.classList.remove('hidden');
-  }
-
-  function hideInfo() {
-    infoPanel.classList.add('hidden');
-    pending = null;
+  function fmtDuration(min) {
+    if (min < 60) return `${min} menit`;
+    const h = Math.floor(min / 60);
+    const m = min % 60;
+    return m ? `${h} jam ${m} menit` : `${h} jam`;
   }
 
   async function reverseGeocode(lat, lng) {
-    const res = await fetch(`/map/geocode/reverse?lat=${lat}&lng=${lng}`, { headers: { Accept: 'application/json' } });
-    if (!res.ok) throw new Error('reverse failed');
-    return res.json();
+    try {
+      const res = await fetch(`/map/geocode/reverse?lat=${lat}&lng=${lng}`, { headers: { Accept: 'application/json' } });
+      if (!res.ok) throw new Error('reverse failed');
+      return await res.json();
+    } catch {
+      return { label: 'Lokasi tanpa nama', lat, lng };
+    }
+  }
+
+  // --- Location action popup (RideLink-style "set as start / via / destination") ---
+  function openLocationPopup(loc) {
+    const el = document.createElement('div');
+    el.style.minWidth = '190px';
+    el.innerHTML = `
+      <p style="font-weight:600;font-size:13px;color:#0F172A;margin:0 0 8px">${loc.label}</p>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <button data-act="start" style="text-align:left;font-size:12px;font-weight:600;padding:7px 10px;border-radius:8px;border:0;cursor:pointer;background:#ECFDF5;color:#047857">Jadikan Titik Awal</button>
+        <button data-act="via" style="text-align:left;font-size:12px;font-weight:600;padding:7px 10px;border-radius:8px;border:0;cursor:pointer;background:#FFFBEB;color:#B45309;${(start && end) ? '' : 'display:none'}">Tambah Titik Singgah</button>
+        <button data-act="end" style="text-align:left;font-size:12px;font-weight:600;padding:7px 10px;border-radius:8px;border:0;cursor:pointer;background:#FEF2F2;color:#B91C1C">Jadikan Titik Tujuan</button>
+      </div>`;
+    el.querySelector('[data-act="start"]').onclick = () => { setStart(loc); map.closePopup(); };
+    el.querySelector('[data-act="end"]').onclick = () => { setEnd(loc); map.closePopup(); };
+    el.querySelector('[data-act="via"]').onclick = () => { addVia(loc); map.closePopup(); };
+    L.popup({ closeButton: true, autoClose: true }).setLatLng([loc.lat, loc.lng]).setContent(el).openOn(map);
   }
 
   map.on('click', async (e) => {
     const { lat, lng } = e.latlng;
-    $('info-label').textContent = 'Memuat lokasi...';
-    $('info-coords').textContent = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
-    routePanel.classList.add('hidden');
-    $('btn-add-via').classList.toggle('hidden', !(start && end));
-    infoPanel.classList.remove('hidden');
-    try {
-      const loc = await reverseGeocode(lat, lng);
-      showInfo(loc);
-    } catch {
-      showInfo({ label: 'Lokasi tanpa nama', lat, lng });
-    }
+    L.popup().setLatLng([lat, lng]).setContent('Memuat lokasi…').openOn(map);
+    const loc = await reverseGeocode(lat, lng);
+    openLocationPopup(loc);
   });
 
+  // --- Markers ---
   function markerFor(loc, color) {
-    return L.circleMarker([loc.lat, loc.lng], { color, radius: 7, fillOpacity: 1 }).addTo(map);
+    return L.circleMarker([loc.lat, loc.lng], { color, radius: 8, fillColor: color, fillOpacity: 1, weight: 2 }).addTo(map);
   }
 
-  $('btn-set-start').addEventListener('click', () => {
-    if (!pending) return;
-    start = pending;
+  function setStart(loc) {
+    start = loc;
     if (startMarker) startMarker.remove();
-    startMarker = markerFor(start, '#059669');
-    hideInfo();
+    startMarker = markerFor(loc, '#059669');
+    renderPanel();
     maybeRoute();
-  });
-
-  $('btn-set-end').addEventListener('click', () => {
-    if (!pending) return;
-    end = pending;
-    if (endMarker) endMarker.remove();
-    endMarker = markerFor(end, '#DC2626');
-    hideInfo();
-    maybeRoute();
-  });
-
-  $('btn-add-via').addEventListener('click', () => {
-    if (!pending || !(start && end)) return;
-    via.push(pending);
-    viaMarkers.push(markerFor(pending, '#F59E0B'));
-    hideInfo();
-    maybeRoute();
-  });
-
-  function maybeRoute() {
-    if (!(start && end)) return;
-    const waypoints = [start, ...via, end].map((p) => [p.lat, p.lng]);
-    computeRoute(waypoints);
   }
 
-  function computeRoute(waypoints) {
+  function setEnd(loc) {
+    end = loc;
+    if (endMarker) endMarker.remove();
+    endMarker = markerFor(loc, '#DC2626');
+    renderPanel();
+    maybeRoute();
+  }
+
+  function addVia(loc) {
+    via.push(loc);
+    viaMarkers.push(markerFor(loc, '#F59E0B'));
+    renderPanel();
+    maybeRoute();
+  }
+
+  // --- Panel rendering ---
+  function labelState(el, loc) {
+    el.textContent = loc ? loc.label : 'Belum dipilih';
+    el.classList.toggle('text-foreground', !!loc);
+    el.classList.toggle('text-muted-fg', !loc);
+  }
+
+  function renderPanel() {
+    labelState($('start-label'), start);
+    labelState($('end-label'), end);
+    $('clear-start').classList.toggle('hidden', !start);
+    $('clear-end').classList.toggle('hidden', !end);
+
+    const viaList = $('via-list');
+    viaList.innerHTML = '';
+    via.forEach((v, i) => {
+      const row = document.createElement('div');
+      row.className = 'flex items-center gap-3 p-3 rounded-xl bg-muted/50';
+      row.innerHTML =
+        '<span class="w-3 h-3 rounded-full bg-amber-500 shrink-0"></span>' +
+        '<div class="flex-1 min-w-0"><p class="text-[10px] font-bold uppercase tracking-wider text-muted-fg">Titik Singgah</p>' +
+        `<p class="text-sm text-foreground truncate">${v.label}</p></div>`;
+      const rm = document.createElement('button');
+      rm.type = 'button';
+      rm.className = 'text-muted-fg hover:text-accent shrink-0 text-lg leading-none';
+      rm.innerHTML = '&times;';
+      rm.onclick = () => {
+        via.splice(i, 1);
+        viaMarkers[i].remove();
+        viaMarkers.splice(i, 1);
+        renderPanel();
+        maybeRoute();
+      };
+      row.appendChild(rm);
+      viaList.appendChild(row);
+    });
+  }
+
+  $('clear-start').onclick = () => {
+    start = null;
+    if (startMarker) { startMarker.remove(); startMarker = null; }
+    clearRoute();
+    renderPanel();
+  };
+
+  $('clear-end').onclick = () => {
+    end = null;
+    if (endMarker) { endMarker.remove(); endMarker = null; }
+    clearRoute();
+    renderPanel();
+  };
+
+  function clearRoute() {
+    if (routeLine) { routeLine.remove(); routeLine = null; }
+    lastRoute = null;
+    $('route-summary').classList.add('hidden');
+    setStatus('', false);
+  }
+
+  // --- Route ---
+  function maybeRoute() {
+    if (!(start && end)) { clearRoute(); return; }
+    const waypoints = [start, ...via, end].map((p) => [p.lat, p.lng]);
     const seq = ++requestSeq;
-    setStatus('Menghitung rute...', false);
+    setStatus('Menghitung rute…', false);
     fetch('/map/route', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': token, Accept: 'application/json' },
@@ -117,13 +169,17 @@
         if (!ok) {
           setStatus(body.error || 'Gagal menghitung rute jalan. Coba lagi sebentar.', true);
           lastRoute = null;
+          $('route-summary').classList.add('hidden');
           return;
         }
         lastRoute = body;
         if (routeLine) routeLine.setLatLngs(body.geometry);
         else routeLine = L.polyline(body.geometry, { color: '#0F766E', weight: 5 }).addTo(map);
+        window.AmictaMap.fitTo(map, body.geometry);
         setStatus('', false);
-        showRoutePanel(body);
+        $('route-distance').textContent = `${body.distance_km} km`;
+        $('route-duration').textContent = fmtDuration(body.duration_minutes);
+        $('route-summary').classList.remove('hidden');
       })
       .catch(() => {
         if (seq !== requestSeq) return;
@@ -132,35 +188,17 @@
       });
   }
 
-  function fmtDuration(min) {
-    if (min < 60) return `${min} menit`;
-    const h = Math.floor(min / 60);
-    const m = min % 60;
-    return m ? `${h} jam ${m} menit` : `${h} jam`;
-  }
-
-  function showRoutePanel(route) {
-    hideInfo();
-    $('route-start-label').textContent = start.label;
-    $('route-end-label').textContent = end.label;
-    $('route-distance').textContent = `${route.distance_km} km`;
-    $('route-duration').textContent = fmtDuration(route.duration_minutes);
-    routePanel.classList.remove('hidden');
-  }
-
+  // --- Search ---
   function runSearch() {
     const q = searchInput.value.trim();
     if (q.length < 2) return;
     const c = map.getCenter();
-    setStatus('Mencari...', false);
+    setStatus('Mencari…', false);
     fetch(`/map/geocode/search?q=${encodeURIComponent(q)}&lat=${c.lat}&lng=${c.lng}`, { headers: { Accept: 'application/json' } })
       .then((r) => r.json().then((body) => ({ ok: r.ok, body })))
       .then(({ ok, body }) => {
         setStatus('', false);
-        if (!ok) {
-          setStatus(body.error || 'Gagal mencari lokasi. Coba lagi sebentar.', true);
-          return;
-        }
+        if (!ok) { setStatus(body.error || 'Gagal mencari lokasi. Coba lagi sebentar.', true); return; }
         renderResults(body.results || []);
       })
       .catch(() => setStatus('Gagal mencari lokasi. Coba lagi sebentar.', true));
@@ -174,32 +212,28 @@
       return;
     }
     results.forEach((loc) => {
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'block w-full text-left px-3 py-2.5 text-sm text-foreground hover:bg-muted transition';
-      btn.textContent = loc.label;
-      btn.addEventListener('click', () => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'block w-full text-left px-3 py-2.5 text-sm text-foreground hover:bg-muted transition';
+      b.textContent = loc.label;
+      b.onclick = () => {
         searchResults.classList.add('hidden');
-        searchInput.value = loc.label;
+        searchInput.value = '';
         map.flyTo([loc.lat, loc.lng], 15);
-        showInfo(loc);
-      });
-      searchResults.appendChild(btn);
+        openLocationPopup(loc);
+      };
+      searchResults.appendChild(b);
     });
     searchResults.classList.remove('hidden');
   }
 
-  $('search-btn').addEventListener('click', runSearch);
-  searchInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      runSearch();
-    }
-  });
+  $('search-btn').onclick = runSearch;
+  searchInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); runSearch(); } });
 
-  $('save-plan').addEventListener('click', async () => {
+  // --- Save / Reset ---
+  $('save-plan').onclick = async () => {
     if (!lastRoute) {
-      await window.AmictaDialog.alert('Tentukan titik awal & tujuan dulu, tunggu rute selesai dihitung.');
+      await window.AmictaDialog.alert('Tentukan titik awal & tujuan dulu, lalu tunggu rutenya selesai dihitung.');
       return;
     }
     const name = await window.AmictaDialog.prompt('Nama rencana rute?', { label: 'Nama', placeholder: 'mis. Rumah ke Kantor' });
@@ -218,10 +252,11 @@
         end_label: end.label,
       }),
     }).then(() => location.reload());
-  });
+  };
 
-  $('reset-plan').addEventListener('click', () => location.reload());
+  $('reset-plan').onclick = () => location.reload();
 
+  // --- Saved plans preview ---
   document.querySelectorAll('[data-view-plan]').forEach((btn) => {
     btn.addEventListener('click', () => {
       const plan = saved.find((p) => String(p.id) === btn.dataset.viewPlan);
@@ -230,12 +265,17 @@
       if (routeLine) routeLine.remove();
       routeLine = L.polyline(pts, { color: '#EF4444', weight: 4, dashArray: '6 6' }).addTo(map);
       window.AmictaMap.fitTo(map, pts);
-      hideInfo();
-      $('route-start-label').textContent = plan.start_label || 'Titik Awal';
-      $('route-end-label').textContent = plan.end_label || 'Titik Tujuan';
+      const startEl = $('start-label');
+      const endEl = $('end-label');
+      startEl.textContent = plan.start_label || 'Titik Awal';
+      startEl.classList.add('text-foreground');
+      startEl.classList.remove('text-muted-fg');
+      endEl.textContent = plan.end_label || 'Titik Tujuan';
+      endEl.classList.add('text-foreground');
+      endEl.classList.remove('text-muted-fg');
       $('route-distance').textContent = plan.distance_km ? `${plan.distance_km} km` : '';
       $('route-duration').textContent = plan.duration_minutes ? fmtDuration(plan.duration_minutes) : '';
-      routePanel.classList.remove('hidden');
+      $('route-summary').classList.remove('hidden');
     });
   });
 
@@ -249,4 +289,6 @@
       }).then(() => location.reload());
     });
   });
+
+  renderPanel();
 })();
