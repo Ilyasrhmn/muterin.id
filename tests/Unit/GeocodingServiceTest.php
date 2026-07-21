@@ -4,6 +4,7 @@ namespace Tests\Unit;
 
 use App\Exceptions\GeocodingException;
 use App\Services\GeocodingService;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
@@ -41,6 +42,16 @@ class GeocodingServiceTest extends TestCase
         (new GeocodingService())->search('bintaro');
     }
 
+    public function test_search_throws_geocoding_exception_on_connection_timeout(): void
+    {
+        Http::fake([
+            'api.openrouteservice.org/geocode/search*' => fn () => throw new ConnectionException('cURL error 28: Connection timed out'),
+        ]);
+
+        $this->expectException(GeocodingException::class);
+        (new GeocodingService())->search('bintaro');
+    }
+
     public function test_reverse_returns_nearest_label(): void
     {
         Http::fake([
@@ -72,6 +83,16 @@ class GeocodingServiceTest extends TestCase
     public function test_reverse_throws_on_http_failure(): void
     {
         Http::fake(['api.openrouteservice.org/geocode/reverse*' => Http::response(['error' => 'down'], 500)]);
+
+        $this->expectException(GeocodingException::class);
+        (new GeocodingService())->reverse(-6.27, 106.75);
+    }
+
+    public function test_reverse_throws_geocoding_exception_on_connection_timeout(): void
+    {
+        Http::fake([
+            'api.openrouteservice.org/geocode/reverse*' => fn () => throw new ConnectionException('cURL error 28: Connection timed out'),
+        ]);
 
         $this->expectException(GeocodingException::class);
         (new GeocodingService())->reverse(-6.27, 106.75);

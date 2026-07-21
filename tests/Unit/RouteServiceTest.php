@@ -4,6 +4,7 @@ namespace Tests\Unit;
 
 use App\Exceptions\RouteNotFoundException;
 use App\Services\RouteService;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
@@ -67,6 +68,18 @@ class RouteServiceTest extends TestCase
     {
         Http::fake([
             'api.openrouteservice.org/*' => Http::response(['features' => []], 200),
+        ]);
+
+        $service = new RouteService();
+
+        $this->expectException(RouteNotFoundException::class);
+        $service->route([[-6.2, 106.8], [-6.22, 106.82]]);
+    }
+
+    public function test_route_throws_route_not_found_exception_on_connection_timeout(): void
+    {
+        Http::fake([
+            'api.openrouteservice.org/*' => fn () => throw new ConnectionException('cURL error 28: Connection timed out'),
         ]);
 
         $service = new RouteService();

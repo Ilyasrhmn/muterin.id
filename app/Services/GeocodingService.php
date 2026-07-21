@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Exceptions\GeocodingException;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
 
 class GeocodingService
@@ -21,9 +22,13 @@ class GeocodingService
             $params['focus.point.lon'] = $focusLng;
         }
 
-        $response = Http::withHeaders([
-            'Authorization' => config('services.ors.key'),
-        ])->timeout(8)->get('https://api.openrouteservice.org/geocode/search', $params);
+        try {
+            $response = Http::withHeaders([
+                'Authorization' => config('services.ors.key'),
+            ])->timeout(8)->get('https://api.openrouteservice.org/geocode/search', $params);
+        } catch (ConnectionException) {
+            throw new GeocodingException(self::ERROR_MESSAGE);
+        }
 
         if ($response->failed()) {
             throw new GeocodingException(self::ERROR_MESSAGE);
@@ -41,13 +46,17 @@ class GeocodingService
 
     public function reverse(float $lat, float $lng): array
     {
-        $response = Http::withHeaders([
-            'Authorization' => config('services.ors.key'),
-        ])->timeout(8)->get('https://api.openrouteservice.org/geocode/reverse', [
-            'point.lat' => $lat,
-            'point.lon' => $lng,
-            'size' => 1,
-        ]);
+        try {
+            $response = Http::withHeaders([
+                'Authorization' => config('services.ors.key'),
+            ])->timeout(8)->get('https://api.openrouteservice.org/geocode/reverse', [
+                'point.lat' => $lat,
+                'point.lon' => $lng,
+                'size' => 1,
+            ]);
+        } catch (ConnectionException) {
+            throw new GeocodingException(self::ERROR_MESSAGE);
+        }
 
         if ($response->failed()) {
             throw new GeocodingException(self::ERROR_MESSAGE);

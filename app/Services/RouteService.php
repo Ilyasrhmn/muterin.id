@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Exceptions\RouteNotFoundException;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
 
 class RouteService
@@ -13,11 +14,15 @@ class RouteService
     {
         $coordinates = array_map(fn ($point) => [$point[1], $point[0]], $waypoints);
 
-        $response = Http::withHeaders([
-            'Authorization' => config('services.ors.key'),
-        ])->timeout(8)->post('https://api.openrouteservice.org/v2/directions/cycling-regular/geojson', [
-            'coordinates' => $coordinates,
-        ]);
+        try {
+            $response = Http::withHeaders([
+                'Authorization' => config('services.ors.key'),
+            ])->timeout(8)->post('https://api.openrouteservice.org/v2/directions/cycling-regular/geojson', [
+                'coordinates' => $coordinates,
+            ]);
+        } catch (ConnectionException) {
+            throw new RouteNotFoundException(self::ERROR_MESSAGE);
+        }
 
         if ($response->failed()) {
             throw new RouteNotFoundException(self::ERROR_MESSAGE);
