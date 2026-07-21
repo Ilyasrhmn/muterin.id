@@ -20,15 +20,8 @@
   let mode = 'confirm';
   let hasExtra = false;
 
-  function open() {
-    root.classList.remove('hidden');
-    root.classList.add('flex');
-  }
-
-  function close() {
-    root.classList.add('hidden');
-    root.classList.remove('flex');
-  }
+  function open() { root.classList.remove('hidden'); root.classList.add('flex'); }
+  function close() { root.classList.add('hidden'); root.classList.remove('flex'); }
 
   function settle(result) {
     const r = resolver;
@@ -40,7 +33,7 @@
   function onConfirm() {
     if (mode === 'prompt') {
       const value = input.value.trim();
-      if (!value) return;
+      if (!value) return; // required
       settle(hasExtra ? { value, extra: extra.value } : value);
     } else if (mode === 'confirm') {
       settle(true);
@@ -63,20 +56,12 @@
     if (e.key === 'Escape') onCancel();
     else if (e.key === 'Enter' && mode !== 'prompt') onConfirm();
   });
-  input.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      onConfirm();
-    }
-  });
-  input.addEventListener('input', () => {
-    confirmBtn.disabled = !input.value.trim();
-  });
+  input.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); onConfirm(); } });
+  input.addEventListener('input', () => { confirmBtn.disabled = !input.value.trim(); });
 
   window.AmictaDialog = {
     confirm(message, opts = {}) {
-      mode = 'confirm';
-      hasExtra = false;
+      mode = 'confirm'; hasExtra = false;
       messageEl.textContent = message;
       fieldsEl.classList.add('hidden');
       cancelBtn.classList.remove('hidden');
@@ -85,13 +70,10 @@
       confirmBtn.className = opts.danger ? BTN_DANGER : BTN_PRIMARY;
       confirmBtn.disabled = false;
       open();
-      return new Promise((res) => {
-        resolver = res;
-      });
+      return new Promise((res) => { resolver = res; });
     },
     prompt(message, opts = {}) {
-      mode = 'prompt';
-      hasExtra = !!opts.extra;
+      mode = 'prompt'; hasExtra = !!opts.extra;
       messageEl.textContent = message;
       fieldsEl.classList.remove('hidden');
       inputLabel.textContent = opts.label || '';
@@ -112,13 +94,10 @@
       confirmBtn.disabled = !input.value.trim();
       open();
       setTimeout(() => input.focus(), 0);
-      return new Promise((res) => {
-        resolver = res;
-      });
+      return new Promise((res) => { resolver = res; });
     },
     alert(message, opts = {}) {
-      mode = 'alert';
-      hasExtra = false;
+      mode = 'alert'; hasExtra = false;
       messageEl.textContent = message;
       fieldsEl.classList.add('hidden');
       cancelBtn.classList.add('hidden');
@@ -126,9 +105,7 @@
       confirmBtn.className = BTN_PRIMARY;
       confirmBtn.disabled = false;
       open();
-      return new Promise((res) => {
-        resolver = res;
-      });
+      return new Promise((res) => { resolver = res; });
     },
   };
 })();
