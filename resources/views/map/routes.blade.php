@@ -39,6 +39,6 @@
 
     @csrf
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="{{ asset('js/map-common.js') }}"></script>
-    <script src="{{ asset('js/map-routes.js') }}"></script>
+    <script src="{{ asset('js/map-common.js') }}?v={{ filemtime(public_path('js/map-common.js')) }}"></script>
+    <script src="{{ asset('js/map-routes.js') }}?v={{ filemtime(public_path('js/map-routes.js')) }}"></script>
 </x-app-layout>

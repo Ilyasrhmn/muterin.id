@@ -46,6 +46,6 @@
         </div>
 
         <x-ui.dialog />
-        <script src="{{ asset('js/dialog.js') }}"></script>
+        <script src="{{ asset('js/dialog.js') }}?v={{ filemtime(public_path('js/dialog.js')) }}"></script>
     </body>
 </html>

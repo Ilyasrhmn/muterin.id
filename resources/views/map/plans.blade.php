@@ -91,6 +91,6 @@
     <script type="application/json" id="plans-data">{!! $plans->map(fn ($p) => ['id' => $p->id, 'points_json' => $p->points_json, 'route_geometry_json' => $p->route_geometry_json, 'start_label' => $p->start_label, 'end_label' => $p->end_label, 'distance_km' => $p->distance_km, 'duration_minutes' => $p->duration_minutes])->toJson() !!}</script>
     @csrf
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="{{ asset('js/map-common.js') }}"></script>
-    <script src="{{ asset('js/map-plans.js') }}"></script>
+    <script src="{{ asset('js/map-common.js') }}?v={{ filemtime(public_path('js/map-common.js')) }}"></script>
+    <script src="{{ asset('js/map-plans.js') }}?v={{ filemtime(public_path('js/map-plans.js')) }}"></script>
 </x-app-layout>

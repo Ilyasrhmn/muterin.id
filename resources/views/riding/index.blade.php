@@ -60,8 +60,8 @@
     @csrf
     @if ($motorcycles->isNotEmpty())
         <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-        <script src="{{ asset('js/map-common.js') }}"></script>
-        <script src="{{ asset('js/trip-recorder.js') }}"></script>
+        <script src="{{ asset('js/map-common.js') }}?v={{ filemtime(public_path('js/map-common.js')) }}"></script>
+        <script src="{{ asset('js/trip-recorder.js') }}?v={{ filemtime(public_path('js/trip-recorder.js')) }}"></script>
     @endif
     <script>
         (function () {

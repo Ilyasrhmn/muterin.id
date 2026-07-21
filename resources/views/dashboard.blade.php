@@ -152,5 +152,5 @@
         </div>
     </div>
 
-    <script src="{{ asset('js/notify.js') }}"></script>
+    <script src="{{ asset('js/notify.js') }}?v={{ filemtime(public_path('js/notify.js')) }}"></script>
 </x-app-layout>
