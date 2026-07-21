@@ -3,6 +3,23 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
     <div class="max-w-lg mx-auto p-4 sm:p-6 lg:p-8" id="riding-app">
+        @isset($unfinished)
+            @if ($unfinished)
+                <div class="mb-4 bg-amber-50 border border-amber-200 rounded-2xl p-4"
+                     data-recover-trip="{{ $unfinished->id }}">
+                    <p class="text-sm font-semibold text-amber-800">Ada perjalanan yang belum selesai</p>
+                    <p class="text-xs text-amber-700 mt-0.5">
+                        {{ $unfinished->motorcycle->nickname ?? 'Motor' }} — {{ number_format($unfinished->distance_km, 2) }} km,
+                        direkam {{ $unfinished->started_at?->diffForHumans() }}.
+                    </p>
+                    <div class="flex gap-2 mt-3">
+                        <button data-recover-finish class="text-xs font-semibold px-3 py-2 rounded-lg bg-primary text-white hover:bg-primary-hover transition">Selesaikan</button>
+                        <button data-recover-discard class="text-xs font-semibold px-3 py-2 rounded-lg border border-amber-300 text-amber-800 hover:bg-amber-100 transition">Buang</button>
+                    </div>
+                </div>
+            @endif
+        @endisset
+
         @if ($motorcycles->isEmpty())
             <x-ui.card class="text-center py-12">
                 <x-icon.motorcycle class="w-10 h-10 text-muted-fg mx-auto mb-3"/>
@@ -46,4 +63,29 @@
         <script src="{{ asset('js/map-common.js') }}"></script>
         <script src="{{ asset('js/trip-recorder.js') }}"></script>
     @endif
+    <script>
+        (function () {
+            const banner = document.querySelector('[data-recover-trip]');
+            if (!banner) return;
+            const id = banner.dataset.recoverTrip;
+            const token = () => document.querySelector('input[name="_token"]').value;
+
+            banner.querySelector('[data-recover-finish]').addEventListener('click', () => {
+                fetch(`/trips/${id}/finish`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': token(), Accept: 'application/json' },
+                    body: JSON.stringify({ distance_km: {{ (float) ($unfinished->distance_km ?? 0) }}, duration_seconds: {{ (int) ($unfinished->duration_seconds ?? 0) }} }),
+                }).then(() => location.reload());
+            });
+
+            banner.querySelector('[data-recover-discard]').addEventListener('click', async () => {
+                const ok = await window.AmictaDialog.confirm('Buang perjalanan yang belum selesai ini?', { danger: true, confirmText: 'Buang' });
+                if (!ok) return;
+                fetch(`/trips/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'X-CSRF-TOKEN': token(), Accept: 'application/json' },
+                }).then(() => location.reload());
+            });
+        })();
+    </script>
 </x-app-layout>

@@ -108,4 +108,24 @@ class TripTest extends TestCase
         $this->actingAs($user)->patchJson(route('trips.finish', $otherTrip), ['distance_km' => 1, 'duration_seconds' => 1])->assertForbidden();
         $this->actingAs($user)->deleteJson(route('trips.destroy', $otherTrip))->assertForbidden();
     }
+
+    public function test_riding_page_shows_recovery_banner_for_unfinished_trip(): void
+    {
+        $user = User::factory()->create();
+        $motor = $this->motor($user);
+        $motor->trips()->create(['distance_km' => 3.4, 'duration_seconds' => 200, 'status' => 'recording', 'started_at' => now()]);
+
+        $this->actingAs($user)->get(route('riding'))
+            ->assertOk()
+            ->assertSee('Ada perjalanan yang belum selesai')
+            ->assertSee('data-recover-trip', false);
+    }
+
+    public function test_riding_page_has_no_banner_without_unfinished_trip(): void
+    {
+        $user = User::factory()->create();
+        $this->motor($user);
+
+        $this->actingAs($user)->get(route('riding'))->assertDontSee('Ada perjalanan yang belum selesai');
+    }
 }
