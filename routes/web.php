@@ -37,7 +37,10 @@ Route::middleware('auth')->group(function () {
     Route::delete('other-expenses/{otherExpense}', [OtherExpenseController::class, 'destroy'])->name('other-expenses.destroy');
 
     Route::get('riding', [TripController::class, 'create'])->name('riding');
-    Route::post('trips', [TripController::class, 'store'])->name('trips.store');
+    Route::post('trips/start', [TripController::class, 'start'])->name('trips.start');
+    Route::patch('trips/{trip}/checkpoint', [TripController::class, 'checkpoint'])->name('trips.checkpoint');
+    Route::patch('trips/{trip}/finish', [TripController::class, 'finish'])->name('trips.finish');
+    Route::delete('trips/{trip}', [TripController::class, 'destroy'])->name('trips.destroy');
 
     Route::get('history', HistoryController::class)->name('history');
     Route::get('history/export', [HistoryController::class, 'exportPdf'])->name('history.export');
