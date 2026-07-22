@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CommunityController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FuelController;
 use App\Http\Controllers\HistoryController;
@@ -64,6 +65,14 @@ Route::middleware('auth')->group(function () {
     Route::delete('map/pins/{pin}', [MapController::class, 'destroyPin'])->name('map.pins.destroy');
     Route::post('map/plans', [MapController::class, 'storePlan'])->name('map.plans.store');
     Route::delete('map/plans/{plan}', [MapController::class, 'destroyPlan'])->name('map.plans.destroy');
+
+    // Peta Komunitas (publik antar-pengguna)
+    Route::get('peta/komunitas', [CommunityController::class, 'index'])->name('map.community');
+    Route::get('peta/komunitas/data', [CommunityController::class, 'data'])->name('map.community.data');
+    Route::post('peta/komunitas', [CommunityController::class, 'store'])->name('map.community.store');
+    Route::post('peta/komunitas/near-route', [CommunityController::class, 'nearRoute'])->name('map.community.near-route');
+    Route::post('peta/komunitas/{pin}/confirm', [CommunityController::class, 'confirm'])->name('map.community.confirm');
+    Route::delete('peta/komunitas/{pin}', [CommunityController::class, 'destroy'])->name('map.community.destroy');
 });
 
 require __DIR__.'/auth.php';

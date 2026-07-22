@@ -8,6 +8,7 @@
         ['route' => 'laporan', 'pattern' => 'laporan', 'label' => 'Laporan', 'icon' => 'bar-chart'],
         ['route' => 'map.routes', 'pattern' => 'map.routes', 'label' => 'Peta Rute', 'icon' => 'route'],
         ['route' => 'map.pins', 'pattern' => 'map.pins', 'label' => 'Titik Saya', 'icon' => 'map-pin'],
+        ['route' => 'map.community', 'pattern' => 'map.community', 'label' => 'Peta Komunitas', 'icon' => 'alert-triangle'],
         ['route' => 'map.plans', 'pattern' => 'map.plans', 'label' => 'Rencana Rute', 'icon' => 'navigation'],
     ];
 @endphp
