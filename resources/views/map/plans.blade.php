@@ -74,6 +74,14 @@
                         </div>
                     </div>
 
+                    {{-- Peringatan titik komunitas di sepanjang rute --}}
+                    <div id="community-warning" class="hidden p-3 rounded-xl bg-amber-50 border border-amber-200">
+                        <p class="text-sm font-semibold text-amber-800 flex items-center gap-1.5">
+                            <x-icon.alert-triangle class="w-4 h-4"/> <span id="community-warning-text"></span>
+                        </p>
+                        <p class="text-xs text-amber-700 mt-0.5">Titik-titik ini ditampilkan di peta. Hati-hati di area tersebut.</p>
+                    </div>
+
                     <p id="route-status" class="text-sm text-muted-fg"></p>
 
                     <div class="flex gap-2">

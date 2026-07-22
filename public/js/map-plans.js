@@ -17,6 +17,51 @@
   let routeLine = null;
   let lastRoute = null;
   let requestSeq = 0;
+  let communityMarkers = [];
+
+  const CAT_LABEL = {
+    sepi: 'sepi', gelap: 'gelap', rawan: 'rawan', rusak: 'rusak', banjir: 'banjir', momen: 'momen',
+  };
+  const CAT_COLOR = {
+    sepi: '#D97706', gelap: '#6366F1', rawan: '#DC2626', rusak: '#78716C', banjir: '#0EA5E9', momen: '#0F766E',
+  };
+
+  function clearCommunity() {
+    communityMarkers.forEach((m) => m.remove());
+    communityMarkers = [];
+    const w = document.getElementById('community-warning');
+    if (w) w.classList.add('hidden');
+  }
+
+  function checkCommunity(geometry) {
+    clearCommunity();
+    fetch('/peta/komunitas/near-route', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': token, Accept: 'application/json' },
+      body: JSON.stringify({ geometry }),
+    })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((b) => {
+        if (!b || !b.pins || !b.pins.length) return;
+        const counts = {};
+        b.pins.forEach((p) => {
+          counts[p.category] = (counts[p.category] || 0) + 1;
+          const color = CAT_COLOR[p.category] || '#64748B';
+          const m = L.circleMarker([p.lat, p.lng], {
+            color, radius: 7, fillColor: color, fillOpacity: 1, weight: 2,
+          }).addTo(map).bindPopup(`<b>${p.title}</b><br>${CAT_LABEL[p.category] || p.category}`);
+          communityMarkers.push(m);
+        });
+        const parts = Object.entries(counts).map(([c, n]) => `${n} ${CAT_LABEL[c] || c}`);
+        const el = document.getElementById('community-warning');
+        const txt = document.getElementById('community-warning-text');
+        if (el && txt) {
+          txt.textContent = `Rutemu lewat ${b.pins.length} titik komunitas (${parts.join(', ')}).`;
+          el.classList.remove('hidden');
+        }
+      })
+      .catch(() => {}); // ponytail: non-fatal, jangan ganggu alur rute
+  }
 
   /**
    * Handle route location button click
@@ -197,6 +242,7 @@
     lastRoute = null;
     $('route-summary').classList.add('hidden');
     setStatus('', false);
+    clearCommunity();
   }
 
   // --- Route ---
@@ -227,6 +273,7 @@
         $('route-distance').textContent = `${body.distance_km} km`;
         $('route-duration').textContent = fmtDuration(body.duration_minutes);
         $('route-summary').classList.remove('hidden');
+        checkCommunity(body.geometry);
       })
       .catch(() => {
         if (seq !== requestSeq) return;
