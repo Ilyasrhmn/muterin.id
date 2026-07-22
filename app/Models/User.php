@@ -40,6 +40,11 @@ class User extends Authenticatable
         return $this->hasMany(MapPin::class);
     }
 
+    public function communityPins(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(CommunityPin::class);
+    }
+
     public function routePlans(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(RoutePlan::class);
