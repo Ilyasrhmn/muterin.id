@@ -3,6 +3,7 @@
   if (!root) return;
 
   const backdrop = root.querySelector('[data-dialog-backdrop]');
+  const dialogContent = root.querySelector('[data-dialog-content]');
   const messageEl = root.querySelector('[data-dialog-message]');
   const fieldsEl = root.querySelector('[data-dialog-fields]');
   const inputLabel = root.querySelector('[data-dialog-input-label]');
@@ -13,15 +14,99 @@
   const cancelBtn = root.querySelector('[data-dialog-cancel]');
   const confirmBtn = root.querySelector('[data-dialog-confirm]');
 
-  const BTN_PRIMARY = 'inline-flex items-center justify-center gap-2 font-heading font-semibold rounded-xl transition text-sm px-4 py-2.5 bg-primary text-white hover:bg-primary-hover cursor-pointer disabled:opacity-50 disabled:pointer-events-none';
-  const BTN_DANGER = 'inline-flex items-center justify-center gap-2 font-heading font-semibold rounded-xl transition text-sm px-4 py-2.5 bg-accent text-white hover:bg-accent-hover cursor-pointer disabled:opacity-50 disabled:pointer-events-none';
+  // Store focusable elements for focus trap
+  let focusableElements = [];
+  let firstFocusable = null;
+  let lastFocusable = null;
+
+  const BTN_PRIMARY = 'inline-flex items-center justify-center gap-2 font-heading font-semibold rounded-xl transition-all duration-200 text-sm px-4 py-2.5 bg-primary text-white hover:bg-primary-hover active:scale-95 cursor-pointer disabled:opacity-50 disabled:pointer-events-none';
+  const BTN_DANGER = 'inline-flex items-center justify-center gap-2 font-heading font-semibold rounded-xl transition-all duration-200 text-sm px-4 py-2.5 bg-accent text-white hover:bg-accent-hover active:scale-95 cursor-pointer disabled:opacity-50 disabled:pointer-events-none';
 
   let resolver = null;
   let mode = 'confirm';
   let hasExtra = false;
 
-  function open() { root.classList.remove('hidden'); root.classList.add('flex'); }
-  function close() { root.classList.add('hidden'); root.classList.remove('flex'); }
+  function updateFocusableElements() {
+    const selector = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+    focusableElements = Array.from(dialogContent.querySelectorAll(selector))
+      .filter(el => !el.disabled && !el.classList.contains('hidden'));
+    firstFocusable = focusableElements[0];
+    lastFocusable = focusableElements[focusableElements.length - 1];
+  }
+
+  function trapFocus(e) {
+    if (e.key !== 'Tab') return;
+
+    if (e.shiftKey) {
+      // Shift + Tab
+      if (document.activeElement === firstFocusable) {
+        e.preventDefault();
+        lastFocusable.focus();
+      }
+    } else {
+      // Tab
+      if (document.activeElement === lastFocusable) {
+        e.preventDefault();
+        firstFocusable.focus();
+      }
+    }
+  }
+
+  function getScrollbarWidth() {
+    return window.innerWidth - document.documentElement.clientWidth;
+  }
+
+  function lockBodyScroll() {
+    document.body.style.overflow = 'hidden';
+    document.body.style.paddingRight = getScrollbarWidth() + 'px';
+  }
+
+  function unlockBodyScroll() {
+    document.body.style.overflow = '';
+    document.body.style.paddingRight = '';
+  }
+
+  function open() {
+    root.classList.remove('hidden');
+    lockBodyScroll();
+    
+    // Trigger reflow to enable transition
+    root.offsetHeight;
+    
+    // Fade in and scale up
+    root.classList.remove('opacity-0');
+    dialogContent.classList.remove('scale-95');
+    dialogContent.classList.add('scale-100');
+    
+    // Setup focus trap
+    updateFocusableElements();
+    document.addEventListener('keydown', trapFocus);
+    
+    // Focus first element after animation
+    setTimeout(() => {
+      if (mode === 'prompt') {
+        input.focus();
+      } else {
+        confirmBtn.focus();
+      }
+    }, 50);
+  }
+
+  function close() {
+    // Fade out and scale down
+    root.classList.add('opacity-0');
+    dialogContent.classList.remove('scale-100');
+    dialogContent.classList.add('scale-95');
+    
+    // Remove focus trap
+    document.removeEventListener('keydown', trapFocus);
+    
+    // Hide after animation completes
+    setTimeout(() => {
+      root.classList.add('hidden');
+      unlockBodyScroll();
+    }, 300);
+  }
 
   function settle(result) {
     const r = resolver;
@@ -61,7 +146,8 @@
 
   window.AmictaDialog = {
     confirm(message, opts = {}) {
-      mode = 'confirm'; hasExtra = false;
+      mode = 'confirm'; 
+      hasExtra = false;
       messageEl.textContent = message;
       fieldsEl.classList.add('hidden');
       cancelBtn.classList.remove('hidden');
@@ -72,13 +158,16 @@
       open();
       return new Promise((res) => { resolver = res; });
     },
+    
     prompt(message, opts = {}) {
-      mode = 'prompt'; hasExtra = !!opts.extra;
+      mode = 'prompt'; 
+      hasExtra = !!opts.extra;
       messageEl.textContent = message;
       fieldsEl.classList.remove('hidden');
       inputLabel.textContent = opts.label || '';
       input.placeholder = opts.placeholder || '';
       input.value = opts.defaultValue || '';
+      
       if (hasExtra) {
         extraWrap.classList.remove('hidden');
         extraLabel.textContent = opts.extra.label || '';
@@ -87,17 +176,19 @@
       } else {
         extraWrap.classList.add('hidden');
       }
+      
       cancelBtn.classList.remove('hidden');
       cancelBtn.textContent = 'Batal';
       confirmBtn.textContent = opts.confirmText || 'Simpan';
       confirmBtn.className = BTN_PRIMARY;
       confirmBtn.disabled = !input.value.trim();
       open();
-      setTimeout(() => input.focus(), 0);
       return new Promise((res) => { resolver = res; });
     },
+    
     alert(message, opts = {}) {
-      mode = 'alert'; hasExtra = false;
+      mode = 'alert'; 
+      hasExtra = false;
       messageEl.textContent = message;
       fieldsEl.classList.add('hidden');
       cancelBtn.classList.add('hidden');

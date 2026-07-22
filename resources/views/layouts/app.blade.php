@@ -6,6 +6,11 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <title>{{ config('app.name', 'Amicta') }}</title>
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        
+        <!-- Font Awesome 6 -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" 
+              integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" 
+              crossorigin="anonymous" referrerpolicy="no-referrer" />
     </head>
     <body class="bg-background text-foreground">
         <div x-data="{ mobileOpen: false }" class="min-h-dvh">
@@ -46,6 +51,7 @@
         </div>
 
         <x-ui.dialog />
+        <script src="{{ asset('js/geolocation.js') }}?v={{ filemtime(public_path('js/geolocation.js')) }}"></script>
         <script src="{{ asset('js/dialog.js') }}?v={{ filemtime(public_path('js/dialog.js')) }}"></script>
     </body>
 </html>

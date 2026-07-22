@@ -18,6 +18,53 @@
   let lastRoute = null;
   let requestSeq = 0;
 
+  /**
+   * Handle route location button click
+   * @param {string} type - 'start' | 'end'
+   */
+  async function handleRouteLocationClick(type) {
+    const btn = $(type === 'start' ? 'btn-current-location-start' : 'btn-current-location-end');
+    const textEl = $(type === 'start' ? 'loc-start-text' : 'loc-end-text');
+    const spinnerEl = $(type === 'start' ? 'loc-start-spinner' : 'loc-end-spinner');
+
+    const resetBtn = () => {
+      textEl.textContent = 'Gunakan Lokasi Saya';
+      spinnerEl.classList.add('hidden');
+      btn.disabled = false;
+    };
+    
+    // Loading state
+    textEl.textContent = 'Mengambil lokasi...';
+    spinnerEl.classList.remove('hidden');
+    btn.disabled = true;
+    
+    try {
+      const pos = await window.AmictaGeolocation.getCurrentPosition();
+      const loc = await reverseGeocode(pos.lat, pos.lng);
+      loc.lat = pos.lat;
+      loc.lng = pos.lng;
+      
+      if (type === 'start') {
+        setStart(loc);
+      } else {
+        setEnd(loc);
+      }
+      
+      map.flyTo([pos.lat, pos.lng], 14);
+      
+    } catch (error) {
+      await window.AmictaDialog.alert(window.AmictaGeolocation.getErrorMessage(error));
+    } finally {
+      resetBtn();
+    }
+  }
+
+  // Wire up current location buttons
+  const btnStart = $('btn-current-location-start');
+  const btnEnd = $('btn-current-location-end');
+  if (btnStart) btnStart.onclick = () => handleRouteLocationClick('start');
+  if (btnEnd) btnEnd.onclick = () => handleRouteLocationClick('end');
+
   function setStatus(text, isError) {
     statusEl.textContent = text || '';
     statusEl.classList.toggle('text-accent', !!isError);

@@ -17,7 +17,13 @@
                             <option value="moment">Momen</option>
                         </select>
                     </label>
-                    <p class="text-xs text-muted-fg">Lalu klik lokasi di peta untuk menandai.</p>
+                    <button id="btn-current-location-pin" type="button"
+                            class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">
+                        <i class="fas fa-location-crosshairs"></i>
+                        <span id="loc-pin-text">Lokasi Saya</span>
+                        <i class="fas fa-spinner fa-spin hidden" id="loc-pin-spinner"></i>
+                    </button>
+                    <p class="text-xs text-muted-fg">atau klik lokasi di peta untuk menandai.</p>
                     <div class="flex items-center gap-3 ms-auto text-xs text-muted-fg">
                         <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-accent"></span> Rawan</span>
                         <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span> Sepi</span>

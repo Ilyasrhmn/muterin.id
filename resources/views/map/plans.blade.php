@@ -24,26 +24,42 @@
                     </div>
 
                     {{-- Titik Awal --}}
-                    <div class="flex items-center gap-3 p-3 rounded-xl bg-muted/50">
-                        <span class="w-3 h-3 rounded-full bg-status-green shrink-0"></span>
-                        <div class="flex-1 min-w-0">
-                            <p class="text-[10px] font-bold uppercase tracking-wider text-muted-fg">Titik Awal</p>
-                            <p id="start-label" class="text-sm text-muted-fg truncate">Belum dipilih</p>
+                    <div>
+                        <div class="flex items-center gap-3 p-3 rounded-xl bg-muted/50">
+                            <span class="w-3 h-3 rounded-full bg-status-green shrink-0"></span>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-[10px] font-bold uppercase tracking-wider text-muted-fg">Titik Awal</p>
+                                <p id="start-label" class="text-sm text-muted-fg truncate">Belum dipilih</p>
+                            </div>
+                            <button id="clear-start" type="button" class="hidden text-muted-fg hover:text-accent shrink-0 text-lg leading-none">&times;</button>
                         </div>
-                        <button id="clear-start" type="button" class="hidden text-muted-fg hover:text-accent shrink-0 text-lg leading-none">&times;</button>
+                        <button id="btn-current-location-start" type="button"
+                                class="mt-2 w-full inline-flex items-center justify-center gap-2 px-3 py-2 text-xs font-semibold rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">
+                            <i class="fas fa-location-crosshairs"></i>
+                            <span id="loc-start-text">Gunakan Lokasi Saya</span>
+                            <i class="fas fa-spinner fa-spin hidden" id="loc-start-spinner"></i>
+                        </button>
                     </div>
 
                     {{-- Titik Singgah (dynamic) --}}
                     <div id="via-list" class="space-y-2"></div>
 
                     {{-- Titik Tujuan --}}
-                    <div class="flex items-center gap-3 p-3 rounded-xl bg-muted/50">
-                        <span class="w-3 h-3 rounded-full bg-accent shrink-0"></span>
-                        <div class="flex-1 min-w-0">
-                            <p class="text-[10px] font-bold uppercase tracking-wider text-muted-fg">Titik Tujuan</p>
-                            <p id="end-label" class="text-sm text-muted-fg truncate">Belum dipilih</p>
+                    <div>
+                        <div class="flex items-center gap-3 p-3 rounded-xl bg-muted/50">
+                            <span class="w-3 h-3 rounded-full bg-accent shrink-0"></span>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-[10px] font-bold uppercase tracking-wider text-muted-fg">Titik Tujuan</p>
+                                <p id="end-label" class="text-sm text-muted-fg truncate">Belum dipilih</p>
+                            </div>
+                            <button id="clear-end" type="button" class="hidden text-muted-fg hover:text-accent shrink-0 text-lg leading-none">&times;</button>
                         </div>
-                        <button id="clear-end" type="button" class="hidden text-muted-fg hover:text-accent shrink-0 text-lg leading-none">&times;</button>
+                        <button id="btn-current-location-end" type="button"
+                                class="mt-2 w-full inline-flex items-center justify-center gap-2 px-3 py-2 text-xs font-semibold rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">
+                            <i class="fas fa-location-crosshairs"></i>
+                            <span id="loc-end-text">Gunakan Lokasi Saya</span>
+                            <i class="fas fa-spinner fa-spin hidden" id="loc-end-spinner"></i>
+                        </button>
                     </div>
 
                     {{-- Route summary --}}
