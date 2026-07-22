@@ -4,12 +4,12 @@
   const $ = (id) => document.getElementById(id);
 
   const CAT = {
-    sepi:   { label: 'Jalan Sepi',        color: '#D97706' },
-    gelap:  { label: 'Penerangan Minim',  color: '#6366F1' },
-    rawan:  { label: 'Rawan Kriminal',    color: '#DC2626' },
-    rusak:  { label: 'Jalan Rusak',       color: '#78716C' },
-    banjir: { label: 'Rawan Banjir',      color: '#0EA5E9' },
-    momen:  { label: 'Momen',             color: '#0F766E' },
+    sepi:   { label: 'Jalan Sepi',        color: '#D97706', icon: 'fa-road' },
+    gelap:  { label: 'Penerangan Minim',  color: '#6366F1', icon: 'fa-lightbulb' },
+    rawan:  { label: 'Rawan Kriminal',    color: '#DC2626', icon: 'fa-triangle-exclamation' },
+    rusak:  { label: 'Jalan Rusak',       color: '#78716C', icon: 'fa-road-barrier' },
+    banjir: { label: 'Rawan Banjir',      color: '#0EA5E9', icon: 'fa-water' },
+    momen:  { label: 'Momen',             color: '#0F766E', icon: 'fa-camera' },
   };
   const TIME = { siang: 'Siang', malam: 'Malam', kapanpun: 'Kapan pun' };
 
@@ -17,9 +17,36 @@
   let markers = new Map(); // id -> layer
   let picked = null;       // {lat, lng} lokasi yang sedang ditandai
   let filter = '';
+  let hasFitted = false;   // fitTo once when pins first arrive, so user pans/zooms freely after
 
   function catColor(c) { return (CAT[c] || {}).color || '#64748B'; }
   function catLabel(c) { return (CAT[c] || {}).label || c; }
+  function catIcon(c) { return (CAT[c] || {}).icon || 'fa-location-dot'; }
+
+  function pinIcon(category) {
+    const color = catColor(category);
+    return L.divIcon({
+      html: `<div class="flex items-center justify-center w-9 h-9 rounded-full shadow-lg border-2 bg-white" style="border-color:${color}">
+               <i class="fas ${catIcon(category)}" style="color:${color}"></i>
+             </div>`,
+      className: 'custom-pin-marker',
+      iconSize: [36, 36],
+      iconAnchor: [18, 36],
+      popupAnchor: [0, -36],
+    });
+  }
+
+  // Kartu ringkas untuk hover: foto (jika ada) + judul + kategori.
+  function tooltipHtml(p) {
+    const photo = p.photo_url
+      ? `<img src="${esc(p.photo_url)}" alt="" style="width:100%;height:80px;object-fit:cover;border-radius:6px;margin-bottom:6px">` : '';
+    return `
+      <div style="min-width:160px;max-width:190px">
+        ${photo}
+        <span style="display:inline-block;font-size:9px;font-weight:700;color:#fff;background:${catColor(p.category)};padding:1px 7px;border-radius:999px">${esc(catLabel(p.category))}</span>
+        <p style="font-weight:700;font-size:13px;color:#0F172A;margin:4px 0 0">${esc(p.title)}</p>
+      </div>`;
+  }
 
   function esc(s) {
     return String(s ?? '').replace(/[&<>"']/g, (m) =>
@@ -90,12 +117,16 @@
 
     shown.forEach((p) => {
       if (markers.has(p.id)) return;
-      const layer = L.circleMarker([p.lat, p.lng], {
-        color: catColor(p.category), radius: 8, fillColor: catColor(p.category), fillOpacity: 1, weight: 2,
-      }).addTo(map);
+      const layer = L.marker([p.lat, p.lng], { icon: pinIcon(p.category) }).addTo(map);
+      layer.bindTooltip(tooltipHtml(p), { direction: 'top', offset: [0, -30], className: 'community-pin-tooltip' });
       layer.on('click', () => openPinPopup(p, [p.lat, p.lng]));
       markers.set(p.id, layer);
     });
+
+    if (!hasFitted && shown.length) {
+      hasFitted = true;
+      window.AmictaMap.fitTo(map, shown.map((p) => [p.lat, p.lng]));
+    }
 
     const list = $('pin-list');
     list.innerHTML = '';
