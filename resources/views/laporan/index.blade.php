@@ -106,13 +106,18 @@
                 data: {
                     labels: {!! json_encode($efficiencyLabels) !!},
                     datasets: [
+                        @php $palette = ['#0F766E', '#D97706', '#2563EB', '#DB2777', '#7C3AED']; @endphp
                         @foreach ($efficiencyAligned as $name => $data)
                             @if (count($efficiencySeries[$name]))
                             {
                                 label: {!! json_encode($name) !!},
                                 data: {!! json_encode($data) !!},
-                                borderColor: '#0F766E',
-                                tension: 0.3,
+                                borderColor: {!! json_encode($palette[$loop->index % count($palette)]) !!},
+                                backgroundColor: {!! json_encode($palette[$loop->index % count($palette)].'33') !!},
+                                tension: 0.4,
+                                spanGaps: true,
+                                fill: true,
+                                pointRadius: 3,
                             },
                             @endif
                         @endforeach
