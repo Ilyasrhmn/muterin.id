@@ -30,8 +30,8 @@
     {{-- Logo --}}
     <div class="h-16 flex items-center justify-between px-5 border-b border-border shrink-0">
         <a href="{{ route('dashboard') }}" class="flex items-center gap-3">
-            <div class="size-9 bg-primary rounded-xl flex items-center justify-center text-white">
-                <x-icon.motorcycle class="w-5 h-5"/>
+            <div class="size-9 rounded-xl overflow-hidden">
+                <img src="{{ asset('images/muterin-logo.webp') }}" alt="Muterin" class="w-full h-full object-cover">
             </div>
             <div class="leading-none">
                 <p class="font-heading font-bold text-foreground text-base tracking-tight">Muterin</p>
