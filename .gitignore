@@ -22,6 +22,8 @@
 /storage/pail
 /vendor
 _ide_helper.php
+/docs/superpowers/
+/.kiro/
 Homestead.json
 Homestead.yaml
 Thumbs.db
