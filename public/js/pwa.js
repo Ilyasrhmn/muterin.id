@@ -15,12 +15,24 @@
     event.preventDefault();
     deferredPrompt = event;
     showInstallBanner();
+    window.dispatchEvent(new CustomEvent('mtn:install-available'));
   });
 
   window.addEventListener('appinstalled', () => {
     deferredPrompt = null;
     hideInstallBanner();
+    window.dispatchEvent(new CustomEvent('mtn:install-done'));
   });
+
+  window.mtnInstallApp = async function () {
+    if (!deferredPrompt) return false;
+    deferredPrompt.prompt();
+    const choice = await deferredPrompt.userChoice;
+    deferredPrompt = null;
+    hideInstallBanner();
+    window.dispatchEvent(new CustomEvent('mtn:install-done'));
+    return choice.outcome === 'accepted';
+  };
 
   function showInstallBanner() {
     if (document.getElementById('mtn-install-banner')) return;
@@ -44,12 +56,8 @@
 
     document.body.appendChild(wrap);
 
-    document.getElementById('mtn-install-yes').addEventListener('click', async () => {
-      hideInstallBanner();
-      if (!deferredPrompt) return;
-      deferredPrompt.prompt();
-      await deferredPrompt.userChoice;
-      deferredPrompt = null;
+    document.getElementById('mtn-install-yes').addEventListener('click', () => {
+      window.mtnInstallApp();
     });
 
     document.getElementById('mtn-install-no').addEventListener('click', () => {
