@@ -8,6 +8,7 @@
         <title>{{ config('app.name', 'Muterin') }}</title>
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @include('partials.pwa-head')
     </head>
     <body class="bg-background text-foreground">
         <div class="min-h-dvh grid md:grid-cols-2">
@@ -38,5 +39,6 @@
                 </div>
             </div>
         </div>
+        <script src="{{ asset('js/pwa.js') }}?v={{ filemtime(public_path('js/pwa.js')) }}"></script>
     </body>
 </html>

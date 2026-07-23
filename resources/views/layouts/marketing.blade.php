@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ config('app.name', 'Muterin') }}: Rawat Motor Tanpa Lupa</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @include('partials.pwa-head')
 </head>
 <body class="bg-background text-foreground">
     <nav x-data="{ scrolled: false, mobileOpen: false }" @scroll.window="scrolled = window.scrollY > 20"
@@ -76,5 +77,6 @@
             <p class="text-center text-xs text-muted-fg pt-4">&copy; {{ date('Y') }} Muterin. Rawat motor berbasis jarak tempuh asli.</p>
         </div>
     </footer>
+    <script src="{{ asset('js/pwa.js') }}?v={{ filemtime(public_path('js/pwa.js')) }}"></script>
 </body>
 </html>
