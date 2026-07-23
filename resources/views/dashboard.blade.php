@@ -25,6 +25,30 @@
             @endif
         </x-ui.hero>
 
+        {{-- Ajakan pasang aplikasi (PWA) --}}
+        <div x-data="{ show: false }" x-show="show" x-cloak
+             @mtn:install-available.window="if (!localStorage.getItem('mtn_install_dismissed')) show = true"
+             @mtn:install-done.window="show = false"
+             class="flex flex-col sm:flex-row sm:items-center gap-4 bg-primary text-white rounded-2xl p-5">
+            <div class="size-11 rounded-xl bg-white/15 flex items-center justify-center shrink-0">
+                <x-icon.motorcycle class="w-6 h-6"/>
+            </div>
+            <div class="flex-1">
+                <p class="font-heading font-semibold">Pasang aplikasi Muterin di HP kamu</p>
+                <p class="text-sm text-white/80 mt-0.5">Akses lebih cepat dari layar utama dan tetap jalan walau sinyal lagi lemah.</p>
+            </div>
+            <div class="flex items-center gap-2 shrink-0">
+                <button type="button" @click="window.mtnInstallApp()"
+                        class="px-4 py-2 rounded-xl bg-white text-primary text-sm font-semibold hover:bg-white/90 transition">
+                    Unduh Aplikasi
+                </button>
+                <button type="button" @click="localStorage.setItem('mtn_install_dismissed', '1'); show = false"
+                        class="px-3 py-2 rounded-xl text-sm text-white/80 hover:bg-white/10 transition">
+                    Nanti saja
+                </button>
+            </div>
+        </div>
+
         {{-- Stat cards --}}
         <div data-reveal-group class="grid grid-cols-2 lg:grid-cols-4 gap-4">
             <div data-reveal class="bg-primary-soft border border-primary/15 rounded-2xl p-5">
