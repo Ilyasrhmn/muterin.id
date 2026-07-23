@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Muterin — Sedang Offline</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    height: 100%;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    background: #F4F7FA;
+    color: #1F2937;
+  }
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  .card {
+    max-width: 380px;
+    width: 100%;
+    text-align: center;
+  }
+  .icon {
+    width: 88px;
+    height: 88px;
+    border-radius: 22px;
+    background: #0F766E;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px;
+  }
+  h1 {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #6B7280;
+    margin-bottom: 24px;
+  }
+  button {
+    font: inherit;
+    font-weight: 600;
+    font-size: 14px;
+    color: #fff;
+    background: #0F766E;
+    border: none;
+    border-radius: 12px;
+    padding: 12px 28px;
+    cursor: pointer;
+  }
+  button:active {
+    opacity: 0.85;
+  }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="icon">
+      <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="1.8"
+           stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="5.5" cy="16.5" r="3.5"/>
+        <circle cx="18.5" cy="16.5" r="3.5"/>
+        <path d="M5.5 16.5h7l4-6h-9M15 10.5l1.5 3M8 6h3l2 4.5"/>
+      </svg>
+    </div>
+    <h1>Kamu sedang offline</h1>
+    <p>Halaman ini belum pernah dibuka sebelumnya, jadi belum tersimpan untuk dilihat tanpa internet. Sambungkan lagi ke internet lalu coba muat ulang.</p>
+    <button onclick="location.reload()">Coba lagi</button>
+  </div>
+</body>
+</html>
