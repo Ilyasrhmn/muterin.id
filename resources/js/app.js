@@ -17,3 +17,7 @@ if (!reduceMotion) {
 }
 
 document.addEventListener('DOMContentLoaded', initReveal);
+
+// Fonts/images can still shift layout after DOMContentLoaded, so re-check
+// trigger positions once everything has settled.
+window.addEventListener('load', () => ScrollTrigger.refresh());

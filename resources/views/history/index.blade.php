@@ -4,7 +4,7 @@
     <div class="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
 
         <x-ui.hero badge="Cost Monitoring" title="Biaya & Servis Motor"
-                    subtitle="Pantau pengeluaran perawatan semua motormu  oli, ban, aki, servis rutin  tercatat rapi di satu tempat.">
+                    subtitle="Pantau pengeluaran perawatan semua motormu, mulai dari oli, ban, aki, sampai servis rutin, tercatat rapi di satu tempat.">
             <x-slot:side>
                 <x-ui.button variant="white" href="{{ route('history.export') }}">Unduh PDF</x-ui.button>
                 <x-ui.button variant="white" type="button" x-data @click="$dispatch('open-expense-form')">Catat Pengeluaran Lain</x-ui.button>

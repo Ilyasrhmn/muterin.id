@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ config('app.name', 'Muterin') }}  Rawat Motor Tanpa Lupa</title>
+    <title>{{ config('app.name', 'Muterin') }}: Rawat Motor Tanpa Lupa</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="bg-background text-foreground">
@@ -50,7 +50,7 @@
                     <a href="{{ route('home') }}" class="flex items-center gap-2 font-heading font-bold text-lg text-primary mb-3">
                         <x-icon.motorcycle class="w-6 h-6"/> Muterin
                     </a>
-                    <p class="text-sm text-muted-fg">Rawat motor tanpa lupa, berbasis km yang benar-benar akurat  dari sumber mana saja: manual, isi bensin, servis, atau riding.</p>
+                    <p class="text-sm text-muted-fg">Rawat motor tanpa lupa, berbasis km yang benar-benar akurat dari sumber mana saja: manual, isi bensin, servis, atau riding.</p>
                 </div>
                 <div class="flex gap-12 sm:gap-16">
                     <div>

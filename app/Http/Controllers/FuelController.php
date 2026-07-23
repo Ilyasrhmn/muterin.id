@@ -60,7 +60,7 @@ class FuelController extends Controller
         $warning = null;
         $latest = $stats->latestKmPerLiter($motor->fresh());
         if ($latest !== null && $latest > 60) {
-            $warning = "Efisiensi {$latest} km/liter terlihat tidak biasa  cek kembali odometer atau jumlah liter yang diinput.";
+            $warning = "Efisiensi {$latest} km/liter terlihat tidak biasa, cek kembali odometer atau jumlah liter yang diinput.";
         }
 
         return redirect()->route('bbm.index')

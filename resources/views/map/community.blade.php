@@ -4,11 +4,11 @@
 
     <div class="p-4 sm:p-6 lg:p-8 max-w-[1400px] mx-auto space-y-6">
         <x-ui.hero badge="{{ $pins->count() }} titik" title="Peta Keamanan Komunitas"
-                    subtitle="Titik dari semua pengguna. Tandai jalan sepi, gelap, rawan, rusak, atau banjir  bantu yang lain tetap aman." />
+                    subtitle="Titik dari semua pengguna. Tandai jalan sepi, gelap, rawan, rusak, atau banjir untuk bantu yang lain tetap aman." />
 
         <div class="grid lg:grid-cols-3 gap-6 items-start">
-            {{-- LEFT: filter + form + daftar --}}
-            <div class="space-y-6">
+            {{-- LEFT: filter + form + daftar (below the map on mobile, since the map is the primary surface there) --}}
+            <div class="space-y-6 order-2 lg:order-none">
                 <div class="bg-surface border border-border rounded-2xl p-5 space-y-3">
                     <h3 class="font-heading font-bold text-foreground text-sm">Filter</h3>
                     <div id="filter-category"></div>
@@ -78,8 +78,8 @@
                 </div>
             </div>
 
-            {{-- RIGHT: map --}}
-            <div class="lg:col-span-2">
+            {{-- RIGHT: map (first on mobile) --}}
+            <div class="lg:col-span-2 order-1 lg:order-none">
                 <div class="bg-surface border border-border rounded-2xl p-3 mb-3">
                     <div class="relative">
                         <input id="search-location" type="text" placeholder="Cari lokasi..."

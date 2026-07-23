@@ -4,11 +4,11 @@
 
     <div class="p-4 sm:p-6 lg:p-8 max-w-[1400px] mx-auto space-y-6">
         <x-ui.hero badge="Tempat tersimpan" title="Titik Saya"
-                    subtitle="Simpan tempat ke dalam list-mu sendiri  favorit, mau ke sana, bengkel langganan, atau list bikinanmu. Klik di peta untuk menyimpan." />
+                    subtitle="Simpan tempat ke dalam list-mu sendiri: favorit, mau ke sana, bengkel langganan, atau list bikinanmu. Klik di peta untuk menyimpan." />
 
         <div class="grid lg:grid-cols-3 gap-6 items-start">
-            {{-- LEFT: list manager + daftar tempat --}}
-            <div class="space-y-6">
+            {{-- LEFT: list manager + daftar tempat (below the map on mobile, since the map is the primary surface there) --}}
+            <div class="space-y-6 order-2 lg:order-none">
                 {{-- Manajer list --}}
                 <div class="bg-surface border border-border rounded-2xl p-5 space-y-3">
                     <div class="flex items-center justify-between">
@@ -70,8 +70,8 @@
                 </div>
             </div>
 
-            {{-- RIGHT: map --}}
-            <div class="lg:col-span-2">
+            {{-- RIGHT: map (first on mobile) --}}
+            <div class="lg:col-span-2 order-1 lg:order-none">
                 <div class="bg-surface border border-border rounded-2xl p-3 mb-3 space-y-3">
                     <div class="flex items-center gap-3">
                         <button id="btn-my-location" type="button"

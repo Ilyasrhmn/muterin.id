@@ -4,11 +4,11 @@
 
     <div class="p-4 sm:p-6 lg:p-8 max-w-[1400px] mx-auto space-y-6">
         <x-ui.hero badge="{{ $plans->count() }} rencana" title="Rencanakan Rute"
-                    subtitle="Cari tempat atau klik di peta, lalu pilih titik awal & tujuan  rute jalan otomatis dihitung." />
+                    subtitle="Cari tempat atau klik di peta, lalu pilih titik awal & tujuan, rute jalan otomatis dihitung." />
 
         <div class="grid lg:grid-cols-3 gap-6 items-start">
-            {{-- LEFT: persistent planning panel + saved plans --}}
-            <div class="space-y-6">
+            {{-- LEFT: persistent planning panel + saved plans (below the map on mobile, since the map is the primary surface there) --}}
+            <div class="space-y-6 order-2 lg:order-none">
                 <div class="bg-surface border border-border rounded-2xl p-5 space-y-4">
                     <h3 class="font-heading font-bold text-foreground text-sm">Rencana Perjalanan</h3>
 
@@ -126,8 +126,8 @@
                 </div>
             </div>
 
-            {{-- RIGHT: map --}}
-            <div class="lg:col-span-2">
+            {{-- RIGHT: map (first on mobile) --}}
+            <div class="lg:col-span-2 order-1 lg:order-none">
                 <div class="rounded-2xl overflow-hidden border border-border">
                     <div id="map" style="height: 72vh"></div>
                 </div>

@@ -12,7 +12,7 @@
                     Rawat motor tanpa lupa,<br class="hidden md:block"> berbasis <span class="text-primary">km yang benar-benar akurat</span>.
                 </h1>
                 <p data-reveal class="mt-5 text-lg text-muted-fg max-w-lg">
-                    Muterin mencatat jarak tempuh motormu dari sumber mana saja  manual, isi bensin, servis, atau riding  lalu otomatis mengingatkan kapan oli, ban, aki, atau servis rutin perlu diganti.
+                    Muterin mencatat jarak tempuh motormu dari sumber mana saja, baik manual, isi bensin, servis, atau riding, lalu otomatis mengingatkan kapan oli, ban, aki, atau servis rutin perlu diganti.
                 </p>
                 <div data-reveal class="mt-8 flex flex-wrap gap-3">
                     <x-ui.button variant="accent" size="lg" href="{{ route('register') }}">
@@ -72,7 +72,7 @@
                     <x-icon.wrench class="w-6 h-6"/>
                 </div>
                 <p data-reveal class="font-heading font-semibold mb-1">Tidak ada riwayat servis</p>
-                <p data-reveal class="text-sm text-muted-fg">Motor dengan riwayat servis lengkap dan tercatat rapi punya nilai jual lebih tinggi saat dijual  tapi kebanyakan orang gak pernah mencatatnya dari awal.</p>
+                <p data-reveal class="text-sm text-muted-fg">Motor dengan riwayat servis lengkap dan tercatat rapi punya nilai jual lebih tinggi saat dijual, tapi kebanyakan orang gak pernah mencatatnya dari awal.</p>
             </x-ui.card>
         </div>
     </section>
@@ -98,7 +98,7 @@
     {{-- Features --}}
     <section id="fitur" class="max-w-6xl mx-auto px-4 py-16 md:py-24">
         <h2 data-reveal class="text-2xl md:text-3xl font-heading font-bold text-center mb-4">Semua yang kamu butuh, satu aplikasi</h2>
-        <p data-reveal class="text-center text-muted-fg max-w-xl mx-auto mb-12">Empat pilar yang menyelesaikan masalah nyata pemilik motor  bukan sekadar pengingat.</p>
+        <p data-reveal class="text-center text-muted-fg max-w-xl mx-auto mb-12">Empat pilar yang menyelesaikan masalah nyata pemilik motor, bukan sekadar pengingat.</p>
         <div data-reveal-group class="grid md:grid-cols-2 gap-6">
             @php
                 $pillars = [
@@ -108,7 +108,7 @@
                         'summary' => 'Odometer akurat dari sumber mana saja, status warna tiap komponen, dan skor kesehatan motor dalam satu angka.',
                         'pills' => ['Odometer Backbone', 'Status Warna', 'Skor Kesehatan'],
                         'points' => [
-                            'Odometer Backbone  km selalu update dari input manual, isi bensin, servis, atau riding, satu sumber kebenaran.',
+                            'Odometer Backbone: km selalu update dari input manual, isi bensin, servis, atau riding, satu sumber kebenaran.',
                             'Status warna per komponen (hijau/kuning/merah) untuk oli, ban, aki, servis rutin.',
                             'Prediksi hari tersisa sebelum servis, berbasis rata-rata jarak harianmu.',
                             'Skor Kesehatan Motor 0-100, ringkasan sekali lihat.',
@@ -118,7 +118,7 @@
                     [
                         'icon' => 'bell',
                         'title' => 'Jangan Ada yang Kelewat',
-                        'summary' => 'Semua yang butuh perhatianmu  servis, dokumen, sampai efisiensi BBM yang aneh  muncul di satu tempat.',
+                        'summary' => 'Semua yang butuh perhatianmu, mulai dari servis, dokumen, sampai efisiensi BBM yang aneh, muncul di satu tempat.',
                         'pills' => ['Pusat Perhatian', 'Dokumen Kendaraan', 'Efisiensi BBM'],
                         'points' => [
                             'Pusat Perhatian menyatukan semua pengingat jadi satu daftar prioritas.',
@@ -134,7 +134,7 @@
                         'points' => [
                             'Catat isi bensin, hitung efisiensi km/liter otomatis.',
                             'Riwayat servis lengkap dengan nama bengkel, part yang diganti, dan foto nota.',
-                            'Pengeluaran Lain  asuransi, parkir, cuci motor, aksesoris, dll.',
+                            'Pengeluaran Lain: asuransi, parkir, cuci motor, aksesoris, dll.',
                             'Laporan Biaya Kepemilikan (TCO): total, biaya per km, tren bulanan.',
                         ],
                     ],
@@ -144,10 +144,10 @@
                         'summary' => 'Rekam perjalananmu lewat GPS dan tandai titik-titik penting di peta pribadimu.',
                         'pills' => ['GPS Trip', 'Peta Rute', 'Peta Titik'],
                         'points' => [
-                            'Trip recording GPS  nyalakan sebelum jalan, jarak terhitung otomatis.',
-                            'Peta rute  lihat kembali jalur yang pernah dilalui.',
-                            'Peta titik  tandai lokasi penting (bengkel langganan, jalan rawan, dll).',
-                            'Peta rencana  rencanakan rute sebelum berangkat.',
+                            'Trip recording GPS: nyalakan sebelum jalan, jarak terhitung otomatis.',
+                            'Peta rute: lihat kembali jalur yang pernah dilalui.',
+                            'Peta titik: tandai lokasi penting (bengkel langganan, jalan rawan, dll).',
+                            'Peta rencana: rencanakan rute sebelum berangkat.',
                         ],
                     ],
                 ];
@@ -275,7 +275,7 @@
         <div data-reveal-group class="grid md:grid-cols-3 gap-8">
             @foreach ([
                 ['n' => '1', 't' => 'Daftar motor', 'd' => 'Masukkan data motor & odometer awal. Motor bekas? Isi form Riwayat Awal sekali saja biar prediksi langsung akurat.'],
-                ['n' => '2', 't' => 'Catat km dari mana saja', 'd' => 'Manual, pas isi bensin, pas servis, atau nyalakan GPS pas riding  bebas pilih, semua otomatis nyambung.'],
+                ['n' => '2', 't' => 'Catat km dari mana saja', 'd' => 'Manual, pas isi bensin, pas servis, atau nyalakan GPS pas riding, bebas pilih, semua otomatis nyambung.'],
                 ['n' => '3', 't' => 'Muterin yang mantau', 'd' => 'Status warna, skor kesehatan, dan Pusat Perhatian otomatis update, kamu tinggal cek kalau ada notifikasi.'],
             ] as $step)
                 <div data-reveal class="text-center">
@@ -295,10 +295,10 @@
         <div data-reveal-group class="space-y-3" x-data="{ open: null }">
             @php
                 $faqs = [
-                    ['q' => 'Apakah saya harus selalu pakai GPS?', 'a' => 'Tidak. GPS cuma salah satu dari 4 cara mencatat km  manual, isi bensin, dan servis juga otomatis update odometer.'],
+                    ['q' => 'Apakah saya harus selalu pakai GPS?', 'a' => 'Tidak. GPS cuma salah satu dari 4 cara mencatat km, karena manual, isi bensin, dan servis juga otomatis update odometer.'],
                     ['q' => 'Bisa buat lebih dari satu motor?', 'a' => 'Bisa, kelola semua motor dalam satu akun, gampang pindah motor aktif.'],
                     ['q' => 'Muterin gratis?', 'a' => 'Gratis, tanpa kartu kredit, daftar langsung bisa dipakai.'],
-                    ['q' => 'Motor saya bekas, riwayat servisnya udah lama, gimana?', 'a' => 'Ada form "Riwayat Awal" opsional pas daftar motor  isi terakhir ganti oli/ban/aki/servis di km berapa, prediksi langsung akurat dari hari pertama.'],
+                    ['q' => 'Motor saya bekas, riwayat servisnya udah lama, gimana?', 'a' => 'Ada form "Riwayat Awal" opsional pas daftar motor: isi terakhir ganti oli/ban/aki/servis di km berapa, prediksi langsung akurat dari hari pertama.'],
                     ['q' => 'Data saya aman?', 'a' => 'Data motor & riwayatnya cuma bisa diakses dari akunmu sendiri, gak dibagikan ke pihak lain.'],
                 ];
             @endphp
