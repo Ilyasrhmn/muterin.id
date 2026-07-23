@@ -2,28 +2,28 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Turn Peta Rencana into a Google-Maps-style planner — search box (geocoding), click-a-point-to-see-its-address, explicit "set as start / destination / via" confirmation, and a route summary panel — and replace every native browser `prompt()`/`confirm()`/`alert()` across the app with one styled dialog component.
+**Goal:** Turn Peta Rencana into a Google-Maps-style planner  search box (geocoding), click-a-point-to-see-its-address, explicit "set as start / destination / via" confirmation, and a route summary panel  and replace every native browser `prompt()`/`confirm()`/`alert()` across the app with one styled dialog component.
 
-**Architecture:** A reusable `AmictaDialog` (Blade partial in the app layout + `public/js/dialog.js`) exposes async `confirm`/`prompt`/`alert`. A backend `GeocodingService` proxies OpenRouteService's Geocode API (forward search + reverse) server-side, exposed via two `GET /map/geocode/*` endpoints — same proxy pattern as the existing `RouteService`. The planner frontend (`public/js/map-plans.js` + `resources/views/map/plans.blade.php`) is rewritten to consume these plus the already-existing `POST /map/route`.
+**Architecture:** A reusable `MuterinDialog` (Blade partial in the app layout + `public/js/dialog.js`) exposes async `confirm`/`prompt`/`alert`. A backend `GeocodingService` proxies OpenRouteService's Geocode API (forward search + reverse) server-side, exposed via two `GET /map/geocode/*` endpoints  same proxy pattern as the existing `RouteService`. The planner frontend (`public/js/map-plans.js` + `resources/views/map/plans.blade.php`) is rewritten to consume these plus the already-existing `POST /map/route`.
 
 **Tech Stack:** Laravel 13, Leaflet.js (CDN, already used), OpenRouteService Geocode API, Laravel `Http` facade, vanilla JS + Alpine (no new dependency).
 
 ## Global Constraints
 
 - API key: `ORS_API_KEY` is already in `.env` and `config('services.ors.key')` already exists (added in the previous routing round). Do not touch `.env`/`.env.example`.
-- OpenRouteService coordinate order is `[lng, lat]` — the opposite of `[lat, lng]` used everywhere else in this codebase. `GeocodingService` is the ONLY place that converts; every other file works in `[lat, lng]`.
+- OpenRouteService coordinate order is `[lng, lat]`  the opposite of `[lat, lng]` used everywhere else in this codebase. `GeocodingService` is the ONLY place that converts; every other file works in `[lat, lng]`.
 - Service-class pattern: pure PHP class in `app/Services/`, method-injected into controllers (same as `RouteService`/`OdometerService`).
 - Error copy (exact): geocoding failure → `"Gagal mencari lokasi. Coba lagi sebentar."`; routing failure (unchanged from before) → `"Gagal menghitung rute jalan. Coba lagi sebentar."`. Never silently fall back to a straight line.
 - Reverse-geocode with no result must still return a usable location: `label = "Lokasi tanpa nama"`, with the queried lat/lng.
-- Search is triggered on submit (Enter / button), NOT on every keystroke — ORS quota is shared across routing + geocoding (2000/day).
-- `public/js/*.js` files are plain static assets served via `asset()`, not part of the Vite build — editing them takes effect immediately, no `npm run build` needed. The dialog Blade partial (Tailwind classes) IS covered by the existing Vite CSS build, but uses only classes already present elsewhere in the app, so no new build is required for it to style correctly.
-- `AmictaDialog.prompt` resolves: a trimmed non-empty string in single-field mode, or `{value, extra}` when an `extra` field is configured, or `null` on cancel. `AmictaDialog.confirm` resolves `true`/`false`. `AmictaDialog.alert` resolves `undefined`.
-- Commit directly to `master` (no worktree — established convention).
-- TDD for backend (RED→GREEN). Frontend-only tasks have no new automated tests (consistent with the rest of this codebase's JS) — they are verified manually in the browser by the controller in the final task.
+- Search is triggered on submit (Enter / button), NOT on every keystroke  ORS quota is shared across routing + geocoding (2000/day).
+- `public/js/*.js` files are plain static assets served via `asset()`, not part of the Vite build  editing them takes effect immediately, no `npm run build` needed. The dialog Blade partial (Tailwind classes) IS covered by the existing Vite CSS build, but uses only classes already present elsewhere in the app, so no new build is required for it to style correctly.
+- `MuterinDialog.prompt` resolves: a trimmed non-empty string in single-field mode, or `{value, extra}` when an `extra` field is configured, or `null` on cancel. `MuterinDialog.confirm` resolves `true`/`false`. `MuterinDialog.alert` resolves `undefined`.
+- Commit directly to `master` (no worktree  established convention).
+- TDD for backend (RED→GREEN). Frontend-only tasks have no new automated tests (consistent with the rest of this codebase's JS)  they are verified manually in the browser by the controller in the final task.
 
 ---
 
-### Task 1: Reusable AmictaDialog component
+### Task 1: Reusable MuterinDialog component
 
 **Files:**
 - Create: `resources/views/components/ui/dialog.blade.php`
@@ -31,14 +31,14 @@
 - Modify: `resources/views/layouts/app.blade.php`
 
 **Interfaces:**
-- Produces (global, on every authenticated page): `window.AmictaDialog.confirm(message, {confirmText, cancelText, danger}) : Promise<boolean>`, `window.AmictaDialog.prompt(message, {label, placeholder, defaultValue, confirmText, extra}) : Promise<string|{value,extra}|null>`, `window.AmictaDialog.alert(message, {confirmText}) : Promise<void>`.
+- Produces (global, on every authenticated page): `window.MuterinDialog.confirm(message, {confirmText, cancelText, danger}) : Promise<boolean>`, `window.MuterinDialog.prompt(message, {label, placeholder, defaultValue, confirmText, extra}) : Promise<string|{value,extra}|null>`, `window.MuterinDialog.alert(message, {confirmText}) : Promise<void>`.
 
 - [ ] **Step 1: Create the dialog Blade partial**
 
 `resources/views/components/ui/dialog.blade.php`:
 
 ```blade
-<div id="amicta-dialog" class="fixed inset-0 z-[100] hidden items-center justify-center p-4" role="dialog" aria-modal="true">
+<div id="Muterin-dialog" class="fixed inset-0 z-[100] hidden items-center justify-center p-4" role="dialog" aria-modal="true">
     <div data-dialog-backdrop class="absolute inset-0 bg-slate-900/50"></div>
     <div class="relative bg-surface rounded-2xl border border-border shadow-lift w-full max-w-sm p-6">
         <p data-dialog-message class="text-sm text-foreground font-medium"></p>
@@ -70,7 +70,7 @@
 
 ```js
 (function () {
-  const root = document.getElementById('amicta-dialog');
+  const root = document.getElementById('Muterin-dialog');
   if (!root) return;
 
   const backdrop = root.querySelector('[data-dialog-backdrop]');
@@ -130,7 +130,7 @@
   input.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); onConfirm(); } });
   input.addEventListener('input', () => { confirmBtn.disabled = !input.value.trim(); });
 
-  window.AmictaDialog = {
+  window.MuterinDialog = {
     confirm(message, opts = {}) {
       mode = 'confirm'; hasExtra = false;
       messageEl.textContent = message;
@@ -220,7 +220,7 @@ Expected: all pass (no backend logic changed; this is additive frontend markup +
 
 ```bash
 git add resources/views/components/ui/dialog.blade.php public/js/dialog.js resources/views/layouts/app.blade.php
-git commit -m "feat: reusable AmictaDialog (styled confirm/prompt/alert) available app-wide"
+git commit -m "feat: reusable MuterinDialog (styled confirm/prompt/alert) available app-wide"
 ```
 
 ---
@@ -329,7 +329,7 @@ class GeocodingServiceTest extends TestCase
 - [ ] **Step 2: Run to verify they fail**
 
 Run: `php artisan test --filter=GeocodingServiceTest`
-Expected: FAIL — `App\Services\GeocodingService` and `App\Exceptions\GeocodingException` don't exist.
+Expected: FAIL  `App\Services\GeocodingService` and `App\Exceptions\GeocodingException` don't exist.
 
 - [ ] **Step 3: Create the exception**
 
@@ -610,7 +610,7 @@ In `tests/Feature/MapTest.php`, add:
 - [ ] **Step 2: Run to verify it fails**
 
 Run: `php artisan test --filter=MapTest`
-Expected: FAIL — `start_label`/`end_label` columns don't exist and aren't stored.
+Expected: FAIL  `start_label`/`end_label` columns don't exist and aren't stored.
 
 - [ ] **Step 3: Create the migration**
 
@@ -714,14 +714,14 @@ git commit -m "feat: route_plans stores start/end labels for saved-plan summarie
 
 ---
 
-### Task 4: Peta Rencana — Google-Maps-style frontend
+### Task 4: Peta Rencana  Google-Maps-style frontend
 
 **Files:**
 - Modify: `resources/views/map/plans.blade.php`
 - Modify: `public/js/map-plans.js`
 
 **Interfaces:**
-- Consumes: `GET /map/geocode/search`, `GET /map/geocode/reverse` (Task 2), `POST /map/route` (existing), `POST /map/plans` with `start_label`/`end_label` (Task 3), `window.AmictaDialog` (Task 1), `window.AmictaMap` (existing).
+- Consumes: `GET /map/geocode/search`, `GET /map/geocode/reverse` (Task 2), `POST /map/route` (existing), `POST /map/plans` with `start_label`/`end_label` (Task 3), `window.MuterinDialog` (Task 1), `window.MuterinMap` (existing).
 
 - [ ] **Step 1: Rewrite the plans view**
 
@@ -734,7 +734,7 @@ Replace the full contents of `resources/views/map/plans.blade.php`:
 
     <div class="p-4 sm:p-6 lg:p-8 max-w-[1400px] mx-auto space-y-6">
         <x-ui.hero badge="{{ $plans->count() }} rencana" title="Rencanakan Rute"
-                    subtitle="Cari tempat atau klik di peta, pilih titik awal & tujuan — rute jalan otomatis dihitung." />
+                    subtitle="Cari tempat atau klik di peta, pilih titik awal & tujuan  rute jalan otomatis dihitung." />
 
         <div class="grid lg:grid-cols-3 gap-6">
             <div class="lg:col-span-2">
@@ -835,9 +835,9 @@ Replace the full contents of `public/js/map-plans.js`:
 
 ```js
 (function () {
-  const map = window.AmictaMap.init('map');
+  const map = window.MuterinMap.init('map');
   map.zoomControl.setPosition('topright'); // keep the +/- control clear of the floating search box (top-left)
-  const token = window.AmictaMap.token();
+  const token = window.MuterinMap.token();
   const saved = JSON.parse(document.getElementById('plans-data').textContent || '[]');
 
   const $ = (id) => document.getElementById(id);
@@ -1017,8 +1017,8 @@ Replace the full contents of `public/js/map-plans.js`:
 
   // --- Save / Reset ---
   $('save-plan').addEventListener('click', async () => {
-    if (!lastRoute) { await window.AmictaDialog.alert('Tentukan titik awal & tujuan dulu, tunggu rute selesai dihitung.'); return; }
-    const name = await window.AmictaDialog.prompt('Nama rencana rute?', { label: 'Nama', placeholder: 'mis. Rumah ke Kantor' });
+    if (!lastRoute) { await window.MuterinDialog.alert('Tentukan titik awal & tujuan dulu, tunggu rute selesai dihitung.'); return; }
+    const name = await window.MuterinDialog.prompt('Nama rencana rute?', { label: 'Nama', placeholder: 'mis. Rumah ke Kantor' });
     if (!name) return;
     const waypoints = [start, ...via, end].map((p) => [p.lat, p.lng]);
     fetch('/map/plans', {
@@ -1046,7 +1046,7 @@ Replace the full contents of `public/js/map-plans.js`:
       const pts = plan.route_geometry_json || plan.points_json;
       if (routeLine) routeLine.remove();
       routeLine = L.polyline(pts, { color: '#EF4444', weight: 4, dashArray: '6 6' }).addTo(map);
-      window.AmictaMap.fitTo(map, pts);
+      window.MuterinMap.fitTo(map, pts);
       hideInfo();
       $('route-start-label').textContent = plan.start_label || 'Titik Awal';
       $('route-end-label').textContent = plan.end_label || 'Titik Tujuan';
@@ -1058,7 +1058,7 @@ Replace the full contents of `public/js/map-plans.js`:
 
   document.querySelectorAll('[data-delete-plan]').forEach((btn) => {
     btn.addEventListener('click', async () => {
-      const ok = await window.AmictaDialog.confirm('Hapus rencana ini?', { danger: true, confirmText: 'Hapus' });
+      const ok = await window.MuterinDialog.confirm('Hapus rencana ini?', { danger: true, confirmText: 'Hapus' });
       if (!ok) return;
       fetch(`/map/plans/${btn.dataset.deletePlan}`, {
         method: 'DELETE',
@@ -1072,34 +1072,34 @@ Replace the full contents of `public/js/map-plans.js`:
 - [ ] **Step 3: Run the full test suite**
 
 Run: `php artisan test`
-Expected: all pass (this task is frontend-only — it consumes endpoints already tested in Tasks 2 & 3; this step just confirms nothing broke).
+Expected: all pass (this task is frontend-only  it consumes endpoints already tested in Tasks 2 & 3; this step just confirms nothing broke).
 
 - [ ] **Step 4: Commit**
 
 ```bash
 git add resources/views/map/plans.blade.php public/js/map-plans.js
-git commit -m "feat: Google-Maps-style route planner — search, click-to-info, set start/dest/via, route summary"
+git commit -m "feat: Google-Maps-style route planner  search, click-to-info, set start/dest/via, route summary"
 ```
 
 ---
 
-### Task 5: Roll AmictaDialog into Titik Saya + BBM
+### Task 5: Roll MuterinDialog into Titik Saya + BBM
 
 **Files:**
 - Modify: `public/js/map-pins.js`
 - Modify: `resources/views/bbm/index.blade.php`
 
 **Interfaces:**
-- Consumes: `window.AmictaDialog` (Task 1).
+- Consumes: `window.MuterinDialog` (Task 1).
 
-- [ ] **Step 1: Rewrite map-pins.js to use AmictaDialog**
+- [ ] **Step 1: Rewrite map-pins.js to use MuterinDialog**
 
 Replace the full contents of `public/js/map-pins.js`:
 
 ```js
 (function () {
-  const map = window.AmictaMap.init('map');
-  const token = window.AmictaMap.token();
+  const map = window.MuterinMap.init('map');
+  const token = window.MuterinMap.token();
   const catInput = document.getElementById('pin-category');
 
   fetch('/map/data', { headers: { Accept: 'application/json' } })
@@ -1108,16 +1108,16 @@ Replace the full contents of `public/js/map-pins.js`:
       const pts = [];
       d.pins.forEach((p) => {
         L.circleMarker([p.lat, p.lng], {
-          color: window.AmictaMap.categoryColor(p.category), fillOpacity: 0.7, radius: 8,
+          color: window.MuterinMap.categoryColor(p.category), fillOpacity: 0.7, radius: 8,
         }).bindPopup(`<b>${p.title}</b><br>${p.note ?? ''}`).addTo(map);
         pts.push([p.lat, p.lng]);
       });
-      window.AmictaMap.fitTo(map, pts);
+      window.MuterinMap.fitTo(map, pts);
     });
 
   map.on('click', async (e) => {
     const category = catInput.value;
-    const result = await window.AmictaDialog.prompt('Judul titik?', {
+    const result = await window.MuterinDialog.prompt('Judul titik?', {
       label: 'Judul',
       placeholder: 'mis. Jalan rusak',
       extra: { label: 'Catatan (opsional)', placeholder: 'Keterangan tambahan…' },
@@ -1132,7 +1132,7 @@ Replace the full contents of `public/js/map-pins.js`:
 
   document.querySelectorAll('[data-delete-pin]').forEach((btn) => {
     btn.addEventListener('click', async () => {
-      const ok = await window.AmictaDialog.confirm('Hapus titik ini?', { danger: true, confirmText: 'Hapus' });
+      const ok = await window.MuterinDialog.confirm('Hapus titik ini?', { danger: true, confirmText: 'Hapus' });
       if (!ok) return;
       fetch(`/map/pins/${btn.dataset.deletePin}`, {
         method: 'DELETE',
@@ -1165,7 +1165,7 @@ Then, immediately before the closing `</x-app-layout>` tag at the very end of `r
             form.addEventListener('submit', (e) => {
                 if (form.dataset.confirmed === 'yes') return;
                 e.preventDefault();
-                window.AmictaDialog.confirm(form.dataset.confirm, { danger: true, confirmText: 'Hapus' }).then((ok) => {
+                window.MuterinDialog.confirm(form.dataset.confirm, { danger: true, confirmText: 'Hapus' }).then((ok) => {
                     if (ok) { form.dataset.confirmed = 'yes'; form.submit(); }
                 });
             });
@@ -1182,7 +1182,7 @@ Expected: all pass (frontend-only changes).
 
 ```bash
 git add public/js/map-pins.js resources/views/bbm/index.blade.php
-git commit -m "feat: replace native prompt/confirm with AmictaDialog in Titik Saya and BBM"
+git commit -m "feat: replace native prompt/confirm with MuterinDialog in Titik Saya and BBM"
 ```
 
 ---
@@ -1196,15 +1196,15 @@ git commit -m "feat: replace native prompt/confirm with AmictaDialog in Titik Sa
 Run: `php artisan test`
 Expected: all tests pass. If any fail, fix before proceeding.
 
-- [ ] **Step 2: Manual end-to-end browser verification (controller does this personally — needs real browser + live ORS)**
+- [ ] **Step 2: Manual end-to-end browser verification (controller does this personally  needs real browser + live ORS)**
 
 - `/peta/rencana`:
   - Type a place name in the search box → Enter → results dropdown appears → click a result → map flies there and the info panel shows the location's label.
   - Click anywhere on the map → info panel shows "Memuat lokasi..." then the reverse-geocoded address.
   - Click "Jadikan Titik Awal" (green marker) then click elsewhere → "Jadikan Titik Tujuan" (red marker) → a road-following route draws and the route summary panel appears with start label, end label, distance (km), duration (jam/menit).
   - With start+end set, click a third point → "Tambah Titik Singgah" appears → adds a yellow marker and the route recomputes through all three in order.
-  - "Simpan" → styled AmictaDialog prompt (not the browser's grey popup) → save → the saved list shows the plan with its distance/duration. Click the saved plan → route redraws and summary shows the saved start/end labels (no new ORS call).
-  - "Hapus" a saved plan → styled AmictaDialog confirm (red button).
+  - "Simpan" → styled MuterinDialog prompt (not the browser's grey popup) → save → the saved list shows the plan with its distance/duration. Click the saved plan → route redraws and summary shows the saved start/end labels (no new ORS call).
+  - "Hapus" a saved plan → styled MuterinDialog confirm (red button).
 - `/peta/titik`: click the map → single styled dialog with title + optional note (not two grey popups) → pin saved. Delete a pin → styled confirm.
 - `/bbm`: delete a fuel log → styled confirm (not the grey browser popup) → row removed.
 

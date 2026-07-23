@@ -11,6 +11,7 @@ use App\Http\Controllers\OdometerReadingController;
 use App\Http\Controllers\OtherExpenseController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\SavedPlaceController;
 use App\Http\Controllers\TripController;
 use Illuminate\Support\Facades\Route;
 
@@ -54,17 +55,24 @@ Route::middleware('auth')->group(function () {
 
     // Peta dipecah jadi tiga fitur terpisah
     Route::get('peta/rute', [MapController::class, 'routesPage'])->name('map.routes');
-    Route::get('peta/titik', [MapController::class, 'pinsPage'])->name('map.pins');
+    Route::get('peta/titik', [SavedPlaceController::class, 'index'])->name('map.saved');
     Route::get('peta/rencana', [MapController::class, 'plansPage'])->name('map.plans');
 
     Route::get('map/data', [MapController::class, 'data'])->name('map.data');
     Route::post('map/route', [MapController::class, 'previewRoute'])->name('map.route');
     Route::get('map/geocode/search', [MapController::class, 'geocodeSearch'])->name('map.geocode.search');
     Route::get('map/geocode/reverse', [MapController::class, 'geocodeReverse'])->name('map.geocode.reverse');
-    Route::post('map/pins', [MapController::class, 'storePin'])->name('map.pins.store');
-    Route::delete('map/pins/{pin}', [MapController::class, 'destroyPin'])->name('map.pins.destroy');
     Route::post('map/plans', [MapController::class, 'storePlan'])->name('map.plans.store');
     Route::delete('map/plans/{plan}', [MapController::class, 'destroyPlan'])->name('map.plans.destroy');
+
+    // Tempat Tersimpan (privat, saved-places ala Google Maps)
+    Route::get('peta/titik/data', [SavedPlaceController::class, 'data'])->name('map.saved.data');
+    Route::post('peta/titik/lists', [SavedPlaceController::class, 'storeList'])->name('map.saved.lists.store');
+    Route::patch('peta/titik/lists/{list}', [SavedPlaceController::class, 'updateList'])->name('map.saved.lists.update');
+    Route::delete('peta/titik/lists/{list}', [SavedPlaceController::class, 'destroyList'])->name('map.saved.lists.destroy');
+    Route::post('peta/titik', [SavedPlaceController::class, 'store'])->name('map.saved.store');
+    Route::patch('peta/titik/{place}', [SavedPlaceController::class, 'update'])->name('map.saved.update');
+    Route::delete('peta/titik/{place}', [SavedPlaceController::class, 'destroy'])->name('map.saved.destroy');
 
     // Peta Komunitas (publik antar-pengguna)
     Route::get('peta/komunitas', [CommunityController::class, 'index'])->name('map.community');

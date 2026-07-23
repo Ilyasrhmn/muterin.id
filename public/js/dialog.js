@@ -1,5 +1,5 @@
 (function () {
-  const root = document.getElementById('amicta-dialog');
+  const root = document.getElementById('Muterin-dialog');
   if (!root) return;
 
   const backdrop = root.querySelector('[data-dialog-backdrop]');
@@ -144,7 +144,7 @@
   input.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); onConfirm(); } });
   input.addEventListener('input', () => { confirmBtn.disabled = !input.value.trim(); });
 
-  window.AmictaDialog = {
+  window.MuterinDialog = {
     confirm(message, opts = {}) {
       mode = 'confirm'; 
       hasExtra = false;

@@ -1,6 +1,6 @@
 (function () {
-  const map = window.AmictaMap.init('map');
-  const token = window.AmictaMap.token();
+  const map = window.MuterinMap.init('map');
+  const token = window.MuterinMap.token();
   const $ = (id) => document.getElementById(id);
 
   const CAT = {
@@ -17,11 +17,13 @@
   let markers = new Map(); // id -> layer
   let picked = null;       // {lat, lng} lokasi yang sedang ditandai
   let filter = '';
+  let newPinCategory = 'sepi'; // kategori terpilih di form "Tandai Titik Baru"
   let hasFitted = false;   // fitTo once when pins first arrive, so user pans/zooms freely after
 
   function catColor(c) { return (CAT[c] || {}).color || '#64748B'; }
   function catLabel(c) { return (CAT[c] || {}).label || c; }
   function catIcon(c) { return (CAT[c] || {}).icon || 'fa-location-dot'; }
+  function catItems() { return Object.entries(CAT).map(([value, c]) => ({ value, label: c.label, icon: c.icon, color: c.color })); }
 
   function pinIcon(category) {
     const color = catColor(category);
@@ -95,7 +97,7 @@
     const delBtn = el.querySelector('[data-act="del"]');
     if (delBtn) {
       delBtn.onclick = async () => {
-        const ok = await window.AmictaDialog.confirm('Hapus titik ini?', { danger: true, confirmText: 'Hapus' });
+        const ok = await window.MuterinDialog.confirm('Hapus titik ini?', { danger: true, confirmText: 'Hapus' });
         if (!ok) return;
         fetch(`/peta/komunitas/${p.id}`, {
           method: 'DELETE',
@@ -125,7 +127,7 @@
 
     if (!hasFitted && shown.length) {
       hasFitted = true;
-      window.AmictaMap.fitTo(map, shown.map((p) => [p.lat, p.lng]));
+      window.MuterinMap.fitTo(map, shown.map((p) => [p.lat, p.lng]));
     }
 
     const list = $('pin-list');
@@ -153,6 +155,59 @@
       .then((r) => r.json())
       .then((b) => { pins = b.pins || []; render(); })
       .catch(() => {});
+  }
+
+  // --- Cari lokasi ---
+  const searchInput = $('search-location');
+  const searchResults = $('search-results');
+  let searchTimer = null;
+
+  function runSearch(q) {
+    const c = map.getCenter();
+    fetch(`/map/geocode/search?q=${encodeURIComponent(q)}&lat=${c.lat}&lng=${c.lng}`, { headers: { Accept: 'application/json' } })
+      .then((r) => r.json().then((body) => ({ ok: r.ok, body })))
+      .then(({ ok, body }) => {
+        if (!ok) { searchResults.innerHTML = ''; searchResults.classList.add('hidden'); return; }
+        renderSearchResults(body.results || []);
+      })
+      .catch(() => { searchResults.innerHTML = ''; searchResults.classList.add('hidden'); });
+  }
+
+  function renderSearchResults(results) {
+    searchResults.innerHTML = '';
+    if (!results.length) {
+      searchResults.innerHTML = '<p class="px-3 py-2.5 text-sm text-muted-fg">Tidak ada hasil.</p>';
+      searchResults.classList.remove('hidden');
+      return;
+    }
+    results.forEach((loc) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'block w-full text-left px-3 py-2.5 text-sm text-foreground hover:bg-muted transition';
+      b.textContent = loc.label;
+      b.onclick = () => {
+        searchResults.classList.add('hidden');
+        searchInput.value = '';
+        map.setView([loc.lat, loc.lng], 15);
+        pickLocation(loc.lat, loc.lng);
+      };
+      searchResults.appendChild(b);
+    });
+    searchResults.classList.remove('hidden');
+  }
+
+  if (searchInput) {
+    searchInput.addEventListener('input', () => {
+      clearTimeout(searchTimer);
+      const q = searchInput.value.trim();
+      if (q.length < 2) { searchResults.classList.add('hidden'); return; }
+      searchTimer = setTimeout(() => runSearch(q), 300); // ponytail: debounce 300ms
+    });
+    document.addEventListener('click', (e) => {
+      if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+        searchResults.classList.add('hidden');
+      }
+    });
   }
 
   // --- Add-pin flow ---
@@ -183,7 +238,7 @@
     if (!title) { showAddError('Judul wajib diisi.'); return; }
 
     const fd = new FormData();
-    fd.append('category', $('f-category').value);
+    fd.append('category', newPinCategory);
     fd.append('lat', picked.lat);
     fd.append('lng', picked.lng);
     fd.append('title', title);
@@ -213,15 +268,43 @@
     return body && body.message;
   }
   function showAddError(msg) { const e = $('add-error'); e.textContent = msg; e.classList.remove('hidden'); }
+
+  // "Berlaku waktu" cuma masuk akal buat kategori keamanan (sepi/gelap/rawan/
+  // rusak/banjir) — sembunyikan buat "Momen" dan kunci nilainya ke "kapanpun".
+  function updateTimeFieldVisibility() {
+    const applies = newPinCategory !== 'momen';
+    $('f-time-wrap').classList.toggle('hidden', !applies);
+    if (!applies) $('f-time').value = 'kapanpun';
+  }
+
   function resetForm() {
     picked = null;
     $('add-form').classList.add('hidden');
     ['f-title', 'f-description'].forEach((id) => { $(id).value = ''; });
     $('f-photo').value = '';
     $('f-anon').checked = false;
+    newPinCategory = 'sepi';
+    fCategorySelect.setSelected('sepi');
+    updateTimeFieldVisibility();
   }
 
-  $('filter-category').onchange = (e) => { filter = e.target.value; render(); };
+  const filterCategorySelect = window.MuterinFoldSelect.render(
+    $('filter-category'),
+    [{ value: '', label: 'Semua', icon: null, color: '#64748B' }, ...catItems()],
+    {
+      selected: filter,
+      onSelect: (value) => { filter = value; render(); },
+    },
+  );
+  const fCategorySelect = window.MuterinFoldSelect.render(
+    $('f-category'),
+    catItems(),
+    {
+      selected: newPinCategory,
+      onSelect: (value) => { newPinCategory = value; updateTimeFieldVisibility(); },
+    },
+  );
+  updateTimeFieldVisibility();
 
   // --- Boot ---
   refresh();

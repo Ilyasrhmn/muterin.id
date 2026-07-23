@@ -2,25 +2,25 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Rebuild Amicta's landing page (`/`) so its content and structure fully represent the product's real feature set (odometer backbone, health score, attention center, documents, other expenses, cost report, GPS/maps) and looks like a professional marketing page, following Nutrio's structural/interaction patterns without copying its color palette.
+**Goal:** Rebuild Muterin's landing page (`/`) so its content and structure fully represent the product's real feature set (odometer backbone, health score, attention center, documents, other expenses, cost report, GPS/maps) and looks like a professional marketing page, following Nutrio's structural/interaction patterns without copying its color palette.
 
-**Architecture:** Pure Blade + Alpine.js + Tailwind, no new backend logic, no new routes, no new JS dependency. All interactivity (mobile nav, expandable feature cards, interactive dashboard preview, FAQ accordion) uses Alpine `x-data`/`x-show` the same way the rest of the app already does. Scroll reveal/count-up/parallax reuse the existing GSAP ScrollTrigger wiring in `resources/js/reveal.js` via `data-reveal`/`data-reveal-group`/`data-countup`/`data-parallax` attributes — untouched by this plan.
+**Architecture:** Pure Blade + Alpine.js + Tailwind, no new backend logic, no new routes, no new JS dependency. All interactivity (mobile nav, expandable feature cards, interactive dashboard preview, FAQ accordion) uses Alpine `x-data`/`x-show` the same way the rest of the app already does. Scroll reveal/count-up/parallax reuse the existing GSAP ScrollTrigger wiring in `resources/js/reveal.js` via `data-reveal`/`data-reveal-group`/`data-countup`/`data-parallax` attributes  untouched by this plan.
 
 **Tech Stack:** Laravel 13 Blade components, Alpine.js, Tailwind CSS, GSAP ScrollTrigger (already wired, not modified).
 
 ## Global Constraints
 
-- Design tokens (from `tailwind.config.js`): `primary` #0F766E, `primary-hover` #0B5D57, `primary-soft` #F0FDFA, `hero` #134E4A, `accent` #DC2626 (used only for main CTA buttons, unchanged), `status-green`/`status-yellow`/`status-red`. All new color usage must stay within the `primary`/`hero` teal family — no indigo, no colors outside this palette. The only gradient anywhere on the page is a `primary`→`hero` background wash in the hero section (explicitly approved) — no gradients elsewhere.
-- Blade component conventions: `x-ui.card`, `x-ui.button` (variants: `primary`/`accent`/`outline`/`ghost`/`white`/`whiteOutline`), `x-ui.badge` (variants: `green`/`yellow`/`red`/`neutral`), `x-ui.progress` (`:percent`, `color`), `x-icon.*` (stroke-width 1.5, `viewBox="0 0 24 24"`, `$attributes->merge()` pattern — see any existing file in `resources/views/components/icon/` for the exact shape).
+- Design tokens (from `tailwind.config.js`): `primary` #0F766E, `primary-hover` #0B5D57, `primary-soft` #F0FDFA, `hero` #134E4A, `accent` #DC2626 (used only for main CTA buttons, unchanged), `status-green`/`status-yellow`/`status-red`. All new color usage must stay within the `primary`/`hero` teal family  no indigo, no colors outside this palette. The only gradient anywhere on the page is a `primary`→`hero` background wash in the hero section (explicitly approved)  no gradients elsewhere.
+- Blade component conventions: `x-ui.card`, `x-ui.button` (variants: `primary`/`accent`/`outline`/`ghost`/`white`/`whiteOutline`), `x-ui.badge` (variants: `green`/`yellow`/`red`/`neutral`), `x-ui.progress` (`:percent`, `color`), `x-icon.*` (stroke-width 1.5, `viewBox="0 0 24 24"`, `$attributes->merge()` pattern  see any existing file in `resources/views/components/icon/` for the exact shape).
 - No new JS/CSS dependency. All interactivity is Alpine `x-data`. No new npm packages.
-- Route is unchanged: `Route::get('/', ...)` in `routes/web.php:16-18` already renders `view('landing')` for guests — do not touch this route.
+- Route is unchanged: `Route::get('/', ...)` in `routes/web.php:16-18` already renders `view('landing')` for guests  do not touch this route.
 - TDD: one growing feature test file (`tests/Feature/LandingPageTest.php`), one test method added per task asserting the new section's unique content is present via `$response->assertSee(...)`. Each assertion string must be genuinely new content that does not appear anywhere in the page before that task's change (verify this before writing the RED step).
-- Commit directly to `master` (no worktree, no branch — established convention for this project).
-- All Blade edits in this plan use exact "Find in current file / Replace with" blocks. Tasks 3–8 sequentially edit the same file (`resources/views/landing.blade.php`); Tasks 1–2 edit a different file (`resources/views/layouts/marketing.blade.php`). Execute tasks in numeric order — each task's "Find" text is drawn from a section no earlier task has touched.
+- Commit directly to `master` (no worktree, no branch  established convention for this project).
+- All Blade edits in this plan use exact "Find in current file / Replace with" blocks. Tasks 3–8 sequentially edit the same file (`resources/views/landing.blade.php`); Tasks 1–2 edit a different file (`resources/views/layouts/marketing.blade.php`). Execute tasks in numeric order  each task's "Find" text is drawn from a section no earlier task has touched.
 
 ---
 
-### Task 1: Nav — section links + mobile menu
+### Task 1: Nav  section links + mobile menu
 
 **Files:**
 - Modify: `resources/views/layouts/marketing.blade.php`
@@ -28,7 +28,7 @@
 - Test: `tests/Feature/LandingPageTest.php` (new file)
 
 **Interfaces:**
-- Produces: nav section anchors `#fitur` (already existed via hero button, unaffected), `#cara-kerja`, `#faq` (both new — later tasks add matching `id="cara-kerja"` / `id="faq"` sections in `landing.blade.php`; anchor links work with no error even before those ids exist since they're just fragment links).
+- Produces: nav section anchors `#fitur` (already existed via hero button, unaffected), `#cara-kerja`, `#faq` (both new  later tasks add matching `id="cara-kerja"` / `id="faq"` sections in `landing.blade.php`; anchor links work with no error even before those ids exist since they're just fragment links).
 
 - [ ] **Step 1: Write the failing test**
 
@@ -61,7 +61,7 @@ class LandingPageTest extends TestCase
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `php artisan test --filter=LandingPageTest`
-Expected: FAIL — `#cara-kerja`, `#faq`, and `Buka menu` do not appear anywhere in the current nav.
+Expected: FAIL  `#cara-kerja`, `#faq`, and `Buka menu` do not appear anywhere in the current nav.
 
 - [ ] **Step 3: Add scroll-behavior to app.css**
 
@@ -90,7 +90,7 @@ In `resources/views/layouts/marketing.blade.php`, find:
         :class="scrolled ? 'bg-surface/90 backdrop-blur shadow-soft' : 'bg-transparent'">
         <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
             <a href="{{ route('home') }}" class="flex items-center gap-2 font-heading font-bold text-lg text-primary">
-                <x-icon.motorcycle class="w-6 h-6"/> Amicta
+                <x-icon.motorcycle class="w-6 h-6"/> Muterin
             </a>
             <div class="flex items-center gap-2">
                 <x-ui.button variant="ghost" href="{{ route('login') }}">Masuk</x-ui.button>
@@ -108,7 +108,7 @@ Replace with:
         :class="scrolled || mobileOpen ? 'bg-surface/90 backdrop-blur shadow-soft' : 'bg-transparent'">
         <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
             <a href="{{ route('home') }}" class="flex items-center gap-2 font-heading font-bold text-lg text-primary">
-                <x-icon.motorcycle class="w-6 h-6"/> Amicta
+                <x-icon.motorcycle class="w-6 h-6"/> Muterin
             </a>
             <div class="hidden md:flex items-center gap-8 text-sm font-medium text-foreground">
                 <a href="#fitur" class="hover:text-primary transition-colors">Fitur</a>
@@ -150,7 +150,7 @@ git commit -m "feat: add section links and mobile menu to marketing nav"
 
 ---
 
-### Task 2: Footer — nav columns + wordmark
+### Task 2: Footer  nav columns + wordmark
 
 **Files:**
 - Modify: `resources/views/layouts/marketing.blade.php`
@@ -170,14 +170,14 @@ In `tests/Feature/LandingPageTest.php`, add to the class:
 
         $response->assertOk();
         $response->assertSee('Navigasi', false);
-        $response->assertSee('AMICTA', false);
+        $response->assertSee('Muterin', false);
     }
 ```
 
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `php artisan test --filter=LandingPageTest`
-Expected: FAIL — `Navigasi` and the all-caps `AMICTA` wordmark don't exist yet (only the lowercase "Amicta" logo text exists, which doesn't satisfy the case-sensitive `assertSee('AMICTA')`).
+Expected: FAIL  `Navigasi` and the all-caps `Muterin` wordmark don't exist yet (only the lowercase "Muterin" logo text exists, which doesn't satisfy the case-sensitive `assertSee('Muterin')`).
 
 - [ ] **Step 3: Replace the footer**
 
@@ -187,9 +187,9 @@ In `resources/views/layouts/marketing.blade.php`, find:
     <footer class="border-t border-border bg-surface">
         <div class="max-w-6xl mx-auto px-4 py-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-muted-fg">
             <span class="flex items-center gap-2 font-heading font-semibold text-foreground">
-                <x-icon.motorcycle class="w-5 h-5 text-primary"/> Amicta
+                <x-icon.motorcycle class="w-5 h-5 text-primary"/> Muterin
             </span>
-            <span>&copy; {{ date('Y') }} Amicta. Rawat motor berbasis jarak tempuh asli.</span>
+            <span>&copy; {{ date('Y') }} Muterin. Rawat motor berbasis jarak tempuh asli.</span>
         </div>
     </footer>
 ```
@@ -202,9 +202,9 @@ Replace with:
             <div class="flex flex-col md:flex-row md:justify-between gap-10 pb-10 border-b border-border">
                 <div class="max-w-sm">
                     <a href="{{ route('home') }}" class="flex items-center gap-2 font-heading font-bold text-lg text-primary mb-3">
-                        <x-icon.motorcycle class="w-6 h-6"/> Amicta
+                        <x-icon.motorcycle class="w-6 h-6"/> Muterin
                     </a>
-                    <p class="text-sm text-muted-fg">Rawat motor tanpa lupa, berbasis km yang benar-benar akurat — dari sumber mana saja: manual, isi bensin, servis, atau riding.</p>
+                    <p class="text-sm text-muted-fg">Rawat motor tanpa lupa, berbasis km yang benar-benar akurat  dari sumber mana saja: manual, isi bensin, servis, atau riding.</p>
                 </div>
                 <div class="flex gap-12 sm:gap-16">
                     <div>
@@ -225,9 +225,9 @@ Replace with:
                 </div>
             </div>
             <p class="text-[clamp(3rem,15vw,10rem)] leading-none font-heading font-black text-primary/10 text-center pt-8 select-none pointer-events-none">
-                AMICTA
+                Muterin
             </p>
-            <p class="text-center text-xs text-muted-fg pt-4">&copy; {{ date('Y') }} Amicta. Rawat motor berbasis jarak tempuh asli.</p>
+            <p class="text-center text-xs text-muted-fg pt-4">&copy; {{ date('Y') }} Muterin. Rawat motor berbasis jarak tempuh asli.</p>
         </div>
     </footer>
 ```
@@ -266,14 +266,14 @@ In `tests/Feature/LandingPageTest.php`, add:
 
         $response->assertOk();
         $response->assertSee('km yang benar-benar akurat');
-        $response->assertDontSee('Amicta merekam perjalananmu lewat GPS');
+        $response->assertDontSee('Muterin merekam perjalananmu lewat GPS');
     }
 ```
 
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `php artisan test --filter=LandingPageTest`
-Expected: FAIL — current hero headline doesn't contain "km yang benar-benar akurat", and the old GPS-only sentence is still present.
+Expected: FAIL  current hero headline doesn't contain "km yang benar-benar akurat", and the old GPS-only sentence is still present.
 
 - [ ] **Step 3: Replace the hero section**
 
@@ -291,7 +291,7 @@ In `resources/views/landing.blade.php`, find (the entire hero `<section>` block,
                     Rawat motor tanpa lupa,<br class="hidden md:block"> berbasis <span class="text-primary">jarak tempuh asli</span>.
                 </h1>
                 <p data-reveal class="mt-5 text-lg text-muted-fg max-w-lg">
-                    Amicta merekam perjalananmu lewat GPS dan otomatis mengingatkan kapan oli, ban, aki, atau servis rutin motor perlu diganti — bukan tebak-tebakan.
+                    Muterin merekam perjalananmu lewat GPS dan otomatis mengingatkan kapan oli, ban, aki, atau servis rutin motor perlu diganti  bukan tebak-tebakan.
                 </p>
                 <div data-reveal class="mt-8 flex flex-wrap gap-3">
                     <x-ui.button variant="accent" size="lg" href="{{ route('register') }}">
@@ -342,7 +342,7 @@ Replace with:
                     Rawat motor tanpa lupa,<br class="hidden md:block"> berbasis <span class="text-primary">km yang benar-benar akurat</span>.
                 </h1>
                 <p data-reveal class="mt-5 text-lg text-muted-fg max-w-lg">
-                    Amicta mencatat jarak tempuh motormu dari sumber mana saja — manual, isi bensin, servis, atau riding — lalu otomatis mengingatkan kapan oli, ban, aki, atau servis rutin perlu diganti.
+                    Muterin mencatat jarak tempuh motormu dari sumber mana saja  manual, isi bensin, servis, atau riding  lalu otomatis mengingatkan kapan oli, ban, aki, atau servis rutin perlu diganti.
                 </p>
                 <div data-reveal class="mt-8 flex flex-wrap gap-3">
                     <x-ui.button variant="accent" size="lg" href="{{ route('register') }}">
@@ -421,7 +421,7 @@ In `tests/Feature/LandingPageTest.php`, add:
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `php artisan test --filter=LandingPageTest`
-Expected: FAIL — the strengthened problem copy and new stats labels don't exist yet; the old "Berbasis km asli via GPS" stat label still does.
+Expected: FAIL  the strengthened problem copy and new stats labels don't exist yet; the old "Berbasis km asli via GPS" stat label still does.
 
 - [ ] **Step 3: Replace the Problem and Stats strip sections**
 
@@ -505,7 +505,7 @@ Replace with:
                     <x-icon.wrench class="w-6 h-6"/>
                 </div>
                 <p data-reveal class="font-heading font-semibold mb-1">Tidak ada riwayat servis</p>
-                <p data-reveal class="text-sm text-muted-fg">Motor dengan riwayat servis lengkap dan tercatat rapi punya nilai jual lebih tinggi saat dijual — tapi kebanyakan orang gak pernah mencatatnya dari awal.</p>
+                <p data-reveal class="text-sm text-muted-fg">Motor dengan riwayat servis lengkap dan tercatat rapi punya nilai jual lebih tinggi saat dijual  tapi kebanyakan orang gak pernah mencatatnya dari awal.</p>
             </x-ui.card>
         </div>
     </section>
@@ -543,7 +543,7 @@ git commit -m "feat: strengthen problem copy and fix inaccurate stats strip clai
 
 ---
 
-### Task 5: Fitur — 4 expandable pillar cards
+### Task 5: Fitur  4 expandable pillar cards
 
 **Files:**
 - Create: `resources/views/components/icon/chevron-down.blade.php`
@@ -574,7 +574,7 @@ In `tests/Feature/LandingPageTest.php`, add:
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `php artisan test --filter=LandingPageTest`
-Expected: FAIL — none of the 4 pillar titles exist yet (current page has 6 generic feature cards instead).
+Expected: FAIL  none of the 4 pillar titles exist yet (current page has 6 generic feature cards instead).
 
 - [ ] **Step 3: Create the chevron-down icon**
 
@@ -599,7 +599,7 @@ In `resources/views/landing.blade.php`, find (the entire Features `<section>`, f
             @php
                 $features = [
                     ['icon' => 'gauge', 'title' => 'Trip Recording GPS', 'desc' => 'Nyalakan sebelum jalan, jarak tempuh terhitung otomatis lewat GPS.'],
-                    ['icon' => 'wrench', 'title' => 'Status Warna Perawatan', 'desc' => 'Hijau, kuning, merah — tahu kapan harus servis sekali lihat.'],
+                    ['icon' => 'wrench', 'title' => 'Status Warna Perawatan', 'desc' => 'Hijau, kuning, merah  tahu kapan harus servis sekali lihat.'],
                     ['icon' => 'motorcycle', 'title' => 'Multi-Motor', 'desc' => 'Kelola beberapa motor sekaligus dalam satu akun.'],
                     ['icon' => 'wallet', 'title' => 'Catatan Biaya', 'desc' => 'Setiap servis bisa dicatat biayanya, terlihat total per motor.'],
                     ['icon' => 'map-pin', 'title' => 'Peta Pribadi', 'desc' => 'Tandai jalan rawan, sepi, atau momen perjalananmu di peta.'],
@@ -625,7 +625,7 @@ Replace with:
     {{-- Features --}}
     <section id="fitur" class="max-w-6xl mx-auto px-4 py-16 md:py-24">
         <h2 data-reveal class="text-2xl md:text-3xl font-heading font-bold text-center mb-4">Semua yang kamu butuh, satu aplikasi</h2>
-        <p data-reveal class="text-center text-muted-fg max-w-xl mx-auto mb-12">Empat pilar yang menyelesaikan masalah nyata pemilik motor — bukan sekadar pengingat.</p>
+        <p data-reveal class="text-center text-muted-fg max-w-xl mx-auto mb-12">Empat pilar yang menyelesaikan masalah nyata pemilik motor  bukan sekadar pengingat.</p>
         <div data-reveal-group class="grid md:grid-cols-2 gap-6">
             @php
                 $pillars = [
@@ -635,7 +635,7 @@ Replace with:
                         'summary' => 'Odometer akurat dari sumber mana saja, status warna tiap komponen, dan skor kesehatan motor dalam satu angka.',
                         'pills' => ['Odometer Backbone', 'Status Warna', 'Skor Kesehatan'],
                         'points' => [
-                            'Odometer Backbone — km selalu update dari input manual, isi bensin, servis, atau riding, satu sumber kebenaran.',
+                            'Odometer Backbone  km selalu update dari input manual, isi bensin, servis, atau riding, satu sumber kebenaran.',
                             'Status warna per komponen (hijau/kuning/merah) untuk oli, ban, aki, servis rutin.',
                             'Prediksi hari tersisa sebelum servis, berbasis rata-rata jarak harianmu.',
                             'Skor Kesehatan Motor 0-100, ringkasan sekali lihat.',
@@ -645,7 +645,7 @@ Replace with:
                     [
                         'icon' => 'bell',
                         'title' => 'Jangan Ada yang Kelewat',
-                        'summary' => 'Semua yang butuh perhatianmu — servis, dokumen, sampai efisiensi BBM yang aneh — muncul di satu tempat.',
+                        'summary' => 'Semua yang butuh perhatianmu  servis, dokumen, sampai efisiensi BBM yang aneh  muncul di satu tempat.',
                         'pills' => ['Pusat Perhatian', 'Dokumen Kendaraan', 'Efisiensi BBM'],
                         'points' => [
                             'Pusat Perhatian menyatukan semua pengingat jadi satu daftar prioritas.',
@@ -661,7 +661,7 @@ Replace with:
                         'points' => [
                             'Catat isi bensin, hitung efisiensi km/liter otomatis.',
                             'Riwayat servis lengkap dengan nama bengkel, part yang diganti, dan foto nota.',
-                            'Pengeluaran Lain — asuransi, parkir, cuci motor, aksesoris, dll.',
+                            'Pengeluaran Lain  asuransi, parkir, cuci motor, aksesoris, dll.',
                             'Laporan Biaya Kepemilikan (TCO): total, biaya per km, tren bulanan.',
                         ],
                     ],
@@ -671,10 +671,10 @@ Replace with:
                         'summary' => 'Rekam perjalananmu lewat GPS dan tandai titik-titik penting di peta pribadimu.',
                         'pills' => ['GPS Trip', 'Peta Rute', 'Peta Titik'],
                         'points' => [
-                            'Trip recording GPS — nyalakan sebelum jalan, jarak terhitung otomatis.',
-                            'Peta rute — lihat kembali jalur yang pernah dilalui.',
-                            'Peta titik — tandai lokasi penting (bengkel langganan, jalan rawan, dll).',
-                            'Peta rencana — rencanakan rute sebelum berangkat.',
+                            'Trip recording GPS  nyalakan sebelum jalan, jarak terhitung otomatis.',
+                            'Peta rute  lihat kembali jalur yang pernah dilalui.',
+                            'Peta titik  tandai lokasi penting (bengkel langganan, jalan rawan, dll).',
+                            'Peta rencana  rencanakan rute sebelum berangkat.',
                         ],
                     ],
                 ];
@@ -758,7 +758,7 @@ In `tests/Feature/LandingPageTest.php`, add:
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `php artisan test --filter=LandingPageTest`
-Expected: FAIL — no dashboard preview section exists yet.
+Expected: FAIL  no dashboard preview section exists yet.
 
 - [ ] **Step 3: Insert the Dashboard Preview section**
 
@@ -906,7 +906,7 @@ In `tests/Feature/LandingPageTest.php`, add:
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `php artisan test --filter=LandingPageTest`
-Expected: FAIL — the updated step title, the FAQ heading, and the FAQ answer mentioning "Riwayat Awal" don't exist yet.
+Expected: FAIL  the updated step title, the FAQ heading, and the FAQ answer mentioning "Riwayat Awal" don't exist yet.
 
 - [ ] **Step 3: Replace the How it works section and add FAQ**
 
@@ -920,7 +920,7 @@ In `resources/views/landing.blade.php`, find (the entire How-it-works `<section>
             @foreach ([
                 ['n' => '1', 't' => 'Daftar motor', 'd' => 'Masukkan data motor & odometer awal, sekali saja.'],
                 ['n' => '2', 't' => 'Nyalakan saat riding', 'd' => 'Tekan mulai sebelum jalan, selesai saat sampai.'],
-                ['n' => '3', 't' => 'Dapat pengingat', 'd' => 'Amicta kasih tahu kapan waktunya servis.'],
+                ['n' => '3', 't' => 'Dapat pengingat', 'd' => 'Muterin kasih tahu kapan waktunya servis.'],
             ] as $step)
                 <div data-reveal class="text-center">
                     <div class="w-12 h-12 rounded-full bg-primary text-white font-heading font-bold flex items-center justify-center mx-auto mb-4">
@@ -943,8 +943,8 @@ Replace with:
         <div data-reveal-group class="grid md:grid-cols-3 gap-8">
             @foreach ([
                 ['n' => '1', 't' => 'Daftar motor', 'd' => 'Masukkan data motor & odometer awal. Motor bekas? Isi form Riwayat Awal sekali saja biar prediksi langsung akurat.'],
-                ['n' => '2', 't' => 'Catat km dari mana saja', 'd' => 'Manual, pas isi bensin, pas servis, atau nyalakan GPS pas riding — bebas pilih, semua otomatis nyambung.'],
-                ['n' => '3', 't' => 'Amicta yang mantau', 'd' => 'Status warna, skor kesehatan, dan Pusat Perhatian otomatis update, kamu tinggal cek kalau ada notifikasi.'],
+                ['n' => '2', 't' => 'Catat km dari mana saja', 'd' => 'Manual, pas isi bensin, pas servis, atau nyalakan GPS pas riding  bebas pilih, semua otomatis nyambung.'],
+                ['n' => '3', 't' => 'Muterin yang mantau', 'd' => 'Status warna, skor kesehatan, dan Pusat Perhatian otomatis update, kamu tinggal cek kalau ada notifikasi.'],
             ] as $step)
                 <div data-reveal class="text-center">
                     <div class="w-12 h-12 rounded-full bg-primary text-white font-heading font-bold flex items-center justify-center mx-auto mb-4">
@@ -963,10 +963,10 @@ Replace with:
         <div data-reveal-group class="space-y-3" x-data="{ open: null }">
             @php
                 $faqs = [
-                    ['q' => 'Apakah saya harus selalu pakai GPS?', 'a' => 'Tidak. GPS cuma salah satu dari 4 cara mencatat km — manual, isi bensin, dan servis juga otomatis update odometer.'],
+                    ['q' => 'Apakah saya harus selalu pakai GPS?', 'a' => 'Tidak. GPS cuma salah satu dari 4 cara mencatat km  manual, isi bensin, dan servis juga otomatis update odometer.'],
                     ['q' => 'Bisa buat lebih dari satu motor?', 'a' => 'Bisa, kelola semua motor dalam satu akun, gampang pindah motor aktif.'],
-                    ['q' => 'Amicta gratis?', 'a' => 'Gratis, tanpa kartu kredit, daftar langsung bisa dipakai.'],
-                    ['q' => 'Motor saya bekas, riwayat servisnya udah lama, gimana?', 'a' => 'Ada form "Riwayat Awal" opsional pas daftar motor — isi terakhir ganti oli/ban/aki/servis di km berapa, prediksi langsung akurat dari hari pertama.'],
+                    ['q' => 'Muterin gratis?', 'a' => 'Gratis, tanpa kartu kredit, daftar langsung bisa dipakai.'],
+                    ['q' => 'Motor saya bekas, riwayat servisnya udah lama, gimana?', 'a' => 'Ada form "Riwayat Awal" opsional pas daftar motor  isi terakhir ganti oli/ban/aki/servis di km berapa, prediksi langsung akurat dari hari pertama.'],
                     ['q' => 'Data saya aman?', 'a' => 'Data motor & riwayatnya cuma bisa diakses dari akunmu sendiri, gak dibagikan ke pihak lain.'],
                 ];
             @endphp
@@ -1026,7 +1026,7 @@ In `tests/Feature/LandingPageTest.php`, add:
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `php artisan test --filter=LandingPageTest`
-Expected: FAIL — trust badges don't exist yet.
+Expected: FAIL  trust badges don't exist yet.
 
 - [ ] **Step 3: Replace the CTA section**
 
@@ -1080,7 +1080,7 @@ Expected: builds without error.
 
 - [ ] **Step 6: Manual verification**
 
-Skip actual browser interaction in this step if running in a sandboxed subagent without browser tooling — note this as a concern in the report instead of skipping silently. If browser tooling is available: load `/` as a guest, verify — mobile menu opens/closes and links scroll to the right section, each of the 4 feature pillars expands/collapses, the dashboard preview switches between "Beat Ilyas" and "NMAX Kantor", each FAQ item expands independently, and the CTA trust badges are legible against the dark `hero` background.
+Skip actual browser interaction in this step if running in a sandboxed subagent without browser tooling  note this as a concern in the report instead of skipping silently. If browser tooling is available: load `/` as a guest, verify  mobile menu opens/closes and links scroll to the right section, each of the 4 feature pillars expands/collapses, the dashboard preview switches between "Beat Ilyas" and "NMAX Kantor", each FAQ item expands independently, and the CTA trust badges are legible against the dark `hero` background.
 
 - [ ] **Step 7: Commit**
 

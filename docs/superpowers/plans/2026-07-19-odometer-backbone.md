@@ -1,8 +1,8 @@
-# Odometer Backbone & Dokumen Kendaraan (Amicta v4) — Implementation Plan
+# Odometer Backbone & Dokumen Kendaraan (Muterin v4)  Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Replace GPS-trip-only odometer tracking with a reliable manual-first backbone (matching industry standard apps Drivvo/Fuelio/Otodiary), add vehicle document due-date reminders (STNK/plat/asuransi), and add an "other expenses" log — so every downstream feature (status, prediction, health score, Pusat Perhatian, Laporan) computes from trustworthy data instead of sparse/absent GPS trips.
+**Goal:** Replace GPS-trip-only odometer tracking with a reliable manual-first backbone (matching industry standard apps Drivvo/Fuelio/Otodiary), add vehicle document due-date reminders (STNK/plat/asuransi), and add an "other expenses" log  so every downstream feature (status, prediction, health score, Pusat Perhatian, Laporan) computes from trustworthy data instead of sparse/absent GPS trips.
 
 **Architecture:** One new pure-calculation service (`OdometerService`) becomes the single write-path for odometer changes, consumed by every existing controller that currently mutates `current_odometer_km` directly. `MaintenancePredictionService::avgKmPerDay()` delegates to it instead of summing `Trip` records. Two small new features (vehicle documents, other expenses) follow the exact same Laravel + Blade + Alpine + Tailwind conventions already established in this codebase (`x-ui.*` components, `x-icon.*` SVGs, service classes matching `MaintenanceStatusService`'s style).
 
@@ -10,15 +10,15 @@
 
 ## Global Constraints
 
-- Follow existing service pattern exactly: pure PHP classes in `app/Services/`, method-injected into controllers (see `FuelController::store(Request $request, FuelStatsService $stats)` for the established style) — do not introduce a DI container config or facades.
-- Icons: SVG only, stroke-width 1.5, viewBox `0 0 24 24`, `{{ $attributes->merge([...]) }}` pattern — copy the structure of an existing icon file (e.g. `resources/views/components/icon/wallet.blade.php`) exactly.
+- Follow existing service pattern exactly: pure PHP classes in `app/Services/`, method-injected into controllers (see `FuelController::store(Request $request, FuelStatsService $stats)` for the established style)  do not introduce a DI container config or facades.
+- Icons: SVG only, stroke-width 1.5, viewBox `0 0 24 24`, `{{ $attributes->merge([...]) }}` pattern  copy the structure of an existing icon file (e.g. `resources/views/components/icon/wallet.blade.php`) exactly.
 - Colors: only existing Tailwind tokens (`primary`, `primary-soft`, `accent`, `status-green/yellow/red`, `muted`, `muted-fg`, `border`, `foreground`, `hero`). No new hex values, no gradients.
 - Reuse existing Blade components: `x-ui.card`, `x-ui.button`, `x-ui.input`, `x-ui.progress`, `x-ui.badge`, `x-ui.hero`. Do not invent new base components.
-- **Odometer never moves backward** — enforced once, in `OdometerService::record()`, via `ValidationException`. Every caller (controllers) lets this exception propagate to Laravel's default handler (redirect back with field error), matching how `$request->validate()` failures already behave everywhere else in this codebase.
+- **Odometer never moves backward**  enforced once, in `OdometerService::record()`, via `ValidationException`. Every caller (controllers) lets this exception propagate to Laravel's default handler (redirect back with field error), matching how `$request->validate()` failures already behave everywhere else in this codebase.
 - All new routes go inside the existing `Route::middleware('auth')->group(...)` block in `routes/web.php`.
 - Every task ends with `php artisan test` passing (67 tests exist before this plan) plus new tests, before commit.
 - Commit style: `feat: ...` / `fix: ...`, one commit per task step group as shown.
-- Reference spec: `docs/superpowers/specs/2026-07-19-odometer-backbone-design.md` — read it if a task's rationale is unclear.
+- Reference spec: `docs/superpowers/specs/2026-07-19-odometer-backbone-design.md`  read it if a task's rationale is unclear.
 
 ---
 
@@ -35,7 +35,7 @@
 - Produces:
   - `OdometerReading` fields: `motorcycle_id, reading_km (int), recorded_at (date), source (enum: manual|fuel|trip|initial), note (string|null)`.
   - `Motorcycle::odometerReadings(): HasMany`.
-  - `OdometerService::record(Motorcycle $motorcycle, int $km, \Illuminate\Support\Carbon $date, string $source, ?string $note = null): OdometerReading` — throws `\Illuminate\Validation\ValidationException` with key `odometer_km` if `$km < $motorcycle->current_odometer_km`.
+  - `OdometerService::record(Motorcycle $motorcycle, int $km, \Illuminate\Support\Carbon $date, string $source, ?string $note = null): OdometerReading`  throws `\Illuminate\Validation\ValidationException` with key `odometer_km` if `$km < $motorcycle->current_odometer_km`.
   - `OdometerService::avgKmPerDay(Motorcycle $motorcycle): ?float`.
 
 - [ ] **Step 1: Write the failing test**
@@ -134,8 +134,8 @@ class OdometerServiceTest extends TestCase
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `cd "D:\Ilyas Nur Rohman\Dicoding\Amicta" && php artisan test --filter=OdometerServiceTest`
-Expected: FAIL — class `App\Services\OdometerService` not found.
+Run: `cd "D:\Ilyas Nur Rohman\Dicoding\Muterin" && php artisan test --filter=OdometerServiceTest`
+Expected: FAIL  class `App\Services\OdometerService` not found.
 
 - [ ] **Step 3: Create migration**
 
@@ -250,7 +250,7 @@ class OdometerService
 
     /**
      * ponytail: 30-day fixed window + lifetime fallback mirrors
-     * MaintenancePredictionService's original trip-based logic — tuning
+     * MaintenancePredictionService's original trip-based logic  tuning
      * knob, not a fixed law.
      */
     public function avgKmPerDay(Motorcycle $motorcycle): ?float
@@ -289,7 +289,7 @@ Expected: PASS (5 tests)
 
 ```bash
 git add database/migrations/2026_07_19_100001_create_odometer_readings_table.php app/Models/OdometerReading.php app/Models/Motorcycle.php app/Services/OdometerService.php tests/Unit/OdometerServiceTest.php
-git commit -m "feat: OdometerReading model and OdometerService — single write-path for odometer"
+git commit -m "feat: OdometerReading model and OdometerService  single write-path for odometer"
 ```
 
 ---
@@ -348,7 +348,7 @@ In `tests/Feature/MotorcycleTest.php`, add to the existing test class:
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `php artisan test --filter=MotorcycleTest`
-Expected: FAIL — `odometer_readings` table has no row for the new motor yet (store() doesn't call `OdometerService` yet).
+Expected: FAIL  `odometer_readings` table has no row for the new motor yet (store() doesn't call `OdometerService` yet).
 
 - [ ] **Step 3: Update MotorcycleController**
 
@@ -412,7 +412,7 @@ In `resources/views/motorcycles/create.blade.php`, inside the `<form>` right aft
 ```blade
                 <div x-data="{ open: false }" class="border-t border-border pt-4">
                     <button type="button" @click="open = !open" class="text-sm text-primary font-medium hover:underline">
-                        Riwayat Awal (opsional) — motor bekas?
+                        Riwayat Awal (opsional)  motor bekas?
                     </button>
                     <p x-show="!open" class="text-xs text-muted-fg mt-1">Kosongkan kalau motor baru / belum pernah diservis.</p>
                     <div x-show="open" x-cloak class="grid sm:grid-cols-2 gap-4 mt-3">
@@ -453,7 +453,7 @@ git commit -m "feat: record initial odometer reading and used-motorcycle onboard
 
 - [ ] **Step 1: Update the existing "does not lower odometer" test**
 
-In `tests/Feature/FuelControllerTest.php`, this test's premise no longer holds — a lower odometer is now rejected outright rather than silently ignored. Replace it:
+In `tests/Feature/FuelControllerTest.php`, this test's premise no longer holds  a lower odometer is now rejected outright rather than silently ignored. Replace it:
 
 ```php
     public function test_storing_fuel_log_rejects_odometer_lower_than_current(): void
@@ -500,7 +500,7 @@ Add a new test for the efficiency warning:
 - [ ] **Step 2: Run tests to verify they fail**
 
 Run: `php artisan test --filter=FuelControllerTest`
-Expected: FAIL — old odometer-lowering behavior still silently succeeds; no `warning` session key exists yet.
+Expected: FAIL  old odometer-lowering behavior still silently succeeds; no `warning` session key exists yet.
 
 - [ ] **Step 3: Update FuelController**
 
@@ -535,7 +535,7 @@ use Illuminate\Support\Carbon;
         $warning = null;
         $latest = $stats->latestKmPerLiter($motor->fresh());
         if ($latest !== null && $latest > 60) {
-            $warning = "Efisiensi {$latest} km/liter terlihat tidak biasa — cek kembali odometer atau jumlah liter yang diinput.";
+            $warning = "Efisiensi {$latest} km/liter terlihat tidak biasa  cek kembali odometer atau jumlah liter yang diinput.";
         }
 
         return redirect()->route('bbm.index')
@@ -547,7 +547,7 @@ use Illuminate\Support\Carbon;
 - [ ] **Step 4: Run tests to verify they pass**
 
 Run: `php artisan test --filter=FuelControllerTest`
-Expected: PASS (5 tests — 4 pre-existing minus the 1 rewritten, plus the 1 new)
+Expected: PASS (5 tests  4 pre-existing minus the 1 rewritten, plus the 1 new)
 
 - [ ] **Step 5: Display the warning flash in the BBM view**
 
@@ -564,7 +564,7 @@ In `resources/views/bbm/index.blade.php`, right after the existing `@if (session
 Run: `php artisan test`
 Expected: all pass.
 
-Manually verify: try submitting a fuel entry with an odometer lower than the motorcycle's current value — confirm you get a validation error, not a silent no-op.
+Manually verify: try submitting a fuel entry with an odometer lower than the motorcycle's current value  confirm you get a validation error, not a silent no-op.
 
 - [ ] **Step 7: Commit**
 
@@ -613,7 +613,7 @@ In `tests/Feature/TripTest.php`, add to the existing test class:
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `php artisan test --filter=TripTest`
-Expected: FAIL — no `odometer_readings` row created yet.
+Expected: FAIL  no `odometer_readings` row created yet.
 
 - [ ] **Step 3: Update TripController**
 
@@ -712,7 +712,7 @@ class OdometerReadingControllerTest extends TestCase
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `php artisan test --filter=OdometerReadingControllerTest`
-Expected: FAIL — route `odometer.store` not defined.
+Expected: FAIL  route `odometer.store` not defined.
 
 - [ ] **Step 3: Create the controller**
 
@@ -783,7 +783,7 @@ In `resources/views/motorcycles/show.blade.php`, find the header row that shows 
 
 - [ ] **Step 7: Add a lighter quick-action on the dashboard motor card**
 
-In `resources/views/dashboard.blade.php`, inside the motor card header block (where the plat/odometer line is), add a small link next to it pointing to the motor's detail page where the Update KM form lives (keeps the dashboard uncluttered — the actual form lives on the detail page from Step 6):
+In `resources/views/dashboard.blade.php`, inside the motor card header block (where the plat/odometer line is), add a small link next to it pointing to the motor's detail page where the Update KM form lives (keeps the dashboard uncluttered  the actual form lives on the detail page from Step 6):
 
 Find the line:
 ```blade
@@ -829,7 +829,7 @@ git commit -m "feat: manual Update KM action on dashboard and motorcycle detail"
 
 - [ ] **Step 1: Update the existing test that exercised trip-based data**
 
-In `tests/Unit/MaintenancePredictionServiceTest.php`, this test's premise changes — `avgKmPerDay` now reads `OdometerReading` rows, not `Trip` rows. Replace `test_avg_km_per_day_from_recent_trips`:
+In `tests/Unit/MaintenancePredictionServiceTest.php`, this test's premise changes  `avgKmPerDay` now reads `OdometerReading` rows, not `Trip` rows. Replace `test_avg_km_per_day_from_recent_trips`:
 
 ```php
     public function test_avg_km_per_day_from_recent_odometer_readings(): void
@@ -845,12 +845,12 @@ In `tests/Unit/MaintenancePredictionServiceTest.php`, this test's premise change
     }
 ```
 
-Leave `test_avg_km_per_day_falls_back_to_lifetime_when_no_recent_trips` and all `forItem()` tests unchanged — they don't depend on the trip-vs-reading distinction (the fallback test has no data at all either way; `forItem()` tests pass `avgKmPerDay` in directly as a parameter).
+Leave `test_avg_km_per_day_falls_back_to_lifetime_when_no_recent_trips` and all `forItem()` tests unchanged  they don't depend on the trip-vs-reading distinction (the fallback test has no data at all either way; `forItem()` tests pass `avgKmPerDay` in directly as a parameter).
 
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `php artisan test --filter=MaintenancePredictionServiceTest`
-Expected: FAIL — `avgKmPerDay()` still reads `trips()`, so the new odometer-readings-only test returns the lifetime fallback (or null) instead of `2.0`.
+Expected: FAIL  `avgKmPerDay()` still reads `trips()`, so the new odometer-readings-only test returns the lifetime fallback (or null) instead of `2.0`.
 
 - [ ] **Step 3: Update MaintenancePredictionService**
 
@@ -897,7 +897,7 @@ class MaintenancePredictionService
 }
 ```
 
-(This removes the old inline 30-day-trip-sum + lifetime-fallback logic entirely — `OdometerService::avgKmPerDay()` from Task 1 is now the single implementation of that logic; `MaintenancePredictionService` just delegates.)
+(This removes the old inline 30-day-trip-sum + lifetime-fallback logic entirely  `OdometerService::avgKmPerDay()` from Task 1 is now the single implementation of that logic; `MaintenancePredictionService` just delegates.)
 
 - [ ] **Step 4: Run test to verify it passes**
 
@@ -907,7 +907,7 @@ Expected: PASS (all tests)
 - [ ] **Step 5: Full test suite + commit**
 
 Run: `php artisan test`
-Expected: all pass — this also confirms `HealthScoreService`, `AttentionService`, and `DashboardController` (which all consume `MaintenancePredictionService`) still work correctly through the new delegation.
+Expected: all pass  this also confirms `HealthScoreService`, `AttentionService`, and `DashboardController` (which all consume `MaintenancePredictionService`) still work correctly through the new delegation.
 
 ```bash
 git add app/Services/MaintenancePredictionService.php tests/Unit/MaintenancePredictionServiceTest.php
@@ -1005,7 +1005,7 @@ class VehicleDocumentServiceTest extends TestCase
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `php artisan test --filter=VehicleDocumentServiceTest`
-Expected: FAIL — class not found, and `motorcycles` table has no document columns yet.
+Expected: FAIL  class not found, and `motorcycles` table has no document columns yet.
 
 - [ ] **Step 3: Create migration**
 
@@ -1087,7 +1087,7 @@ class VehicleDocumentService
 
     /**
      * ponytail: 30-day "soon" threshold mirrors AttentionService's
-     * maintenance-item threshold — tuning knob, not a fixed law.
+     * maintenance-item threshold  tuning knob, not a fixed law.
      */
     public function forMotorcycle(Motorcycle $motorcycle): array
     {
@@ -1141,7 +1141,7 @@ Inside `forUser()`, right after the existing per-motorcycle fuel-efficiency chec
                     $overdueText = $doc['days_left'] === 0 ? 'hari ini' : abs($doc['days_left']).' hari lalu';
                     $items[] = [
                         'severity' => 'red',
-                        'text' => "Segera bayar {$doc['label']} — {$motor->nickname}, jatuh tempo {$overdueText}",
+                        'text' => "Segera bayar {$doc['label']}  {$motor->nickname}, jatuh tempo {$overdueText}",
                         'url' => route('motorcycles.show', $motor),
                     ];
                 } elseif ($doc['color'] === 'yellow') {
@@ -1381,7 +1381,7 @@ class OtherExpenseControllerTest extends TestCase
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `php artisan test --filter=OtherExpenseControllerTest`
-Expected: FAIL — route not defined.
+Expected: FAIL  route not defined.
 
 - [ ] **Step 3: Create migration**
 
@@ -1604,7 +1604,7 @@ Add the toggle form + other-expenses list as a new card, right after the existin
                 @forelse ($otherExpenses as $expense)
                     <div class="flex items-center justify-between p-3 rounded-xl hover:bg-muted/40">
                         <div>
-                            <p class="text-sm font-medium text-foreground">{{ \App\Models\OtherExpense::CATEGORY_LABELS[$expense->category] }} — {{ $expense->motorcycle->nickname }}</p>
+                            <p class="text-sm font-medium text-foreground">{{ \App\Models\OtherExpense::CATEGORY_LABELS[$expense->category] }}  {{ $expense->motorcycle->nickname }}</p>
                             <p class="text-[11px] text-muted-fg">{{ $expense->expense_date->format('d M Y') }}</p>
                         </div>
                         <span class="text-sm font-bold text-foreground tabular-nums">Rp{{ number_format($expense->amount) }}</span>
@@ -1661,7 +1661,7 @@ Read `app/Http/Controllers/ReportController.php` first, then update `__invoke()`
 
 - [ ] **Step 11: Extend Laporan view**
 
-Read `resources/views/laporan/index.blade.php` first. Add a 5th stat card for "Pengeluaran Lain" next to the existing 4 (Total, Biaya/KM, BBM, Servis) — adjust the grid to `sm:grid-cols-2 lg:grid-cols-5`:
+Read `resources/views/laporan/index.blade.php` first. Add a 5th stat card for "Pengeluaran Lain" next to the existing 4 (Total, Biaya/KM, BBM, Servis)  adjust the grid to `sm:grid-cols-2 lg:grid-cols-5`:
 
 ```blade
             <div data-reveal class="bg-surface border border-border rounded-2xl p-5">
@@ -1697,7 +1697,7 @@ git commit -m "feat: Pengeluaran Lain (other expenses) integrated into Biaya & S
 
 ## Task 9: Final verification and demo data refresh
 
-**Files:** `database/seeders/DemoDataSeeder.php` (modify) — verification only otherwise.
+**Files:** `database/seeders/DemoDataSeeder.php` (modify)  verification only otherwise.
 
 - [ ] **Step 1: Run the complete test suite**
 
@@ -1711,7 +1711,7 @@ Expected: builds without error.
 
 - [ ] **Step 3: Extend the demo seeder**
 
-Read `database/seeders/DemoDataSeeder.php` first (it seeds `demo@amicta.test` with two motorcycles, "Beat Ilyas" and "NMAX Kantor"). Add odometer readings, document due dates, and other-expense entries.
+Read `database/seeders/DemoDataSeeder.php` first (it seeds `demo@Muterin.test` with two motorcycles, "Beat Ilyas" and "NMAX Kantor"). Add odometer readings, document due dates, and other-expense entries.
 
 In `seedMotor1()` (Beat Ilyas), after the existing `fuelLogs()->createMany([...])` call, add:
 
@@ -1762,7 +1762,7 @@ Expected: completes without error.
 Run:
 ```bash
 php artisan tinker --execute="
-\$u = App\Models\User::where('email','demo@amicta.test')->first();
+\$u = App\Models\User::where('email','demo@Muterin.test')->first();
 foreach (\$u->motorcycles as \$m) {
     echo \$m->nickname . ': ' . \$m->odometerReadings()->count() . ' readings, ' . \$m->otherExpenses()->count() . ' other expenses, STNK due ' . (\$m->stnk_due_date?->toDateString() ?? 'null') . PHP_EOL;
 }
@@ -1776,12 +1776,12 @@ Expected: both motorcycles show non-zero reading/expense counts, correct due dat
 
 - [ ] **Step 6: Manual end-to-end browser verification**
 
-Start `php artisan serve`, log in as `demo@amicta.test` / `password123`, and check:
-- `/dashboard` — Pusat Perhatian shows a red "Segera bayar Pajak STNK — Beat Ilyas" item and a yellow "Pajak STNK NMAX Kantor jatuh tempo ~20 hari lagi" item.
-- A motorcycle detail page — "Update KM" button works; "Dokumen" card shows the right colors.
-- `/history` — "Pengeluaran Lain" section lists the seeded asuransi/parkir/cuci_motor entries; total cost includes them.
-- `/laporan` — 5-card stat row includes "Pengeluaran Lain"; trend chart shows a 3rd bar series.
-- Add a new motorcycle via `/motorcycles/create` with the "Riwayat Awal" and "Dokumen Kendaraan" sections filled in — confirm both apply correctly on the resulting detail page.
+Start `php artisan serve`, log in as `demo@Muterin.test` / `password123`, and check:
+- `/dashboard`  Pusat Perhatian shows a red "Segera bayar Pajak STNK  Beat Ilyas" item and a yellow "Pajak STNK NMAX Kantor jatuh tempo ~20 hari lagi" item.
+- A motorcycle detail page  "Update KM" button works; "Dokumen" card shows the right colors.
+- `/history`  "Pengeluaran Lain" section lists the seeded asuransi/parkir/cuci_motor entries; total cost includes them.
+- `/laporan`  5-card stat row includes "Pengeluaran Lain"; trend chart shows a 3rd bar series.
+- Add a new motorcycle via `/motorcycles/create` with the "Riwayat Awal" and "Dokumen Kendaraan" sections filled in  confirm both apply correctly on the resulting detail page.
 
 - [ ] **Step 7: Commit**
 
@@ -1794,10 +1794,10 @@ git commit -m "feat: seed odometer readings, vehicle documents, and other expens
 
 ## Self-Review
 
-**Spec coverage:** All 9 items from the spec's §2 summary table map to tasks — items 1-7 (odometer backbone) → Tasks 1-6; item 8 (Dokumen Kendaraan) → Task 7; item 9 (Pengeluaran Lain) → Task 8. Task 9 is the final verification task called for by the spec's demo-data-consistency concern (§10 risk table, "seeder demo diupdate agar tetap konsisten").
+**Spec coverage:** All 9 items from the spec's §2 summary table map to tasks  items 1-7 (odometer backbone) → Tasks 1-6; item 8 (Dokumen Kendaraan) → Task 7; item 9 (Pengeluaran Lain) → Task 8. Task 9 is the final verification task called for by the spec's demo-data-consistency concern (§10 risk table, "seeder demo diupdate agar tetap konsisten").
 
 **Placeholder scan:** No TBD/TODO; every step has complete, runnable code.
 
-**Type consistency:** `OdometerService::record()`'s signature (`Motorcycle, int, Carbon, string, ?string`) is used identically in every calling controller (Motorcycle/Fuel/Trip/OdometerReading). `OdometerService::avgKmPerDay()` returns `?float`, matching `MaintenancePredictionService::avgKmPerDay()`'s pre-existing return type exactly (pure delegation, no signature drift). `VehicleDocumentService::forMotorcycle()`'s return shape (`label/due_date/days_left/color`) is read consistently by both `MotorcycleController::show()` (view) and `AttentionService::forUser()`. `AttentionService`'s constructor signature change (4th param) is applied consistently to its only manual instantiation site (`AttentionServiceTest`) — `DashboardController` uses method injection, which Laravel's container resolves automatically without needing a code change. `OtherExpense::CATEGORY_LABELS` is referenced identically in `HistoryController`, `history/index.blade.php`, and `ReportController`.
+**Type consistency:** `OdometerService::record()`'s signature (`Motorcycle, int, Carbon, string, ?string`) is used identically in every calling controller (Motorcycle/Fuel/Trip/OdometerReading). `OdometerService::avgKmPerDay()` returns `?float`, matching `MaintenancePredictionService::avgKmPerDay()`'s pre-existing return type exactly (pure delegation, no signature drift). `VehicleDocumentService::forMotorcycle()`'s return shape (`label/due_date/days_left/color`) is read consistently by both `MotorcycleController::show()` (view) and `AttentionService::forUser()`. `AttentionService`'s constructor signature change (4th param) is applied consistently to its only manual instantiation site (`AttentionServiceTest`)  `DashboardController` uses method injection, which Laravel's container resolves automatically without needing a code change. `OtherExpense::CATEGORY_LABELS` is referenced identically in `HistoryController`, `history/index.blade.php`, and `ReportController`.
 
-**Deliberate behavior changes flagged for reviewers:** Task 3 changes `FuelController`'s backward-odometer handling from silent-ignore to hard rejection — this is a disclosed, spec-mandated change (§4/§7), not a regression; the existing test for the old behavior is explicitly rewritten in the same task rather than left stale.
+**Deliberate behavior changes flagged for reviewers:** Task 3 changes `FuelController`'s backward-odometer handling from silent-ignore to hard rejection  this is a disclosed, spec-mandated change (§4/§7), not a regression; the existing test for the old behavior is explicitly rewritten in the same task rather than left stale.

@@ -11,7 +11,7 @@
 
   const token = () => document.querySelector('input[name="_token"]').value;
 
-  const map = window.AmictaMap.init('ride-map');
+  const map = window.MuterinMap.init('ride-map');
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition((pos) => {
       map.setView([pos.coords.latitude, pos.coords.longitude], 15);
@@ -69,7 +69,7 @@
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': token(), Accept: 'application/json' },
       body: JSON.stringify(progressBody()),
-    }).catch(() => { /* offline blip — retried next interval, data stays in memory */ });
+    }).catch(() => { /* offline blip  retried next interval, data stays in memory */ });
   }
 
   async function start() {

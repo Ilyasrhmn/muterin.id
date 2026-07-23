@@ -1,4 +1,4 @@
-<div id="amicta-dialog" 
+<div id="Muterin-dialog" 
      class="fixed inset-0 z-[9999] hidden opacity-0 transition-opacity duration-300"
      role="dialog" 
      aria-modal="true"

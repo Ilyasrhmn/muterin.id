@@ -1,4 +1,4 @@
-# Motor Maintenance Tracker (Amicta) — Implementation Plan
+# Motor Maintenance Tracker (Muterin)  Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
@@ -15,7 +15,7 @@
 - Peta: Leaflet.js + OpenStreetMap tile. TANPA Google Maps / API key berbayar.
 - Jarak GPS dihitung client-side (haversine), server hanya menerima hasil.
 - Status perawatan: hijau `<80%`, kuning `80–100%`, merah `>100%` dari `interval_km`. Satu-satunya sumber logika ini adalah `MaintenanceStatusService`.
-- 4 item perawatan default per motor: `Oli Mesin` (2500 km), `Ban` (12000 km), `Aki` (15000 km), `Servis Rutin` (4000 km). Interval bisa diedit user. Angka default ini knob kalibrasi — boleh dituning.
+- 4 item perawatan default per motor: `Oli Mesin` (2500 km), `Ban` (12000 km), `Aki` (15000 km), `Servis Rutin` (4000 km). Interval bisa diedit user. Angka default ini knob kalibrasi  boleh dituning.
 - Semua data motor/trip/perawatan milik user login (scope `user_id`); user tidak boleh akses data user lain.
 - Commit sering, satu commit per task minimal.
 
@@ -42,23 +42,23 @@ tests/Unit/            MaintenanceStatusServiceTest
 ## Task 1: Project Setup + Auth (Breeze)
 
 **Files:**
-- Create: seluruh skeleton Laravel di `D:/Ilyas Nur Rohman/Dicoding/Amicta`
+- Create: seluruh skeleton Laravel di `D:/Ilyas Nur Rohman/Dicoding/Muterin`
 - Modify: `.env` (DB), `routes/web.php`
 
 **Interfaces:**
 - Produces: aplikasi Laravel jalan di `php artisan serve`, halaman login/register Breeze, `auth()->user()` tersedia, middleware `auth`.
 
-- [ ] **Step 1: Buat project Laravel di folder Amicta**
+- [ ] **Step 1: Buat project Laravel di folder Muterin**
 
 ```bash
 cd "D:/Ilyas Nur Rohman/Dicoding"
-composer create-project laravel/laravel Amicta
-cd Amicta
+composer create-project laravel/laravel Muterin
+cd Muterin
 ```
 
 - [ ] **Step 2: Pakai SQLite biar cepat (tanpa setup MySQL)**
 
-Edit `.env` — hapus baris `DB_*` lain, sisakan:
+Edit `.env`  hapus baris `DB_*` lain, sisakan:
 
 ```
 DB_CONNECTION=sqlite
@@ -149,7 +149,7 @@ public function up(): void
 }
 ```
 
-- [ ] **Step 3: Tulis failing test — buat motor otomatis bikin 4 item**
+- [ ] **Step 3: Tulis failing test  buat motor otomatis bikin 4 item**
 
 `tests/Feature/MotorcycleTest.php`:
 
@@ -187,7 +187,7 @@ class MotorcycleTest extends TestCase
 }
 ```
 
-- [ ] **Step 4: Run — pastikan gagal**
+- [ ] **Step 4: Run  pastikan gagal**
 
 Run: `php artisan test --filter=test_creating_motorcycle_seeds_four_default_items`
 Expected: FAIL (class Motorcycle belum ada / relasi kosong).
@@ -276,7 +276,7 @@ public function motorcycles(): \Illuminate\Database\Eloquent\Relations\HasMany
 }
 ```
 
-- [ ] **Step 8: Run — pastikan lulus**
+- [ ] **Step 8: Run  pastikan lulus**
 
 Run: `php artisan test --filter=MotorcycleTest`
 Expected: PASS.
@@ -304,7 +304,7 @@ git commit -m "feat: motorcycle model with auto-seeded maintenance items"
 - Consumes: `Motorcycle` model (Task 2).
 - Produces: resource routes `motorcycles.*`, route `motorcycles.activate` (POST) yang set satu motor `is_active=true` & sisanya false untuk user itu.
 
-- [ ] **Step 1: Failing test — user hanya lihat motornya sendiri + activate**
+- [ ] **Step 1: Failing test  user hanya lihat motornya sendiri + activate**
 
 Tambah di `MotorcycleTest`:
 
@@ -334,7 +334,7 @@ public function test_activating_one_motorcycle_deactivates_others(): void
 }
 ```
 
-- [ ] **Step 2: Run — pastikan gagal**
+- [ ] **Step 2: Run  pastikan gagal**
 
 Run: `php artisan test --filter=MotorcycleTest`
 Expected: FAIL (route belum ada).
@@ -448,7 +448,7 @@ class MotorcycleController extends Controller
                 <div class="border rounded p-4 flex justify-between items-center {{ $motor->is_active ? 'ring-2 ring-blue-500' : '' }}">
                     <div>
                         <a href="{{ route('motorcycles.show', $motor) }}" class="font-bold">{{ $motor->nickname }}</a>
-                        <p class="text-sm text-gray-500">{{ $motor->brand }} {{ $motor->model }} — {{ number_format($motor->current_odometer_km) }} km</p>
+                        <p class="text-sm text-gray-500">{{ $motor->brand }} {{ $motor->model }}  {{ number_format($motor->current_odometer_km) }} km</p>
                     </div>
                     @unless ($motor->is_active)
                         <form method="POST" action="{{ route('motorcycles.activate', $motor) }}">@csrf
@@ -489,7 +489,7 @@ class MotorcycleController extends Controller
 
 `resources/views/motorcycles/show.blade.php`: tampilkan detail + status item (dipakai penuh di Task 5; untuk sekarang cukup tampilkan nama, odometer, dan daftar `maintenanceItems` beserta `interval_km`).
 
-- [ ] **Step 6: Run — pastikan lulus**
+- [ ] **Step 6: Run  pastikan lulus**
 
 Run: `php artisan test --filter=MotorcycleTest`
 Expected: PASS.
@@ -503,7 +503,7 @@ git commit -m "feat: motorcycle CRUD and active-motorcycle selection"
 
 ---
 
-## Task 4: MaintenanceStatusService (logika status — TDD inti)
+## Task 4: MaintenanceStatusService (logika status  TDD inti)
 
 **Files:**
 - Create: `app/Services/MaintenanceStatusService.php`
@@ -516,7 +516,7 @@ git commit -m "feat: motorcycle CRUD and active-motorcycle selection"
   - `MaintenanceStatusService::color(float $percent): string` → `'green'|'yellow'|'red'`
   - `MaintenanceStatusService::forItem(MaintenanceItem $item, int $currentOdometer): array` → `['used'=>int,'percent'=>float,'color'=>string,'remaining'=>int]`
 
-- [ ] **Step 1: Failing test — batas warna 79/80/100/101**
+- [ ] **Step 1: Failing test  batas warna 79/80/100/101**
 
 `tests/Unit/MaintenanceStatusServiceTest.php`:
 
@@ -547,13 +547,13 @@ class MaintenanceStatusServiceTest extends TestCase
 
     public function test_zero_interval_is_safe_not_divide_by_zero(): void
     {
-        // interval 0 tidak valid; jangan crash — anggap 0%
+        // interval 0 tidak valid; jangan crash  anggap 0%
         $this->assertEquals(0.0, $this->svc->percent(500, 0));
     }
 }
 ```
 
-- [ ] **Step 2: Run — pastikan gagal**
+- [ ] **Step 2: Run  pastikan gagal**
 
 Run: `php artisan test --filter=MaintenanceStatusServiceTest`
 Expected: FAIL (class belum ada).
@@ -597,7 +597,7 @@ class MaintenanceStatusService
 }
 ```
 
-- [ ] **Step 4: Run — pastikan lulus**
+- [ ] **Step 4: Run  pastikan lulus**
 
 Run: `php artisan test --filter=MaintenanceStatusServiceTest`
 Expected: PASS.
@@ -767,7 +767,7 @@ class MaintenanceLog extends Model
 }
 ```
 
-- [ ] **Step 3: Failing test — complete bikin log & reset checkpoint**
+- [ ] **Step 3: Failing test  complete bikin log & reset checkpoint**
 
 `tests/Feature/MaintenanceTest.php`:
 
@@ -805,7 +805,7 @@ class MaintenanceTest extends TestCase
 }
 ```
 
-- [ ] **Step 4: Run — pastikan gagal**
+- [ ] **Step 4: Run  pastikan gagal**
 
 Run: `php artisan test --filter=MaintenanceTest`
 Expected: FAIL (route belum ada).
@@ -855,7 +855,7 @@ Route::post('maintenance_items/{item}/complete', [MaintenanceController::class, 
     ->name('maintenance.complete');
 ```
 
-- [ ] **Step 6: UI di show.blade.php — tombol + form biaya**
+- [ ] **Step 6: UI di show.blade.php  tombol + form biaya**
 
 Di `resources/views/motorcycles/show.blade.php`, untuk tiap item tambahkan (pakai Alpine untuk toggle form):
 
@@ -870,7 +870,7 @@ Di `resources/views/motorcycles/show.blade.php`, untuk tiap item tambahkan (paka
 </div>
 ```
 
-- [ ] **Step 7: Run — pastikan lulus**
+- [ ] **Step 7: Run  pastikan lulus**
 
 Run: `php artisan test --filter=MaintenanceTest`
 Expected: PASS.
@@ -884,7 +884,7 @@ git commit -m "feat: mark maintenance complete with cost logging"
 
 ---
 
-## Task 7: Trip recording — backend (odometer bertambah)
+## Task 7: Trip recording  backend (odometer bertambah)
 
 **Files:**
 - Create: `database/migrations/xxxx_create_trips_table.php`
@@ -937,7 +937,7 @@ class Trip extends Model
 }
 ```
 
-- [ ] **Step 3: Failing test — trip nambah odometer**
+- [ ] **Step 3: Failing test  trip nambah odometer**
 
 `tests/Feature/TripTest.php`:
 
@@ -986,7 +986,7 @@ class TripTest extends TestCase
 }
 ```
 
-- [ ] **Step 4: Run — pastikan gagal**
+- [ ] **Step 4: Run  pastikan gagal**
 
 Run: `php artisan test --filter=TripTest`
 Expected: FAIL.
@@ -1045,9 +1045,9 @@ Route::get('riding', [TripController::class, 'create'])->name('riding');
 Route::post('trips', [TripController::class, 'store'])->name('trips.store');
 ```
 
-> Catatan desain: odometer disimpan integer, `distance_km` disimpan desimal penuh di `trips`. Pembulatan hanya di odometer — akumulasi presisi ada di riwayat trip. (ponytail: cukup untuk MVP; kalau butuh presisi odometer, ubah kolom ke decimal nanti.)
+> Catatan desain: odometer disimpan integer, `distance_km` disimpan desimal penuh di `trips`. Pembulatan hanya di odometer  akumulasi presisi ada di riwayat trip. (ponytail: cukup untuk MVP; kalau butuh presisi odometer, ubah kolom ke decimal nanti.)
 
-- [ ] **Step 6: Run — pastikan lulus**
+- [ ] **Step 6: Run  pastikan lulus**
 
 Run: `php artisan test --filter=TripTest`
 Expected: PASS.
@@ -1061,7 +1061,7 @@ git commit -m "feat: trip store endpoint increments odometer"
 
 ---
 
-## Task 8: Trip recording — frontend GPS (Leaflet + haversine + Alpine)
+## Task 8: Trip recording  frontend GPS (Leaflet + haversine + Alpine)
 
 **Files:**
 - Create: `resources/views/riding/index.blade.php`
@@ -1252,7 +1252,7 @@ Route::get('history', HistoryController::class)->name('history');
             <h3 class="font-bold mb-2">Perjalanan</h3>
             @forelse ($trips as $t)
                 <div class="border rounded p-3 mb-2 text-sm">
-                    <div class="font-medium">{{ $t->motorcycle->nickname }} — {{ $t->distance_km }} km</div>
+                    <div class="font-medium">{{ $t->motorcycle->nickname }}  {{ $t->distance_km }} km</div>
                     <div class="text-gray-500">{{ $t->ended_at?->format('d M Y H:i') }} · {{ gmdate('H:i:s', $t->duration_seconds) }}</div>
                 </div>
             @empty <p class="text-gray-500">Belum ada perjalanan.</p> @endforelse
@@ -1261,7 +1261,7 @@ Route::get('history', HistoryController::class)->name('history');
             <h3 class="font-bold mb-2">Perawatan <span class="text-sm text-gray-500">(total Rp{{ number_format($totalCost) }})</span></h3>
             @forelse ($logs as $l)
                 <div class="border rounded p-3 mb-2 text-sm">
-                    <div class="font-medium">{{ $l->item->name }} — {{ $l->item->motorcycle->nickname }}</div>
+                    <div class="font-medium">{{ $l->item->name }}  {{ $l->item->motorcycle->nickname }}</div>
                     <div class="text-gray-500">{{ $l->serviced_at->format('d M Y') }} · {{ number_format($l->serviced_at_odometer_km) }} km · Rp{{ number_format($l->cost) }}</div>
                 </div>
             @empty <p class="text-gray-500">Belum ada perawatan.</p> @endforelse
@@ -1282,7 +1282,7 @@ git commit -m "feat: trip and maintenance history page"
 
 ---
 
-## Task 10 (STRETCH): Peta Perjalanan — riwayat rute + pin + planner
+## Task 10 (STRETCH): Peta Perjalanan  riwayat rute + pin + planner
 
 > Kerjakan HANYA jika Task 1–9 selesai & stabil. Satu peta Leaflet, tiga fungsi.
 
@@ -1337,7 +1337,7 @@ class RoutePlan extends Model {
 }
 ```
 
-- [ ] **Step 3: Failing test — simpan pin milik user**
+- [ ] **Step 3: Failing test  simpan pin milik user**
 
 `tests/Feature/MapTest.php`:
 
@@ -1353,7 +1353,7 @@ public function test_user_can_store_and_list_own_pin(): void
 }
 ```
 
-- [ ] **Step 4: Run — gagal, lalu Controller + routes**
+- [ ] **Step 4: Run  gagal, lalu Controller + routes**
 
 `app/Http/Controllers/MapController.php`:
 
@@ -1529,7 +1529,7 @@ git commit -m "feat: trip map with pins, route history and simple planner"
 - Create: `public/sw.js` (service worker)
 - Modify: dashboard view (subscribe + cek transisi)
 
-**Approach ringkas (tanpa server push/VAPID — pakai Notification API lokal saat app dibuka):**
+**Approach ringkas (tanpa server push/VAPID  pakai Notification API lokal saat app dibuka):**
 - Saat dashboard load, JS bandingkan status warna tiap item dengan yang tersimpan di `localStorage`. Jika ada item berubah `green→yellow` atau `→red`, tampilkan `new Notification(...)` (minta izin dulu). Simpan snapshot warna baru.
 - Ini "notifikasi saat kondisi tertentu" yang jujur untuk MVP tanpa infra push server.
 
@@ -1566,7 +1566,7 @@ git add -A
 git commit -m "feat: local notifications on maintenance status change"
 ```
 
-> ponytail: skip VAPID/web-push server. Tambah push server-side hanya jika butuh notif saat app tertutup — jelaskan batasan ini di pitch.
+> ponytail: skip VAPID/web-push server. Tambah push server-side hanya jika butuh notif saat app tertutup  jelaskan batasan ini di pitch.
 
 ---
 
@@ -1583,6 +1583,6 @@ git commit -m "feat: local notifications on maintenance status change"
 ## Self-Review Notes (sudah dicek terhadap spec)
 
 - **Coverage:** Auth(T1), motor CRUD + aktif(T3), item default(T2), status(T4), dashboard(T5), tandai selesai+biaya(T6), trip+odometer(T7/T8), riwayat(T9), peta/pin/planner(T10), push(T11), bengkel+PDF(T12). Item berbasis tanggal sengaja tidak ada (dicoret di spec). Semua requirement Core tercakup.
-- **Type consistency:** `MaintenanceStatusService::forItem()` mengembalikan key `used/percent/color/remaining` — dipakai konsisten di `status-bar.blade.php` & dashboard. `color()` mengembalikan `green|yellow|red` dipakai konsisten di UI & notify.js. `trips.store` menerima `{motorcycle_id, distance_km, duration_seconds, path}` — cocok dengan yang dikirim `trip-recorder.js`.
+- **Type consistency:** `MaintenanceStatusService::forItem()` mengembalikan key `used/percent/color/remaining`  dipakai konsisten di `status-bar.blade.php` & dashboard. `color()` mengembalikan `green|yellow|red` dipakai konsisten di UI & notify.js. `trips.store` menerima `{motorcycle_id, distance_km, duration_seconds, path}`  cocok dengan yang dikirim `trip-recorder.js`.
 - **Auto-stop & outlier:** knob (`IDLE_MS`, `MAX_JUMP_KM`) ditandai untuk tuning device asli.
 ```

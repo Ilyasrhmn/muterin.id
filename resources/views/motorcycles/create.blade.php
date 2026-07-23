@@ -13,7 +13,7 @@
 
                 <div x-data="{ open: false }" class="border-t border-border pt-4">
                     <button type="button" @click="open = !open" class="text-sm text-primary font-medium hover:underline">
-                        Riwayat Awal (opsional) — motor bekas?
+                        Riwayat Awal (opsional)  motor bekas?
                     </button>
                     <p x-show="!open" class="text-xs text-muted-fg mt-1">Kosongkan kalau motor baru / belum pernah diservis.</p>
                     <div x-show="open" x-cloak class="grid sm:grid-cols-2 gap-4 mt-3">

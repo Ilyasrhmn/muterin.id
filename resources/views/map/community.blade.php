@@ -4,24 +4,14 @@
 
     <div class="p-4 sm:p-6 lg:p-8 max-w-[1400px] mx-auto space-y-6">
         <x-ui.hero badge="{{ $pins->count() }} titik" title="Peta Keamanan Komunitas"
-                    subtitle="Titik dari semua pengguna. Tandai jalan sepi, gelap, rawan, rusak, atau banjir — bantu yang lain tetap aman." />
+                    subtitle="Titik dari semua pengguna. Tandai jalan sepi, gelap, rawan, rusak, atau banjir  bantu yang lain tetap aman." />
 
         <div class="grid lg:grid-cols-3 gap-6 items-start">
             {{-- LEFT: filter + form + daftar --}}
             <div class="space-y-6">
-                <div class="bg-surface border border-border rounded-2xl p-5 space-y-4">
-                    <div class="flex items-center justify-between">
-                        <h3 class="font-heading font-bold text-foreground text-sm">Filter</h3>
-                        <select id="filter-category" class="rounded-xl border border-border bg-surface px-3 py-1.5 text-sm focus:border-primary focus:ring-2 focus:ring-primary/20">
-                            <option value="">Semua</option>
-                            <option value="sepi">Jalan Sepi</option>
-                            <option value="gelap">Penerangan Minim</option>
-                            <option value="rawan">Rawan Kriminal</option>
-                            <option value="rusak">Jalan Rusak</option>
-                            <option value="banjir">Rawan Banjir</option>
-                            <option value="momen">Momen</option>
-                        </select>
-                    </div>
+                <div class="bg-surface border border-border rounded-2xl p-5 space-y-3">
+                    <h3 class="font-heading font-bold text-foreground text-sm">Filter</h3>
+                    <div id="filter-category"></div>
                     <button id="btn-my-location" type="button"
                             class="w-full inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition">
                         <x-icon.navigation class="w-4 h-4"/> Tandai Lokasi Saya
@@ -34,17 +24,10 @@
                     <h3 class="font-heading font-bold text-foreground text-sm">Tandai Titik Baru</h3>
                     <p id="add-coords" class="text-xs text-muted-fg"></p>
 
-                    <label class="block space-y-1">
+                    <div class="space-y-1">
                         <span class="text-xs font-semibold text-muted-fg">Kategori</span>
-                        <select id="f-category" class="w-full rounded-xl border border-border bg-surface px-3 py-2 text-sm">
-                            <option value="sepi">Jalan Sepi</option>
-                            <option value="gelap">Penerangan Minim</option>
-                            <option value="rawan">Rawan Kriminal</option>
-                            <option value="rusak">Jalan Rusak</option>
-                            <option value="banjir">Rawan Banjir</option>
-                            <option value="momen">Momen</option>
-                        </select>
-                    </label>
+                        <div id="f-category"></div>
+                    </div>
 
                     <label class="block space-y-1">
                         <span class="text-xs font-semibold text-muted-fg">Judul</span>
@@ -58,7 +41,7 @@
                                   class="w-full rounded-xl border border-border bg-surface px-3 py-2 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"></textarea>
                     </label>
 
-                    <label class="block space-y-1">
+                    <label id="f-time-wrap" class="block space-y-1">
                         <span class="text-xs font-semibold text-muted-fg">Berlaku waktu</span>
                         <select id="f-time" class="w-full rounded-xl border border-border bg-surface px-3 py-2 text-sm">
                             <option value="kapanpun">Kapan pun</option>
@@ -69,8 +52,9 @@
 
                     <label class="block space-y-1">
                         <span class="text-xs font-semibold text-muted-fg">Foto (opsional)</span>
-                        <input id="f-photo" type="file" accept="image/*"
+                        <input id="f-photo" type="file" accept="image/*" capture="environment"
                                class="w-full text-xs text-muted-fg file:mr-3 file:rounded-lg file:border-0 file:bg-muted file:px-3 file:py-1.5 file:text-xs file:font-semibold">
+                        <span class="text-[11px] text-muted-fg">Di HP, ini bisa langsung buka kamera.</span>
                     </label>
 
                     <label class="flex items-center gap-2 text-sm text-foreground">
@@ -96,8 +80,16 @@
 
             {{-- RIGHT: map --}}
             <div class="lg:col-span-2">
+                <div class="bg-surface border border-border rounded-2xl p-3 mb-3">
+                    <div class="relative">
+                        <input id="search-location" type="text" placeholder="Cari lokasi..."
+                               class="w-full rounded-xl border border-border bg-surface pl-10 pr-3 py-2 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20">
+                        <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-muted-fg text-sm"></i>
+                        <div id="search-results" class="hidden absolute top-full left-0 right-0 mt-1 bg-surface border border-border rounded-xl shadow-lg max-h-64 overflow-y-auto z-10"></div>
+                    </div>
+                </div>
                 <div class="rounded-2xl overflow-hidden border border-border">
-                    <div id="map" style="height: 72vh"></div>
+                    <div id="map" style="height: 68vh"></div>
                 </div>
             </div>
         </div>

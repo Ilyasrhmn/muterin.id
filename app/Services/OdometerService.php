@@ -33,7 +33,7 @@ class OdometerService
 
     /**
      * ponytail: 30-day fixed window + lifetime fallback mirrors
-     * MaintenancePredictionService's original trip-based logic — tuning
+     * MaintenancePredictionService's original trip-based logic  tuning
      * knob, not a fixed law.
      */
     public function avgKmPerDay(Motorcycle $motorcycle): ?float

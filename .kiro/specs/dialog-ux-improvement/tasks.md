@@ -115,6 +115,6 @@ Implementasi perbaikan UX untuk dialog component dengan menambahkan backdrop blu
 
 - Tasks marked with `*` are optional and can be skipped for faster implementation
 - Focus on visual and UX improvements first, then accessibility features
-- Maintain backward compatibility with existing AmictaDialog API
+- Maintain backward compatibility with existing MuterinDialog API
 - No database migrations or model changes required
 - All changes are in presentation layer (Blade template and JavaScript)

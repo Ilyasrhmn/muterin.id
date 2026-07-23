@@ -13,7 +13,7 @@ Implementasi tiga fitur utama untuk meningkatkan UX peta: (1) Current Location b
   - Implement `getErrorMessage()` for user-friendly error messages
   - Handle all geolocation error codes (PERMISSION_DENIED, POSITION_UNAVAILABLE, TIMEOUT)
   - Add timeout configuration (10 seconds default)
-  - Export as `window.AmictaGeolocation` module
+  - Export as `window.MuterinGeolocation` module
   - _Requirements: 1.2, 1.3, 1.5, 1.6, 6.1, 6.2, 6.3, 6.4_
 
 - [ ] 2. Add Font Awesome to project
@@ -23,7 +23,7 @@ Implementasi tiga fitur utama untuk meningkatkan UX peta: (1) Current Location b
   - _Requirements: 3.1, 5.4_
 
 - [ ] 3. Create pin icon configuration system
-  - Create icon mapping object `window.AmictaPinIcons`
+  - Create icon mapping object `window.MuterinPinIcons`
   - Define icon, color, and bgColor for each category (infrastruktur, bencana, layanan, lainnya)
   - Implement `getIconConfig(category)` function with fallback to 'lainnya'
   - Use Font Awesome icon names (fa-road-barrier, fa-triangle-exclamation, fa-building, fa-location-dot)

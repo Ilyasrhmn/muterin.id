@@ -4,18 +4,18 @@
 
 **Goal:** Add a live map to the Riding (trip recording) page showing current position and the path traveled so far, and replace Peta Rencana's straight-line route drawing with real road-following routes computed by OpenRouteService.
 
-**Architecture:** A new `RouteService` proxies OpenRouteService's Directions API server-side (API key never reaches the browser). A new `POST /map/route` endpoint exposes it for live preview while planning. `route_plans` gains 3 nullable columns to persist the computed route so viewing a saved plan never re-calls the external API. The Riding page's existing real-time GPS tracking (`watchPosition`) is unchanged — a Leaflet map is layered on top, updated from the same position callback that already drives the distance counter.
+**Architecture:** A new `RouteService` proxies OpenRouteService's Directions API server-side (API key never reaches the browser). A new `POST /map/route` endpoint exposes it for live preview while planning. `route_plans` gains 3 nullable columns to persist the computed route so viewing a saved plan never re-calls the external API. The Riding page's existing real-time GPS tracking (`watchPosition`) is unchanged  a Leaflet map is layered on top, updated from the same position callback that already drives the distance counter.
 
 **Tech Stack:** Laravel 13, Leaflet.js (already used elsewhere in the app, loaded via CDN), OpenRouteService Directions API (`cycling-regular` profile), Laravel's `Http` facade.
 
 ## Global Constraints
 
-- API key: `ORS_API_KEY` is already set in `.env` (not committed — confirmed gitignored). `.env.example` already documents the empty key. Do not touch either file.
-- OpenRouteService coordinate order is `[lng, lat]` — the opposite of the `[lat, lng]` convention used everywhere else in this codebase (`Trip::path_json`, `RoutePlan::points_json`, Leaflet's own `L.latLng`). `RouteService` is the only place that does this conversion — every other file in this plan works exclusively in `[lat, lng]`.
+- API key: `ORS_API_KEY` is already set in `.env` (not committed  confirmed gitignored). `.env.example` already documents the empty key. Do not touch either file.
+- OpenRouteService coordinate order is `[lng, lat]`  the opposite of the `[lat, lng]` convention used everywhere else in this codebase (`Trip::path_json`, `RoutePlan::points_json`, Leaflet's own `L.latLng`). `RouteService` is the only place that does this conversion  every other file in this plan works exclusively in `[lat, lng]`.
 - Service-class pattern: pure PHP class in `app/Services/`, method-injected into controllers (same pattern as `OdometerService`, `HealthScoreService`, etc. elsewhere in this codebase).
-- Error copy (exact, when routing fails): `"Gagal menghitung rute jalan. Coba lagi sebentar."` — do not silently fall back to a straight line.
-- `public/js/*.js` files are plain static assets served via `asset()`, not part of the Vite build — editing them takes effect immediately, no `npm run build` needed.
-- Commit directly to `master` (no worktree — established convention for this project).
+- Error copy (exact, when routing fails): `"Gagal menghitung rute jalan. Coba lagi sebentar."`  do not silently fall back to a straight line.
+- `public/js/*.js` files are plain static assets served via `asset()`, not part of the Vite build  editing them takes effect immediately, no `npm run build` needed.
+- Commit directly to `master` (no worktree  established convention for this project).
 - TDD: write failing tests first, verify RED, then implement, verify GREEN.
 
 ---
@@ -118,7 +118,7 @@ class RouteServiceTest extends TestCase
 - [ ] **Step 2: Run tests to verify they fail**
 
 Run: `php artisan test --filter=RouteServiceTest`
-Expected: FAIL — `App\Services\RouteService` and `App\Exceptions\RouteNotFoundException` don't exist yet.
+Expected: FAIL  `App\Services\RouteService` and `App\Exceptions\RouteNotFoundException` don't exist yet.
 
 - [ ] **Step 3: Create the exception**
 
@@ -225,7 +225,7 @@ Expected: PASS (4 tests)
 
 ```bash
 git add app/Exceptions/RouteNotFoundException.php app/Services/RouteService.php config/services.php tests/Unit/RouteServiceTest.php
-git commit -m "feat: RouteService — OpenRouteService directions proxy"
+git commit -m "feat: RouteService  OpenRouteService directions proxy"
 ```
 
 ---
@@ -297,7 +297,7 @@ In `tests/Feature/MapTest.php`, add `use Illuminate\Support\Facades\Http;` to th
 - [ ] **Step 2: Run tests to verify they fail**
 
 Run: `php artisan test --filter=MapTest`
-Expected: FAIL — route `map.route` / `/map/route` not defined.
+Expected: FAIL  route `map.route` / `/map/route` not defined.
 
 - [ ] **Step 3: Add the route**
 
@@ -346,7 +346,7 @@ Then add this method (anywhere among the other public methods, e.g. right after 
 - [ ] **Step 5: Run tests to verify they pass**
 
 Run: `php artisan test --filter=MapTest`
-Expected: PASS (8 tests — 4 pre-existing + 4 new)
+Expected: PASS (8 tests  4 pre-existing + 4 new)
 
 - [ ] **Step 6: Commit**
 
@@ -395,7 +395,7 @@ In `tests/Feature/MapTest.php`, add:
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `php artisan test --filter=MapTest`
-Expected: FAIL — `route_geometry_json`/`distance_km`/`duration_minutes` columns don't exist and aren't validated/stored yet, so the assertion against `route_plans` fails (the row is created but without these values, or the request 500s on a missing column depending on validation — either way, not a clean pass).
+Expected: FAIL  `route_geometry_json`/`distance_km`/`duration_minutes` columns don't exist and aren't validated/stored yet, so the assertion against `route_plans` fails (the row is created but without these values, or the request 500s on a missing column depending on validation  either way, not a clean pass).
 
 - [ ] **Step 3: Create the migration**
 
@@ -493,7 +493,7 @@ Replace with:
 - [ ] **Step 6: Run migration and tests**
 
 Run: `php artisan migrate --no-interaction && php artisan test --filter=MapTest`
-Expected: PASS (9 tests — including the pre-existing `test_saving_route_plan_requires_at_least_two_points`, which still passes since sending only 1 point still fails the `points` `min:2` rule regardless of the new required fields).
+Expected: PASS (9 tests  including the pre-existing `test_saving_route_plan_requires_at_least_two_points`, which still passes since sending only 1 point still fails the `points` `min:2` rule regardless of the new required fields).
 
 - [ ] **Step 7: Commit**
 
@@ -504,14 +504,14 @@ git commit -m "feat: route_plans stores computed road geometry, distance, and du
 
 ---
 
-### Task 4: Peta Rencana — road-following planner UI
+### Task 4: Peta Rencana  road-following planner UI
 
 **Files:**
 - Modify: `public/js/map-plans.js`
 - Modify: `resources/views/map/plans.blade.php`
 
 **Interfaces:**
-- Consumes: `POST /map/route` (Task 2), `POST /map/plans` now requiring `route_geometry`/`distance_km`/`duration_minutes` (Task 3), `window.AmictaMap` helpers (`init`, `token`, `fitTo`) already in `public/js/map-common.js`.
+- Consumes: `POST /map/route` (Task 2), `POST /map/plans` now requiring `route_geometry`/`distance_km`/`duration_minutes` (Task 3), `window.MuterinMap` helpers (`init`, `token`, `fitTo`) already in `public/js/map-common.js`.
 
 - [ ] **Step 1: Replace map-plans.js**
 
@@ -519,8 +519,8 @@ Replace the full contents of `public/js/map-plans.js`:
 
 ```js
 (function () {
-  const map = window.AmictaMap.init('map');
-  const token = window.AmictaMap.token();
+  const map = window.MuterinMap.init('map');
+  const token = window.MuterinMap.token();
   let points = [];
   let markers = [];
   let routeLine = null;
@@ -595,7 +595,7 @@ Replace the full contents of `public/js/map-plans.js`:
       if (!plan) return;
       const pts = plan.route_geometry_json || plan.points_json;
       L.polyline(pts, { color: '#EF4444', weight: 4, dashArray: '6 6' }).addTo(map);
-      window.AmictaMap.fitTo(map, pts);
+      window.MuterinMap.fitTo(map, pts);
     });
   });
 
@@ -630,7 +630,7 @@ Replace with:
 ```blade
                 <div class="bg-surface border border-border rounded-2xl p-4 flex flex-wrap items-center gap-3">
                     <div>
-                        <p class="text-sm text-muted-fg">Klik titik awal, lalu titik tujuan — rute jalan otomatis dihitung.</p>
+                        <p class="text-sm text-muted-fg">Klik titik awal, lalu titik tujuan  rute jalan otomatis dihitung.</p>
                         <p id="route-status" class="text-sm text-muted-fg mt-1"></p>
                     </div>
                     <div class="flex items-center gap-2 ms-auto">
@@ -683,7 +683,7 @@ Replace with:
 - [ ] **Step 5: Run the full test suite**
 
 Run: `php artisan test`
-Expected: all pass (this task has no new backend logic — it consumes what Tasks 1-3 already built and tested — so this step just confirms nothing broke).
+Expected: all pass (this task has no new backend logic  it consumes what Tasks 1-3 already built and tested  so this step just confirms nothing broke).
 
 - [ ] **Step 6: Commit**
 
@@ -694,14 +694,14 @@ git commit -m "feat: Peta Rencana draws real road-following routes via OpenRoute
 
 ---
 
-### Task 5: Riding page — live map
+### Task 5: Riding page  live map
 
 **Files:**
 - Modify: `resources/views/riding/index.blade.php`
 - Modify: `public/js/trip-recorder.js`
 
 **Interfaces:**
-- Consumes: `window.AmictaMap.init()` (already in `public/js/map-common.js`, already loaded on other map pages — this task is the first to load it on the Riding page).
+- Consumes: `window.MuterinMap.init()` (already in `public/js/map-common.js`, already loaded on other map pages  this task is the first to load it on the Riding page).
 
 - [ ] **Step 1: Add the map and Leaflet includes to the Riding page**
 
@@ -775,7 +775,7 @@ Replace the full contents of `public/js/trip-recorder.js`:
   let watchId = null, last = null, distance = 0, startTs = 0, path = [], idleTimer = null, tick = null;
   let marker = null, liveLine = null;
 
-  const map = window.AmictaMap.init('ride-map');
+  const map = window.MuterinMap.init('ride-map');
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition((pos) => {
       map.setView([pos.coords.latitude, pos.coords.longitude], 15);
@@ -873,11 +873,11 @@ Replace the full contents of `public/js/trip-recorder.js`:
 - [ ] **Step 3: Run the full test suite**
 
 Run: `php artisan test`
-Expected: all pass (this task is frontend-only — the distance/duration/haversine logic that IS tested indirectly via `TripControllerTest`/`TripTest` is untouched; only map rendering was added around it).
+Expected: all pass (this task is frontend-only  the distance/duration/haversine logic that IS tested indirectly via `TripControllerTest`/`TripTest` is untouched; only map rendering was added around it).
 
 - [ ] **Step 4: Manual verification**
 
-Skip actual browser interaction in this step if running in a sandboxed subagent without browser tooling or GPS access — note this as a concern in the report instead of skipping silently. If browser tooling is available: open `/riding`, confirm the map appears immediately (even before pressing "Mulai"), confirm pressing "Mulai Perjalanan" and simulating GPS position changes (browser devtools geolocation override) makes the marker move, the blue line grow, and the map follow the marker.
+Skip actual browser interaction in this step if running in a sandboxed subagent without browser tooling or GPS access  note this as a concern in the report instead of skipping silently. If browser tooling is available: open `/riding`, confirm the map appears immediately (even before pressing "Mulai"), confirm pressing "Mulai Perjalanan" and simulating GPS position changes (browser devtools geolocation override) makes the marker move, the blue line grow, and the map follow the marker.
 
 - [ ] **Step 5: Commit**
 
@@ -901,12 +901,12 @@ Expected: all tests pass (92 pre-existing + this plan's new tests). If any fail,
 
 This step requires real browser tooling and should be performed directly by the controller (not delegated to a sandboxed implementer subagent, which typically lacks browser access):
 
-- `/riding` — map appears on load; start a trip, confirm distance/duration still work exactly as before, confirm the map now shows a live marker and growing path line.
-- `/peta/rencana` — click a start point (green marker), click a destination point (red marker), confirm a road-following route (not a straight line) is drawn within a couple seconds, confirm the status text shows distance/duration. Click a third point, confirm the route recalculates through all three points in order. Save the plan, reload the page, click it in the saved list, confirm the same road-following route redraws instantly (no new network delay, since it's stored, not recomputed).
-- Try clicking 2 points somewhere a route genuinely can't be found (e.g., across open ocean) if easy to test, or simulate a failure — confirm the error message appears and no straight-line fallback is silently drawn.
+- `/riding`  map appears on load; start a trip, confirm distance/duration still work exactly as before, confirm the map now shows a live marker and growing path line.
+- `/peta/rencana`  click a start point (green marker), click a destination point (red marker), confirm a road-following route (not a straight line) is drawn within a couple seconds, confirm the status text shows distance/duration. Click a third point, confirm the route recalculates through all three points in order. Save the plan, reload the page, click it in the saved list, confirm the same road-following route redraws instantly (no new network delay, since it's stored, not recomputed).
+- Try clicking 2 points somewhere a route genuinely can't be found (e.g., across open ocean) if easy to test, or simulate a failure  confirm the error message appears and no straight-line fallback is silently drawn.
 
 - [ ] **Step 3: Report**
 
-No commit needed for this task — it's verification-only. If manual verification finds any issue, fix it in the relevant task's files, re-run the full suite, and commit the fix with a message describing what was found and fixed.
+No commit needed for this task  it's verification-only. If manual verification finds any issue, fix it in the relevant task's files, re-run the full suite, and commit the fix with a message describing what was found and fixed.
 
 ---

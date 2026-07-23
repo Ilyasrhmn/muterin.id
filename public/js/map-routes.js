@@ -1,5 +1,5 @@
 (function () {
-  const map = window.AmictaMap.init('map');
+  const map = window.MuterinMap.init('map');
   const all = [];
 
   fetch('/map/data', { headers: { Accept: 'application/json' } })
@@ -11,6 +11,6 @@
           t.path_json.forEach((p) => all.push(p));
         }
       });
-      window.AmictaMap.fitTo(map, all);
+      window.MuterinMap.fitTo(map, all);
     });
 })();

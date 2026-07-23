@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Exceptions\GeocodingException;
 use App\Exceptions\RouteNotFoundException;
-use App\Models\MapPin;
 use App\Models\RoutePlan;
 use App\Models\Trip;
 use App\Services\GeocodingService;
@@ -26,14 +25,6 @@ class MapController extends Controller
         return view('map.routes', compact('trips'));
     }
 
-    // --- Titik Saya: manage moment/hazard/quiet pins ---
-    public function pinsPage()
-    {
-        $pins = auth()->user()->mapPins()->latest()->get();
-
-        return view('map.pins', compact('pins'));
-    }
-
     // --- Rencana Rute: build & manage saved route plans ---
     public function plansPage()
     {
@@ -47,7 +38,6 @@ class MapController extends Controller
         $userId = auth()->id();
 
         return response()->json([
-            'pins' => MapPin::where('user_id', $userId)->get(),
             'plans' => RoutePlan::where('user_id', $userId)->get(),
             'trips' => Trip::whereHas('motorcycle', fn ($q) => $q->where('user_id', $userId))
                 ->where('status', 'completed')
@@ -100,28 +90,6 @@ class MapController extends Controller
         } catch (GeocodingException $e) {
             return response()->json(['error' => $e->getMessage()], 422);
         }
-    }
-
-    public function storePin(Request $request)
-    {
-        $data = $request->validate([
-            'category' => 'required|in:moment,hazard,quiet',
-            'lat' => 'required|numeric',
-            'lng' => 'required|numeric',
-            'title' => 'required|string|max:255',
-            'note' => 'nullable|string|max:255',
-        ]);
-        $pin = auth()->user()->mapPins()->create($data);
-
-        return response()->json($pin, 201);
-    }
-
-    public function destroyPin(MapPin $pin)
-    {
-        abort_unless($pin->user_id === auth()->id(), 403);
-        $pin->delete();
-
-        return response()->json(['ok' => true]);
     }
 
     public function storePlan(Request $request)

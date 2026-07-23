@@ -1,4 +1,4 @@
-# Peta Komunitas (Community Safety Map) — Design Spec
+# Peta Komunitas (Community Safety Map)  Design Spec
 
 **Tanggal:** 2026-07-22
 **Status:** Approved (brainstorming)
@@ -6,20 +6,20 @@
 
 ## Tujuan
 
-Peta keamanan berbasis komunitas: setiap pengguna Amicta bisa menandai titik di
+Peta keamanan berbasis komunitas: setiap pengguna Muterin bisa menandai titik di
 peta (jalan sepi, gelap, rawan, rusak, banjir, atau momen) lengkap dengan foto &
 deskripsi, dan **semua pengguna lain** bisa melihatnya. Kasus inti: pengendara
 (terutama perempuan) sering diarahkan navigasi ke jalan sepi/rawan tanpa tahu
-sebelumnya — fitur ini meng-crowdsource informasi itu supaya bisa dihindari.
+sebelumnya  fitur ini meng-crowdsource informasi itu supaya bisa dihindari.
 
 ## Yang membedakan dari kompetitor
 
-1. **Integrasi ke Peta Rencana** — saat user merencanakan rute, sistem memperingatkan
+1. **Integrasi ke Peta Rencana**  saat user merencanakan rute, sistem memperingatkan
    kalau rute melewati titik komunitas ("Rutemu lewat 2 titik jalan sepi"). Google
    Maps/Waze tidak menyambungkan data keamanan komunitas ke planner-nya sendiri.
-2. **Sistem "Masih di sini?"** — titik bisa dikonfirmasi user lain, membangun
+2. **Sistem "Masih di sini?"**  titik bisa dikonfirmasi user lain, membangun
    kepercayaan dan membersihkan info basi secara otomatis.
-3. **Konteks waktu + lapor anonim** — titik bisa spesifik ke waktu (siang/malam) dan
+3. **Konteks waktu + lapor anonim**  titik bisa spesifik ke waktu (siang/malam) dan
    pelapor bisa menyembunyikan identitasnya, langsung menjawab isu keamanan.
 
 ## Batasan Global
@@ -31,7 +31,7 @@ sebelumnya — fitur ini meng-crowdsource informasi itu supaya bisa dihindari.
   live-push. (`// ponytail:` interval 30s adalah tuning-knob.)
 - Ikuti pola yang sudah ada: service-class untuk logika non-trivial, `MapController`
   untuk endpoint, `public/js/*.js` dengan cache-bust `?v=filemtime`, komponen
-  `AmictaDialog` untuk semua dialog (tidak ada `alert/confirm/prompt` native),
+  `MuterinDialog` untuk semua dialog (tidak ada `alert/confirm/prompt` native),
   `L.popup()` untuk menu klik di peta.
 - Titik komunitas **terpisah total** dari `map_pins` (privat). Tabel & halaman baru.
 - Semua string UI berbahasa Indonesia, konsisten dengan halaman lain.
@@ -126,17 +126,17 @@ konsisten:
 ### Menambah titik
 
 1. User klik lokasi di peta (atau "Lokasi Saya") → `L.popup()` "Tandai lokasi ini?".
-2. Klik "Tandai" → buka dialog `AmictaDialog` form (perlu varian form multi-field):
+2. Klik "Tandai" → buka dialog `MuterinDialog` form (perlu varian form multi-field):
    kategori, judul, deskripsi, konteks waktu, checkbox "Posting anonim", input foto
    (opsional).
 3. Submit → `POST /peta/komunitas` (multipart, karena ada file). Server simpan,
    simpan foto ke `storage/app/public/community`, kembalikan pin JSON.
 4. Titik langsung muncul di peta + panel.
 
-> Catatan implementasi: `AmictaDialog` saat ini mendukung teks/prompt. Form
-> multi-field + upload foto **tidak** dipaksakan lewat `AmictaDialog` kalau bikin
+> Catatan implementasi: `MuterinDialog` saat ini mendukung teks/prompt. Form
+> multi-field + upload foto **tidak** dipaksakan lewat `MuterinDialog` kalau bikin
 > komponennya jadi rumit. Boleh pakai panel/form inline di halaman (bukan dialog
-> native) — keputusan final di tahap plan. Yang wajib: tidak ada `alert/confirm/prompt`
+> native)  keputusan final di tahap plan. Yang wajib: tidak ada `alert/confirm/prompt`
 > native browser.
 
 ### Popup kartu titik (klik/hover marker)
@@ -250,7 +250,7 @@ Unit test (`tests/Unit/CommunityPinNearRouteTest.php`):
 - `nearRoute`: titik ≤ 300m dari polyline masuk; titik > 300m tidak; polyline
   kosong/1 titik ditangani aman.
 
-## Di luar cakupan (YAGNI — sengaja ditunda)
+## Di luar cakupan (YAGNI  sengaja ditunda)
 
 Heatmap zona, gamifikasi/badge kontributor, live-push WebSocket, komentar/thread per
 titik, banyak foto per titik, moderasi admin. Semua bisa ditambah belakangan tanpa

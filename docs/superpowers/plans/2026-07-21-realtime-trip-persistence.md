@@ -2,20 +2,20 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Make riding trips survive a mid-ride crash — create a draft trip on start, auto-save (checkpoint) the growing path every ~10 seconds during the ride, finalize on stop (updating the odometer exactly once), and recover any unfinished draft next time the Riding page loads.
+**Goal:** Make riding trips survive a mid-ride crash  create a draft trip on start, auto-save (checkpoint) the growing path every ~10 seconds during the ride, finalize on stop (updating the odometer exactly once), and recover any unfinished draft next time the Riding page loads.
 
 **Architecture:** Trips gain a `status` (`recording` | `completed`). The old single `POST /trips` (save-everything-at-the-end) is replaced by a start → checkpoint → finish lifecycle. The odometer is only ever touched at `finish`, guarded by `status` so it can never double-count. Peta Rute shows only `completed` trips. The Riding page detects an interrupted `recording` trip and offers to finish or discard it.
 
-**Tech Stack:** Laravel 13, Leaflet (CDN, already used), vanilla JS, `OdometerService` (existing), `AmictaDialog` (from Plan 1).
+**Tech Stack:** Laravel 13, Leaflet (CDN, already used), vanilla JS, `OdometerService` (existing), `MuterinDialog` (from Plan 1).
 
 ## Global Constraints
 
-- **Depends on Plan 1** (`2026-07-21-maps-planner-google-style.md`) being complete: the recovery banner's "Buang" confirmation uses `window.AmictaDialog.confirm`, which Plan 1 makes globally available. Execute Plan 1 first.
+- **Depends on Plan 1** (`2026-07-21-maps-planner-google-style.md`) being complete: the recovery banner's "Buang" confirmation uses `window.MuterinDialog.confirm`, which Plan 1 makes globally available. Execute Plan 1 first.
 - The odometer must be updated **exactly once per trip**, only at `finish`, and never at `start` or `checkpoint`. `finish` guards on `status`: a trip already `completed` must not update the odometer again (idempotent).
-- Existing GPS/Haversine/distance logic in `public/js/trip-recorder.js` must NOT change — only the persistence wiring (which endpoint is called, and when) changes.
+- Existing GPS/Haversine/distance logic in `public/js/trip-recorder.js` must NOT change  only the persistence wiring (which endpoint is called, and when) changes.
 - Peta Rute (`MapController::routesPage` + `data`) must show only `status='completed'` trips.
 - `public/js/*.js` are static assets (no Vite build needed).
-- Commit directly to `master` (no worktree — established convention).
+- Commit directly to `master` (no worktree  established convention).
 - TDD for backend (RED→GREEN). The `trip-recorder.js` rewrite and the recovery banner UI are verified manually in the browser by the controller in the final task.
 - Checkpoint interval is a `ponytail:` tuning knob (10s), not a hard law.
 
@@ -34,7 +34,7 @@
 
 - [ ] **Step 1: Write the failing test**
 
-In `tests/Feature/MapTest.php`, add (`use App\Models\Motorcycle;` and `use App\Models\Trip;` — add these imports at the top if not already present):
+In `tests/Feature/MapTest.php`, add (`use App\Models\Motorcycle;` and `use App\Models\Trip;`  add these imports at the top if not already present):
 
 ```php
     public function test_map_data_excludes_recording_trips(): void
@@ -59,7 +59,7 @@ In `tests/Feature/MapTest.php`, add (`use App\Models\Motorcycle;` and `use App\M
 - [ ] **Step 2: Run to verify it fails**
 
 Run: `php artisan test --filter=MapTest`
-Expected: FAIL — `status` column doesn't exist (mass-assign error / unknown column), and `data` doesn't filter it.
+Expected: FAIL  `status` column doesn't exist (mass-assign error / unknown column), and `data` doesn't filter it.
 
 - [ ] **Step 3: Create the migration**
 
@@ -288,7 +288,7 @@ class TripTest extends TestCase
 - [ ] **Step 2: Run to verify it fails**
 
 Run: `php artisan test --filter=TripTest`
-Expected: FAIL — `trips.start`/`trips.checkpoint`/`trips.finish`/`trips.destroy` routes/methods don't exist yet.
+Expected: FAIL  `trips.start`/`trips.checkpoint`/`trips.finish`/`trips.destroy` routes/methods don't exist yet.
 
 - [ ] **Step 3: Replace the trips routes**
 
@@ -431,7 +431,7 @@ git commit -m "feat: trip start/checkpoint/finish/destroy lifecycle with once-on
 
 ---
 
-### Task 3: trip-recorder.js — start/checkpoint/finish wiring
+### Task 3: trip-recorder.js  start/checkpoint/finish wiring
 
 **Files:**
 - Modify: `public/js/trip-recorder.js`
@@ -457,7 +457,7 @@ Replace the full contents of `public/js/trip-recorder.js`:
 
   const token = () => document.querySelector('input[name="_token"]').value;
 
-  const map = window.AmictaMap.init('ride-map');
+  const map = window.MuterinMap.init('ride-map');
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition((pos) => {
       map.setView([pos.coords.latitude, pos.coords.longitude], 15);
@@ -515,7 +515,7 @@ Replace the full contents of `public/js/trip-recorder.js`:
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': token(), Accept: 'application/json' },
       body: JSON.stringify(progressBody()),
-    }).catch(() => { /* offline blip — retried next interval, data stays in memory */ });
+    }).catch(() => { /* offline blip  retried next interval, data stays in memory */ });
   }
 
   async function start() {
@@ -598,7 +598,7 @@ git commit -m "feat: riding auto-saves trip every 10s (start/checkpoint/finish) 
 - Test: `tests/Feature/TripTest.php`
 
 **Interfaces:**
-- Consumes: `$unfinished` passed from `TripController::create()` (Task 2 already added it to the view data), `PATCH /trips/{id}/finish`, `DELETE /trips/{id}` (Task 2), `window.AmictaDialog` (Plan 1).
+- Consumes: `$unfinished` passed from `TripController::create()` (Task 2 already added it to the view data), `PATCH /trips/{id}/finish`, `DELETE /trips/{id}` (Task 2), `window.MuterinDialog` (Plan 1).
 
 - [ ] **Step 1: Write the failing test**
 
@@ -629,7 +629,7 @@ In `tests/Feature/TripTest.php`, add:
 - [ ] **Step 2: Run to verify it fails**
 
 Run: `php artisan test --filter=TripTest`
-Expected: FAIL — the banner markup doesn't exist in the view yet.
+Expected: FAIL  the banner markup doesn't exist in the view yet.
 
 - [ ] **Step 3: Add the recovery banner to the riding view**
 
@@ -650,7 +650,7 @@ Replace with:
                      data-recover-trip="{{ $unfinished->id }}">
                     <p class="text-sm font-semibold text-amber-800">Ada perjalanan yang belum selesai</p>
                     <p class="text-xs text-amber-700 mt-0.5">
-                        {{ $unfinished->motorcycle->nickname ?? 'Motor' }} — {{ number_format($unfinished->distance_km, 2) }} km,
+                        {{ $unfinished->motorcycle->nickname ?? 'Motor' }}  {{ number_format($unfinished->distance_km, 2) }} km,
                         direkam {{ $unfinished->started_at?->diffForHumans() }}.
                     </p>
                     <div class="flex gap-2 mt-3">
@@ -703,7 +703,7 @@ Replace with:
             });
 
             banner.querySelector('[data-recover-discard]').addEventListener('click', async () => {
-                const ok = await window.AmictaDialog.confirm('Buang perjalanan yang belum selesai ini?', { danger: true, confirmText: 'Buang' });
+                const ok = await window.MuterinDialog.confirm('Buang perjalanan yang belum selesai ini?', { danger: true, confirmText: 'Buang' });
                 if (!ok) return;
                 fetch(`/trips/${id}`, {
                     method: 'DELETE',
@@ -718,7 +718,7 @@ Replace with:
 - [ ] **Step 5: Run tests to verify they pass**
 
 Run: `php artisan test --filter=TripTest`
-Expected: PASS (9 tests — 7 from Task 2 + 2 new banner tests)
+Expected: PASS (9 tests  7 from Task 2 + 2 new banner tests)
 
 - [ ] **Step 6: Commit**
 
@@ -738,10 +738,10 @@ git commit -m "feat: recovery banner to finish or discard an interrupted riding 
 Run: `php artisan test`
 Expected: all tests pass. If any fail, fix before proceeding.
 
-- [ ] **Step 2: Manual end-to-end browser verification (controller does this personally — needs real browser + GPS simulation)**
+- [ ] **Step 2: Manual end-to-end browser verification (controller does this personally  needs real browser + GPS simulation)**
 
-- `/riding`: press "Mulai Perjalanan" — confirm a draft trip row appears server-side (status `recording`) immediately, before pressing Stop (check via `php artisan tinker` or a second query). Simulate GPS movement (browser devtools geolocation) for >10s — confirm a checkpoint PATCH fires and the draft's `distance_km`/`path_json` grow while `current_odometer_km` stays unchanged. Press "Selesai" — confirm status flips to `completed`, `ended_at` set, and odometer increases exactly once.
-- **Crash recovery:** start a ride, let one checkpoint save, then navigate away / reload WITHOUT pressing Stop. Return to `/riding` — confirm the amber "Ada perjalanan yang belum selesai" banner shows the checkpointed distance. Click "Selesaikan" — confirm the trip completes and odometer updates once. Repeat the crash, then click "Buang" (styled confirm) — confirm the draft is deleted and no odometer change.
+- `/riding`: press "Mulai Perjalanan"  confirm a draft trip row appears server-side (status `recording`) immediately, before pressing Stop (check via `php artisan tinker` or a second query). Simulate GPS movement (browser devtools geolocation) for >10s  confirm a checkpoint PATCH fires and the draft's `distance_km`/`path_json` grow while `current_odometer_km` stays unchanged. Press "Selesai"  confirm status flips to `completed`, `ended_at` set, and odometer increases exactly once.
+- **Crash recovery:** start a ride, let one checkpoint save, then navigate away / reload WITHOUT pressing Stop. Return to `/riding`  confirm the amber "Ada perjalanan yang belum selesai" banner shows the checkpointed distance. Click "Selesaikan"  confirm the trip completes and odometer updates once. Repeat the crash, then click "Buang" (styled confirm)  confirm the draft is deleted and no odometer change.
 - `/peta/rute`: confirm only completed trips are drawn (a lingering `recording` draft must not appear).
 - Confirm the odometer never double-counts across any of the above (finish is idempotent).
 

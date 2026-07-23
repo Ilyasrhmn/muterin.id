@@ -123,7 +123,7 @@
             form.addEventListener('submit', (e) => {
                 if (form.dataset.confirmed === 'yes') return;
                 e.preventDefault();
-                window.AmictaDialog.confirm(form.dataset.confirm, { danger: true, confirmText: 'Hapus' }).then((ok) => {
+                window.MuterinDialog.confirm(form.dataset.confirm, { danger: true, confirmText: 'Hapus' }).then((ok) => {
                     if (ok) {
                         form.dataset.confirmed = 'yes';
                         form.submit();

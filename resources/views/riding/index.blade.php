@@ -9,7 +9,7 @@
                      data-recover-trip="{{ $unfinished->id }}">
                     <p class="text-sm font-semibold text-amber-800">Ada perjalanan yang belum selesai</p>
                     <p class="text-xs text-amber-700 mt-0.5">
-                        {{ $unfinished->motorcycle->nickname ?? 'Motor' }} — {{ number_format($unfinished->distance_km, 2) }} km,
+                        {{ $unfinished->motorcycle->nickname ?? 'Motor' }}  {{ number_format($unfinished->distance_km, 2) }} km,
                         direkam {{ $unfinished->started_at?->diffForHumans() }}.
                     </p>
                     <div class="flex gap-2 mt-3">
@@ -79,7 +79,7 @@
             });
 
             banner.querySelector('[data-recover-discard]').addEventListener('click', async () => {
-                const ok = await window.AmictaDialog.confirm('Buang perjalanan yang belum selesai ini?', { danger: true, confirmText: 'Buang' });
+                const ok = await window.MuterinDialog.confirm('Buang perjalanan yang belum selesai ini?', { danger: true, confirmText: 'Buang' });
                 if (!ok) return;
                 fetch(`/trips/${id}`, {
                     method: 'DELETE',

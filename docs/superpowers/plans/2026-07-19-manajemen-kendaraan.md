@@ -1,8 +1,8 @@
-# Manajemen Kendaraan (Amicta v3) — Implementation Plan
+# Manajemen Kendaraan (Muterin v3)  Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Add 6 vehicle-management modules to Amicta — fuel tracking, predictive maintenance, health score, an attention center, richer service history (workshop/parts/photo), and a cost report — turning it from an oil reminder into a full ownership-cost & maintenance management tool.
+**Goal:** Add 6 vehicle-management modules to Muterin  fuel tracking, predictive maintenance, health score, an attention center, richer service history (workshop/parts/photo), and a cost report  turning it from an oil reminder into a full ownership-cost & maintenance management tool.
 
 **Architecture:** Laravel + Blade + Alpine + Tailwind, following the exact conventions already in the codebase (`x-ui.*` components, `x-icon.*` SVGs, `x-ui.hero`, design tokens `primary`/`primary-soft`/`muted-fg`/`status-*`). Four new pure-calculation Services (no new tables beyond `fuel_logs`) sit alongside the existing `MaintenanceStatusService`. Everything renders through the existing sidebar/dashboard shell.
 
@@ -14,7 +14,7 @@
 - Reuse existing Blade components: `x-ui.card`, `x-ui.button`, `x-ui.input`, `x-ui.progress`, `x-ui.badge`, `x-ui.hero`, `x-ui.stat-tile`. Do not invent new base components unless a genuinely new shape is needed.
 - Icons: SVG only, stroke-width 1.5, viewBox 0 0 24 24, matching `resources/views/components/icon/*.blade.php` style. New icons needed: `droplet`, `camera`, `activity`, `trending-up`, `trending-down`, `alert-triangle`, `clock`, `bar-chart`.
 - Colors: only use existing Tailwind tokens (`primary`, `primary-soft`, `accent`, `status-green/yellow/red`, `muted`, `muted-fg`, `border`, `foreground`, `hero`). No new hex values, no gradients (project convention: solid colors only, established in prior session).
-- No document/date-based reminders (STNK, pajak, asuransi, SIM) — explicitly out of scope per user decision.
+- No document/date-based reminders (STNK, pajak, asuransi, SIM)  explicitly out of scope per user decision.
 - Every task ends with `php artisan test` passing (currently 40 tests) plus any new tests, before commit.
 - All new routes go inside the existing `Route::middleware('auth')->group(...)` block in `routes/web.php`.
 - Commit after each task with a descriptive message, following the existing commit style (`feat: ...`).
@@ -73,8 +73,8 @@ class FuelLogTest extends TestCase
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `cd "D:\Ilyas Nur Rohman\Dicoding\Amicta" && php artisan test --filter=FuelLogTest`
-Expected: FAIL — "Call to undefined method App\Models\Motorcycle::fuelLogs()" or missing table.
+Run: `cd "D:\Ilyas Nur Rohman\Dicoding\Muterin" && php artisan test --filter=FuelLogTest`
+Expected: FAIL  "Call to undefined method App\Models\Motorcycle::fuelLogs()" or missing table.
 
 - [ ] **Step 3: Create migration**
 
@@ -183,7 +183,7 @@ git commit -m "feat: FuelLog model and migration"
   - `FuelStatsService::consumptionSeries(Motorcycle $m): array` → list of `['date' => string, 'km_per_liter' => float]`, computed only between consecutive **full-tank** fills.
   - `FuelStatsService::averageKmPerLiter(Motorcycle $m): ?float`
   - `FuelStatsService::latestKmPerLiter(Motorcycle $m): ?float`
-  - `FuelStatsService::costPerKm(Motorcycle $m): ?float` — total fuel cost / total km spanned by fuel logs (first to last odometer reading), null if fewer than 2 logs or zero distance.
+  - `FuelStatsService::costPerKm(Motorcycle $m): ?float`  total fuel cost / total km spanned by fuel logs (first to last odometer reading), null if fewer than 2 logs or zero distance.
 
 - [ ] **Step 1: Write the failing test**
 
@@ -290,7 +290,7 @@ class FuelStatsServiceTest extends TestCase
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `php artisan test --filter=FuelStatsServiceTest`
-Expected: FAIL — class not found.
+Expected: FAIL  class not found.
 
 - [ ] **Step 3: Implement FuelStatsService**
 
@@ -379,7 +379,7 @@ git commit -m "feat: FuelStatsService for consumption and cost-per-km calculatio
 
 ---
 
-## Task 3: Fuel CRUD — controller, routes, BBM page
+## Task 3: Fuel CRUD  controller, routes, BBM page
 
 **Files:**
 - Create: `app/Http/Controllers/FuelController.php`
@@ -476,7 +476,7 @@ class FuelControllerTest extends TestCase
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `php artisan test --filter=FuelControllerTest`
-Expected: FAIL — route `bbm.store` not defined.
+Expected: FAIL  route `bbm.store` not defined.
 
 - [ ] **Step 3: Create controller**
 
@@ -742,7 +742,7 @@ git commit -m "feat: fuel tracking page with efficiency stats"
 
 ---
 
-## Task 4: Richer service history — workshop, parts, receipt photo
+## Task 4: Richer service history  workshop, parts, receipt photo
 
 **Files:**
 - Create: `database/migrations/2026_07_19_000002_add_service_detail_to_maintenance_logs_table.php`
@@ -812,7 +812,7 @@ In `tests/Feature/MaintenanceTest.php`, add this test to the existing class:
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `php artisan test --filter=MaintenanceTest`
-Expected: FAIL — column `workshop_name` does not exist.
+Expected: FAIL  column `workshop_name` does not exist.
 
 - [ ] **Step 3: Create migration**
 
@@ -994,7 +994,7 @@ git commit -m "feat: workshop name, parts, and receipt photo on service records"
 **Interfaces:**
 - Consumes: `Motorcycle`, `MaintenanceItem`, `MaintenanceStatusService` (existing, `app/Services/MaintenanceStatusService.php`).
 - Produces:
-  - `MaintenancePredictionService::avgKmPerDay(Motorcycle $m): ?float` — trips in last 30 days / 30, falling back to lifetime average.
+  - `MaintenancePredictionService::avgKmPerDay(Motorcycle $m): ?float`  trips in last 30 days / 30, falling back to lifetime average.
   - `MaintenancePredictionService::forItem(MaintenanceItem $item, int $currentOdometer, ?float $avgKmPerDay): array` → `['days_left' => int|null, 'predicted_date' => \Carbon\Carbon|null]`.
 
 - [ ] **Step 1: Write the failing test**
@@ -1101,7 +1101,7 @@ class MaintenancePredictionServiceTest extends TestCase
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `php artisan test --filter=MaintenancePredictionServiceTest`
-Expected: FAIL — class not found.
+Expected: FAIL  class not found.
 
 - [ ] **Step 3: Implement the service**
 
@@ -1128,7 +1128,7 @@ class MaintenancePredictionService
      * Falls back to lifetime average (odometer growth / days since created)
      * when there is no recent trip data.
      *
-     * ponytail: 30-day window is a tuning knob, not a fixed law — revisit if
+     * ponytail: 30-day window is a tuning knob, not a fixed law  revisit if
      * predictions feel stale for infrequent riders.
      */
     public function avgKmPerDay(Motorcycle $motorcycle): ?float
@@ -1179,7 +1179,7 @@ Expected: PASS (5 tests)
 
 ```bash
 git add app/Services/MaintenancePredictionService.php tests/Unit/MaintenancePredictionServiceTest.php
-git commit -m "feat: MaintenancePredictionService — days-left estimate from riding average"
+git commit -m "feat: MaintenancePredictionService  days-left estimate from riding average"
 ```
 
 ---
@@ -1282,7 +1282,7 @@ class HealthScoreServiceTest extends TestCase
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `php artisan test --filter=HealthScoreServiceTest`
-Expected: FAIL — class not found.
+Expected: FAIL  class not found.
 
 - [ ] **Step 3: Implement the service**
 
@@ -1306,7 +1306,7 @@ class HealthScoreService
     /**
      * Composite 0-100 score from maintenance status + fuel efficiency trend.
      * ponytail: penalty weights (15/5/10) and the 0.85 efficiency-drop
-     * threshold are tuning knobs — adjust if the score feels miscalibrated
+     * threshold are tuning knobs  adjust if the score feels miscalibrated
      * against real usage.
      */
     public function forMotorcycle(Motorcycle $motorcycle): array
@@ -1349,7 +1349,7 @@ Expected: PASS (4 tests)
 
 ```bash
 git add app/Services/HealthScoreService.php tests/Unit/HealthScoreServiceTest.php
-git commit -m "feat: HealthScoreService — composite 0-100 vehicle health score"
+git commit -m "feat: HealthScoreService  composite 0-100 vehicle health score"
 ```
 
 ---
@@ -1463,7 +1463,7 @@ class AttentionServiceTest extends TestCase
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `php artisan test --filter=AttentionServiceTest`
-Expected: FAIL — class not found.
+Expected: FAIL  class not found.
 
 - [ ] **Step 3: Implement the service**
 
@@ -1501,7 +1501,7 @@ class AttentionService
                 if ($status['percent'] > 100) {
                     $items[] = [
                         'severity' => 'red',
-                        'text' => "Segera servis {$item->name} — {$motor->nickname}",
+                        'text' => "Segera servis {$item->name}  {$motor->nickname}",
                         'url' => route('motorcycles.show', $motor),
                     ];
                     continue;
@@ -1760,7 +1760,7 @@ class ReportControllerTest extends TestCase
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `php artisan test --filter=ReportControllerTest`
-Expected: FAIL — route `laporan` not defined.
+Expected: FAIL  route `laporan` not defined.
 
 - [ ] **Step 3: Implement ReportController**
 
@@ -1864,7 +1864,7 @@ Expected: PASS (2 tests)
                 </div>
                 <p class="text-[10px] font-bold text-slate-500 uppercase tracking-[0.15em]">Biaya per KM</p>
                 <p class="text-2xl font-heading font-extrabold text-foreground mt-1 tracking-tight">
-                    @if ($costPerKm) Rp <span data-countup="{{ $costPerKm }}">0</span> @else — @endif
+                    @if ($costPerKm) Rp <span data-countup="{{ $costPerKm }}">0</span> @else  @endif
                 </p>
             </div>
             <div data-reveal class="bg-surface border border-border rounded-2xl p-5">
@@ -1952,7 +1952,7 @@ Expected: PASS (2 tests)
 </x-app-layout>
 ```
 
-> Note: the efficiency chart uses a time-scale x-axis. Chart.js's time scale needs a date adapter; if it doesn't render, swap `type: 'time'` for `type: 'category'` and drop the `time: { unit: 'day' }` option — the labels will still be readable as plain date strings. Verify visually in Step 9 and adjust if needed.
+> Note: the efficiency chart uses a time-scale x-axis. Chart.js's time scale needs a date adapter; if it doesn't render, swap `type: 'time'` for `type: 'category'` and drop the `time: { unit: 'day' }` option  the labels will still be readable as plain date strings. Verify visually in Step 9 and adjust if needed.
 
 - [ ] **Step 8: Add "Laporan" to sidebar nav**
 
@@ -1973,19 +1973,19 @@ Start the dev server, log in, visit `/laporan`. Confirm the stat cards show corr
 
 ```bash
 git add app/Http/Controllers/ReportController.php resources/views/laporan/index.blade.php resources/views/components/icon/bar-chart.blade.php routes/web.php resources/views/layouts/navigation.blade.php tests/Feature/ReportControllerTest.php
-git commit -m "feat: Laporan page — TCO, cost-per-km, monthly spend and efficiency trends"
+git commit -m "feat: Laporan page  TCO, cost-per-km, monthly spend and efficiency trends"
 ```
 
 ---
 
 ## Task 9: Final full-suite verification and demo data refresh
 
-**Files:** none new — verification only.
+**Files:** none new  verification only.
 
 - [ ] **Step 1: Run the complete test suite**
 
 Run: `php artisan test`
-Expected: all tests pass (40 original + ~18 new ≈ 58 total). If any fail, fix before proceeding — do not skip.
+Expected: all tests pass (40 original + ~18 new ≈ 58 total). If any fail, fix before proceeding  do not skip.
 
 - [ ] **Step 2: Rebuild frontend assets**
 
@@ -2023,7 +2023,7 @@ Expected: completes without error (the seeder already deletes and recreates the 
 Run:
 ```bash
 php artisan tinker --execute="
-\$u = App\Models\User::where('email','demo@amicta.test')->first();
+\$u = App\Models\User::where('email','demo@Muterin.test')->first();
 foreach (\$u->motorcycles as \$m) {
     echo \$m->nickname . ': ' . \$m->fuelLogs()->count() . ' fuel logs' . PHP_EOL;
 }
@@ -2033,12 +2033,12 @@ Expected: "Beat Ilyas: 3 fuel logs" and "NMAX Kantor: 2 fuel logs".
 
 - [ ] **Step 6: Manual end-to-end browser verification**
 
-Start `php artisan serve`, log in as `demo@amicta.test` / `password123`, and check each new/changed page:
-- `/dashboard` — health score badges on motor cards, prediction text under progress bars, Pusat Perhatian card populated.
-- `/bbm` — per-motor efficiency stats show real km/liter numbers (not "—"), history table lists 5 entries.
-- `/laporan` — TCO, biaya/km, and both charts render with real numbers.
-- A motorcycle detail page — mark an item complete with workshop/parts/photo, confirm it saves.
-- `/history` (Biaya & Servis) — confirm the workshop name and receipt thumbnail show for the log just created.
+Start `php artisan serve`, log in as `demo@Muterin.test` / `password123`, and check each new/changed page:
+- `/dashboard`  health score badges on motor cards, prediction text under progress bars, Pusat Perhatian card populated.
+- `/bbm`  per-motor efficiency stats show real km/liter numbers (not "—"), history table lists 5 entries.
+- `/laporan`  TCO, biaya/km, and both charts render with real numbers.
+- A motorcycle detail page  mark an item complete with workshop/parts/photo, confirm it saves.
+- `/history` (Biaya & Servis)  confirm the workshop name and receipt thumbnail show for the log just created.
 
 - [ ] **Step 7: Commit demo data seeder update**
 
@@ -2051,8 +2051,8 @@ git commit -m "feat: seed fuel log demo data for both demo motorcycles"
 
 ## Self-Review
 
-**Spec coverage:** All 6 modules from the spec map to tasks — Modul 1 (BBM) → Tasks 1–3; Modul 2 (Prediksi) → Task 5, wired into dashboard in Task 7; Modul 3 (Skor Kesehatan) → Task 6, wired in Task 7; Modul 4 (Pusat Perhatian) → Task 7; Modul 5 (Riwayat Servis Detail) → Task 4; Modul 6 (Laporan) → Task 8. Navigation structure from spec §10 matches: BBM and Laporan added as top-level sidebar items; prediction/health/attention integrated into Dashboard and motor detail rather than separate pages, exactly as specified.
+**Spec coverage:** All 6 modules from the spec map to tasks  Modul 1 (BBM) → Tasks 1–3; Modul 2 (Prediksi) → Task 5, wired into dashboard in Task 7; Modul 3 (Skor Kesehatan) → Task 6, wired in Task 7; Modul 4 (Pusat Perhatian) → Task 7; Modul 5 (Riwayat Servis Detail) → Task 4; Modul 6 (Laporan) → Task 8. Navigation structure from spec §10 matches: BBM and Laporan added as top-level sidebar items; prediction/health/attention integrated into Dashboard and motor detail rather than separate pages, exactly as specified.
 
 **Placeholder scan:** No TBD/TODO; every step has complete, runnable code.
 
-**Type consistency:** `MaintenanceStatusService::forItem()` returns `['used','percent','color','remaining']` (existing, unchanged) — `MaintenancePredictionService::forItem()` reads `$status['remaining']` and `$status['percent']`, matching. `HealthScoreService::forMotorcycle()` and `AttentionService` both consume `MaintenanceStatusService::forItem()` the same way. `FuelStatsService` method names (`averageKmPerLiter`, `latestKmPerLiter`, `costPerKm`, `consumptionSeries`) are used identically across `HealthScoreService`, `AttentionService`, `FuelController`, and `ReportController`. `DashboardController` constructs `$dashboard` with `'health'` and per-item `'prediction'` keys that the updated `dashboard.blade.php` steps read directly.
+**Type consistency:** `MaintenanceStatusService::forItem()` returns `['used','percent','color','remaining']` (existing, unchanged)  `MaintenancePredictionService::forItem()` reads `$status['remaining']` and `$status['percent']`, matching. `HealthScoreService::forMotorcycle()` and `AttentionService` both consume `MaintenanceStatusService::forItem()` the same way. `FuelStatsService` method names (`averageKmPerLiter`, `latestKmPerLiter`, `costPerKm`, `consumptionSeries`) are used identically across `HealthScoreService`, `AttentionService`, `FuelController`, and `ReportController`. `DashboardController` constructs `$dashboard` with `'health'` and per-item `'prediction'` keys that the updated `dashboard.blade.php` steps read directly.

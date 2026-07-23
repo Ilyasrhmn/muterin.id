@@ -1,6 +1,6 @@
 (function () {
-  const map = window.AmictaMap.init('map');
-  const token = window.AmictaMap.token();
+  const map = window.MuterinMap.init('map');
+  const token = window.MuterinMap.token();
   const saved = JSON.parse(document.getElementById('plans-data').textContent || '[]');
   const $ = (id) => document.getElementById(id);
 
@@ -84,7 +84,7 @@
     btn.disabled = true;
     
     try {
-      const pos = await window.AmictaGeolocation.getCurrentPosition();
+      const pos = await window.MuterinGeolocation.getCurrentPosition();
       const loc = await reverseGeocode(pos.lat, pos.lng);
       loc.lat = pos.lat;
       loc.lng = pos.lng;
@@ -98,7 +98,7 @@
       map.flyTo([pos.lat, pos.lng], 14);
       
     } catch (error) {
-      await window.AmictaDialog.alert(window.AmictaGeolocation.getErrorMessage(error));
+      await window.MuterinDialog.alert(window.MuterinGeolocation.getErrorMessage(error));
     } finally {
       resetBtn();
     }
@@ -268,7 +268,7 @@
         lastRoute = body;
         if (routeLine) routeLine.setLatLngs(body.geometry);
         else routeLine = L.polyline(body.geometry, { color: '#0F766E', weight: 5 }).addTo(map);
-        window.AmictaMap.fitTo(map, body.geometry);
+        window.MuterinMap.fitTo(map, body.geometry);
         setStatus('', false);
         $('route-distance').textContent = `${body.distance_km} km`;
         $('route-duration').textContent = fmtDuration(body.duration_minutes);
@@ -327,10 +327,10 @@
   // --- Save / Reset ---
   $('save-plan').onclick = async () => {
     if (!lastRoute) {
-      await window.AmictaDialog.alert('Tentukan titik awal & tujuan dulu, lalu tunggu rutenya selesai dihitung.');
+      await window.MuterinDialog.alert('Tentukan titik awal & tujuan dulu, lalu tunggu rutenya selesai dihitung.');
       return;
     }
-    const name = await window.AmictaDialog.prompt('Nama rencana rute?', { label: 'Nama', placeholder: 'mis. Rumah ke Kantor' });
+    const name = await window.MuterinDialog.prompt('Nama rencana rute?', { label: 'Nama', placeholder: 'mis. Rumah ke Kantor' });
     if (!name) return;
     const waypoints = [start, ...via, end].map((p) => [p.lat, p.lng]);
     fetch('/map/plans', {
@@ -358,7 +358,7 @@
       const pts = plan.route_geometry_json || plan.points_json;
       if (routeLine) routeLine.remove();
       routeLine = L.polyline(pts, { color: '#EF4444', weight: 4, dashArray: '6 6' }).addTo(map);
-      window.AmictaMap.fitTo(map, pts);
+      window.MuterinMap.fitTo(map, pts);
       const startEl = $('start-label');
       const endEl = $('end-label');
       startEl.textContent = plan.start_label || 'Titik Awal';
@@ -375,7 +375,7 @@
 
   document.querySelectorAll('[data-delete-plan]').forEach((btn) => {
     btn.addEventListener('click', async () => {
-      const ok = await window.AmictaDialog.confirm('Hapus rencana ini?', { danger: true, confirmText: 'Hapus' });
+      const ok = await window.MuterinDialog.confirm('Hapus rencana ini?', { danger: true, confirmText: 'Hapus' });
       if (!ok) return;
       fetch(`/map/plans/${btn.dataset.deletePlan}`, {
         method: 'DELETE',

@@ -26,6 +26,15 @@
     background-size: 28px 28px;
   }
 
+  /* Leaflet's internal panes/controls use z-index up to 1000 (tiles, markers,
+     popups, zoom controls) and never isolate their own stacking context, so
+     without this they escape past the sticky header and any absolutely
+     positioned sibling (e.g. a search dropdown) that sits at a much lower
+     z-index right next to the map. */
+  .leaflet-container {
+    isolation: isolate;
+  }
+
   /* Custom pin marker styles */
   .custom-pin-marker {
     background: transparent;
@@ -38,9 +47,5 @@
   
   .leaflet-popup-content {
     margin: 12px 14px;
-  }
-  
-  .pin-popup .space-y-3 > * + * {
-    margin-top: 0.75rem;
   }
 }

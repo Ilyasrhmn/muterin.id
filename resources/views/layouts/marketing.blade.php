@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ config('app.name', 'Amicta') }} — Rawat Motor Tanpa Lupa</title>
+    <title>{{ config('app.name', 'Muterin') }}  Rawat Motor Tanpa Lupa</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="bg-background text-foreground">
@@ -12,7 +12,7 @@
         :class="scrolled || mobileOpen ? 'bg-surface/90 backdrop-blur shadow-soft' : 'bg-transparent'">
         <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
             <a href="{{ route('home') }}" class="flex items-center gap-2 font-heading font-bold text-lg text-primary">
-                <x-icon.motorcycle class="w-6 h-6"/> Amicta
+                <x-icon.motorcycle class="w-6 h-6"/> Muterin
             </a>
             <div class="hidden md:flex items-center gap-8 text-sm font-medium text-foreground">
                 <a href="#fitur" class="hover:text-primary transition-colors">Fitur</a>
@@ -48,9 +48,9 @@
             <div class="flex flex-col md:flex-row md:justify-between gap-10 pb-10 border-b border-border">
                 <div class="max-w-sm">
                     <a href="{{ route('home') }}" class="flex items-center gap-2 font-heading font-bold text-lg text-primary mb-3">
-                        <x-icon.motorcycle class="w-6 h-6"/> Amicta
+                        <x-icon.motorcycle class="w-6 h-6"/> Muterin
                     </a>
-                    <p class="text-sm text-muted-fg">Rawat motor tanpa lupa, berbasis km yang benar-benar akurat — dari sumber mana saja: manual, isi bensin, servis, atau riding.</p>
+                    <p class="text-sm text-muted-fg">Rawat motor tanpa lupa, berbasis km yang benar-benar akurat  dari sumber mana saja: manual, isi bensin, servis, atau riding.</p>
                 </div>
                 <div class="flex gap-12 sm:gap-16">
                     <div>
@@ -71,9 +71,9 @@
                 </div>
             </div>
             <p class="text-[clamp(3rem,15vw,10rem)] leading-none font-heading font-black text-primary/10 text-center pt-8 select-none pointer-events-none">
-                AMICTA
+                Muterin
             </p>
-            <p class="text-center text-xs text-muted-fg pt-4">&copy; {{ date('Y') }} Amicta. Rawat motor berbasis jarak tempuh asli.</p>
+            <p class="text-center text-xs text-muted-fg pt-4">&copy; {{ date('Y') }} Muterin. Rawat motor berbasis jarak tempuh asli.</p>
         </div>
     </footer>
 </body>

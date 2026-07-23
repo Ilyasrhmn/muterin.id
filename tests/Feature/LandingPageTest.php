@@ -25,7 +25,7 @@ class LandingPageTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('Navigasi', false);
-        $response->assertSee('AMICTA', false);
+        $response->assertSee('Muterin', false);
     }
 
     public function test_hero_describes_multi_source_odometer_not_gps_only(): void
@@ -34,7 +34,7 @@ class LandingPageTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('km yang benar-benar akurat');
-        $response->assertDontSee('Amicta merekam perjalananmu lewat GPS');
+        $response->assertDontSee('Muterin merekam perjalananmu lewat GPS');
     }
 
     public function test_problem_and_stats_reflect_real_capabilities(): void

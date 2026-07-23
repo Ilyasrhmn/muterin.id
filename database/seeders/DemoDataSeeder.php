@@ -11,13 +11,13 @@ class DemoDataSeeder extends Seeder
 {
     /**
      * Demo account with two motorcycles, realistic service history, and a
-     * few recorded trips — for showing the app with data instead of empty
+     * few recorded trips  for showing the app with data instead of empty
      * states.
      */
     public function run(): void
     {
         $user = User::firstOrCreate(
-            ['email' => 'demo@amicta.test'],
+            ['email' => 'demo@Muterin.test'],
             ['name' => 'Ilyas', 'password' => bcrypt('password123')]
         );
 
@@ -105,7 +105,7 @@ class DemoDataSeeder extends Seeder
         $this->serviceItem($motor, 'Ban', [
             ['2026-01-05', 100, 400000, 'Ban baru bawaan servis besar'],
         ]);
-        // Aki belum pernah diservis — tetap dari checkpoint awal (0 km).
+        // Aki belum pernah diservis  tetap dari checkpoint awal (0 km).
         $this->serviceItem($motor, 'Servis Rutin', [
             ['2026-04-01', 3600, 140000, 'Servis rutin CVT'],
         ]);
@@ -136,7 +136,7 @@ class DemoDataSeeder extends Seeder
 
     /**
      * Create maintenance log entries for one item, in order, then move the
-     * item's checkpoint to the last entry — exactly what
+     * item's checkpoint to the last entry  exactly what
      * MaintenanceController::complete() does for a real "tandai selesai".
      */
     private function serviceItem(Motorcycle $motor, string $itemName, array $logs): void

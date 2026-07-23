@@ -35,11 +35,6 @@ class User extends Authenticatable
         return $this->hasMany(Motorcycle::class);
     }
 
-    public function mapPins(): \Illuminate\Database\Eloquent\Relations\HasMany
-    {
-        return $this->hasMany(MapPin::class);
-    }
-
     public function communityPins(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(CommunityPin::class);
@@ -48,5 +43,15 @@ class User extends Authenticatable
     public function routePlans(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(RoutePlan::class);
+    }
+
+    public function placeLists(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(PlaceList::class);
+    }
+
+    public function savedPlaces(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(SavedPlace::class);
     }
 }

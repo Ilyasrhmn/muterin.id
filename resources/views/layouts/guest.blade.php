@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Amicta') }}</title>
+        <title>{{ config('app.name', 'Muterin') }}</title>
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
@@ -16,7 +16,7 @@
                 <div data-parallax class="absolute bottom-10 right-0 w-56 h-56 rounded-full bg-accent/20 blur-3xl pointer-events-none"></div>
 
                 <a href="{{ route('home') }}" class="relative flex items-center gap-2 font-heading font-bold text-xl">
-                    <x-icon.motorcycle class="w-7 h-7"/> Amicta
+                    <x-icon.motorcycle class="w-7 h-7"/> Muterin
                 </a>
                 <div class="relative">
                     <p class="text-2xl font-heading font-semibold leading-snug">
@@ -26,12 +26,12 @@
                         Rekam perjalanan lewat GPS, dapat pengingat servis otomatis, kelola banyak motor sekaligus.
                     </p>
                 </div>
-                <p class="relative text-sm text-white/60">&copy; {{ date('Y') }} Amicta</p>
+                <p class="relative text-sm text-white/60">&copy; {{ date('Y') }} Muterin</p>
             </div>
 
             <div class="flex flex-col justify-center items-center px-6 py-12">
                 <a href="{{ route('home') }}" class="md:hidden flex items-center gap-2 font-heading font-bold text-lg text-primary mb-8">
-                    <x-icon.motorcycle class="w-6 h-6"/> Amicta
+                    <x-icon.motorcycle class="w-6 h-6"/> Muterin
                 </a>
                 <div class="w-full max-w-sm">
                     {{ $slot }}

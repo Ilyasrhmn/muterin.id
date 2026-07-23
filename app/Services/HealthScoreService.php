@@ -15,7 +15,7 @@ class HealthScoreService
     /**
      * Composite 0-100 score from maintenance status + fuel efficiency trend.
      * ponytail: penalty weights (15/5/10) and the 0.85 efficiency-drop
-     * threshold are tuning knobs — adjust if the score feels miscalibrated
+     * threshold are tuning knobs  adjust if the score feels miscalibrated
      * against real usage.
      */
     public function forMotorcycle(Motorcycle $motorcycle): array

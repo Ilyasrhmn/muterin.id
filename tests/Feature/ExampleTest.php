@@ -12,7 +12,7 @@ class ExampleTest extends TestCase
 
     public function test_guest_sees_landing_page(): void
     {
-        $this->get('/')->assertOk()->assertSee('Amicta');
+        $this->get('/')->assertOk()->assertSee('Muterin');
     }
 
     public function test_logged_in_user_is_redirected_to_dashboard(): void

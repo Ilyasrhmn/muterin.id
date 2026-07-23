@@ -15,7 +15,7 @@ class VehicleDocumentService
 
     /**
      * ponytail: 30-day "soon" threshold mirrors AttentionService's
-     * maintenance-item threshold — tuning knob, not a fixed law.
+     * maintenance-item threshold  tuning knob, not a fixed law.
      */
     public function forMotorcycle(Motorcycle $motorcycle): array
     {

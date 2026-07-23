@@ -1,8 +1,8 @@
-# Amicta UI/UX Redesign — Implementation Plan
+# Muterin UI/UX Redesign  Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax. This is a **UI redesign of an already-working app** — the 39 existing tests must stay green; each task ends with a browser verification checkpoint instead of a new unit test.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax. This is a **UI redesign of an already-working app**  the 39 existing tests must stay green; each task ends with a browser verification checkpoint instead of a new unit test.
 
-**Goal:** Ubah tampilan Amicta dari template mentah Breeze menjadi UI light-theme yang profesional, konsisten, dan interaktif (smooth scroll Lenis + GSAP scroll animations), tanpa mengubah logika fitur yang sudah jalan.
+**Goal:** Ubah tampilan Muterin dari template mentah Breeze menjadi UI light-theme yang profesional, konsisten, dan interaktif (smooth scroll Lenis + GSAP scroll animations), tanpa mengubah logika fitur yang sudah jalan.
 
 **Architecture:** Tetap Laravel + Blade + Alpine + Tailwind (Vite). Tambah 2 dependency frontend: `lenis` (smooth scroll) & `gsap` (+ ScrollTrigger) via npm, di-import di `resources/js/app.js`. Design token dipusatkan di CSS variables + `tailwind.config.js`. Semua UI berulang jadi anonymous Blade components (`x-*`). Landing page publik baru di `/` sebagai etalase.
 
@@ -13,7 +13,7 @@
 - **Tema:** Light-mode only (sesuai permintaan). TIDAK bikin dark mode.
 - **Warna (design tokens, hex pasti):** primary `#0284C7`, primary-hover `#0369A1`, secondary `#0891B2`, accent/CTA `#DC2626`, accent-hover `#B91C1C`, background `#F0F9FF`, surface `#FFFFFF`, foreground `#0F172A`, muted-fg `#64748B`, border `#E0F0F8`, status-green `#22C55E`, status-yellow `#F59E0B`, status-red `#EF4444`. JANGAN pakai putih polos `#FFFFFF` sebagai background halaman (anti-pattern); putih hanya untuk surface/card.
 - **Font:** Poppins (heading, 400-700), Open Sans (body, 300-700). Load via Google Fonts `display=swap`.
-- **Radius:** soft — `--radius: 0.75rem` (rounded-xl) untuk card, `9999px` untuk pill/badge.
+- **Radius:** soft  `--radius: 0.75rem` (rounded-xl) untuk card, `9999px` untuk pill/badge.
 - **Motion:** durasi micro-interaction 150-300ms; scroll reveal 400-700ms `expo.out`/`power2.out`; parallax delta kecil (5-15%); SEMUA animasi dibungkus cek `prefers-reduced-motion` → kalau reduce, tampilkan konten final tanpa animasi. JANGAN pakai SplitText (plugin berbayar GSAP).
 - **Ikon:** SVG saja (Lucide/Heroicons inline). TANPA emoji sebagai ikon.
 - **Accessibility:** kontras teks ≥4.5:1; focus ring terlihat; touch target ≥44px; label form terlihat (bukan placeholder-only).
@@ -109,7 +109,7 @@ Ganti isi `resources/css/app.css`:
 
 - [ ] **Step 2: Map token ke Tailwind**
 
-`tailwind.config.js` — di `theme.extend` tambahkan:
+`tailwind.config.js`  di `theme.extend` tambahkan:
 
 ```js
 extend: {
@@ -295,7 +295,7 @@ git add -A && git commit -m "feat(ui): Lenis smooth scroll + GSAP reveal/countup
 @endif
 ```
 
-> Catatan: `bg-muted` dipakai di outline/ghost — tambahkan `muted: '#EFF7FB'` ke colors Tailwind di Task 0 Step 2 (tambahkan baris `muted: '#EFF7FB',`). Lakukan sekarang jika belum.
+> Catatan: `bg-muted` dipakai di outline/ghost  tambahkan `muted: '#EFF7FB'` ke colors Tailwind di Task 0 Step 2 (tambahkan baris `muted: '#EFF7FB',`). Lakukan sekarang jika belum.
 
 - [ ] **Step 2: Card**
 
@@ -389,7 +389,7 @@ Buat file per ikon di `resources/views/components/icon/`. Contoh `motorcycle.bla
 </svg>
 ```
 
-Buat juga (pola SVG stroke 1.5 yang sama): `gauge.blade.php`, `wrench.blade.php`, `map-pin.blade.php`, `bell.blade.php`, `route.blade.php`, `wallet.blade.php`, `plus.blade.php`, `check.blade.php`, `play.blade.php`, `stop.blade.php`. (Ambil path resmi dari lucide.dev per nama ikon; jangan tebak path — copy dari Lucide.)
+Buat juga (pola SVG stroke 1.5 yang sama): `gauge.blade.php`, `wrench.blade.php`, `map-pin.blade.php`, `bell.blade.php`, `route.blade.php`, `wallet.blade.php`, `plus.blade.php`, `check.blade.php`, `play.blade.php`, `stop.blade.php`. (Ambil path resmi dari lucide.dev per nama ikon; jangan tebak path  copy dari Lucide.)
 
 - [ ] **Step 8: Verifikasi (render sanity)**
 
@@ -403,7 +403,7 @@ git add -A && git commit -m "feat(ui): reusable Blade UI component library + ico
 
 ---
 
-## Task 3: Landing Page (etalase — Lenis + scroll reveals)
+## Task 3: Landing Page (etalase  Lenis + scroll reveals)
 
 **Files:**
 - Create: `resources/views/layouts/marketing.blade.php`, `resources/views/landing.blade.php`
@@ -426,12 +426,12 @@ Route::get('/', function () {
 
 - [ ] **Step 2: Update ExampleTest**
 
-`tests/Feature/ExampleTest.php` — ganti isi test jadi dua kasus:
+`tests/Feature/ExampleTest.php`  ganti isi test jadi dua kasus:
 
 ```php
 public function test_guest_sees_landing_page(): void
 {
-    $this->get('/')->assertOk()->assertSee('Amicta');
+    $this->get('/')->assertOk()->assertSee('Muterin');
 }
 
 public function test_logged_in_user_is_redirected_to_dashboard(): void
@@ -443,7 +443,7 @@ public function test_logged_in_user_is_redirected_to_dashboard(): void
 
 - [ ] **Step 3: Marketing layout**
 
-`resources/views/layouts/marketing.blade.php`: `<html>` shell dengan `@vite`, sticky top nav transparan (logo "Amicta" + tombol "Masuk" `x-ui.button variant=ghost href=login` & "Daftar" `variant=primary href=register`), `{{ $slot }}`, footer sederhana. Nav jadi solid (`bg-surface/90 backdrop-blur`) setelah scroll (Alpine: `x-data="{ y:0 }" @scroll.window="y=window.scrollY"` → `:class="y>20 && 'bg-surface/90 backdrop-blur shadow-soft'"`).
+`resources/views/layouts/marketing.blade.php`: `<html>` shell dengan `@vite`, sticky top nav transparan (logo "Muterin" + tombol "Masuk" `x-ui.button variant=ghost href=login` & "Daftar" `variant=primary href=register`), `{{ $slot }}`, footer sederhana. Nav jadi solid (`bg-surface/90 backdrop-blur`) setelah scroll (Alpine: `x-data="{ y:0 }" @scroll.window="y=window.scrollY"` → `:class="y>20 && 'bg-surface/90 backdrop-blur shadow-soft'"`).
 
 - [ ] **Step 4: Landing sections**
 
@@ -481,7 +481,7 @@ git add -A && git commit -m "feat(ui): public landing page with Lenis smooth scr
 
 - [ ] **Step 1: Guest layout split-screen**
 
-`resources/views/layouts/guest.blade.php`: grid 2 kolom di desktop — kiri panel `bg-primary` (brand "Amicta", tagline, ilustrasi/pattern halus, `data-parallax` blob), kanan `bg-background` berisi `{{ $slot }}` (card form center, `max-w-md`). Mobile: panel brand jadi header tipis di atas.
+`resources/views/layouts/guest.blade.php`: grid 2 kolom di desktop  kiri panel `bg-primary` (brand "Muterin", tagline, ilustrasi/pattern halus, `data-parallax` blob), kanan `bg-background` berisi `{{ $slot }}` (card form center, `max-w-md`). Mobile: panel brand jadi header tipis di atas.
 
 - [ ] **Step 2: Login/Register pakai komponen**
 
@@ -493,7 +493,7 @@ Terapkan pola komponen yang sama ke `forgot-password.blade.php` & `reset-passwor
 
 - [ ] **Step 4: Verifikasi**
 
-Run: `php artisan test --filter=Auth` (semua PASS — memastikan field/flow tak berubah), lalu manual: buka `/login` & `/register`, submit, pastikan redirect benar.
+Run: `php artisan test --filter=Auth` (semua PASS  memastikan field/flow tak berubah), lalu manual: buka `/login` & `/register`, submit, pastikan redirect benar.
 
 - [ ] **Step 5: Commit**
 
@@ -514,7 +514,7 @@ git add -A && git commit -m "feat(ui): branded split-screen auth pages"
 
 - [ ] **Step 1: Redesign navigation.blade.php**
 
-Ganti nav Breeze: brand "Amicta" (logo `x-icon.motorcycle` + wordmark Poppins) di kiri; menu tengah/kanan pakai link dengan ikon + label; active pakai `text-primary` + garis bawah/`bg-primary/10 rounded`. Gunakan warna token (`text-muted-fg` default, `text-primary` aktif). Pertahankan semua `route()` yang sudah ada + form logout.
+Ganti nav Breeze: brand "Muterin" (logo `x-icon.motorcycle` + wordmark Poppins) di kiri; menu tengah/kanan pakai link dengan ikon + label; active pakai `text-primary` + garis bawah/`bg-primary/10 rounded`. Gunakan warna token (`text-muted-fg` default, `text-primary` aktif). Pertahankan semua `route()` yang sudah ada + form logout.
 
 - [ ] **Step 2: app.blade.php shell**
 
@@ -522,7 +522,7 @@ Pastikan `<body class="bg-background">`, header `bg-surface border-b border-bord
 
 - [ ] **Step 3: Verifikasi**
 
-Manual: login, cek tiap menu — active state pindah benar, responsif di 375px (hamburger jalan).
+Manual: login, cek tiap menu  active state pindah benar, responsif di 375px (hamburger jalan).
 
 - [ ] **Step 4: Commit**
 
@@ -557,7 +557,7 @@ return view('dashboard', ['dashboard' => $dashboard, 'kpi' => $kpi]);
 
 - [ ] **Step 2: KPI row + motor cards**
 
-Redesign `dashboard.blade.php`: grid `sm:grid-cols-2 lg:grid-cols-4` berisi 4 `x-ui.stat-tile` (`data-reveal-group`), lalu daftar motor pakai `x-ui.card hover` — tiap item perawatan pakai `x-ui.progress :percent="$i['status']['percent']" :color="$i['status']['color']"` + label. Badge "Perlu perhatian" pakai `x-ui.badge variant="red"`. Empty state ramah (ikon + ajakan tambah motor + `x-ui.button`). Tetap sertakan `<script src="{{ asset('js/notify.js') }}">` (data-attribute status di progress/row tetap ada — pertahankan `data-item-id/name/color`).
+Redesign `dashboard.blade.php`: grid `sm:grid-cols-2 lg:grid-cols-4` berisi 4 `x-ui.stat-tile` (`data-reveal-group`), lalu daftar motor pakai `x-ui.card hover`  tiap item perawatan pakai `x-ui.progress :percent="$i['status']['percent']" :color="$i['status']['color']"` + label. Badge "Perlu perhatian" pakai `x-ui.badge variant="red"`. Empty state ramah (ikon + ajakan tambah motor + `x-ui.button`). Tetap sertakan `<script src="{{ asset('js/notify.js') }}">` (data-attribute status di progress/row tetap ada  pertahankan `data-item-id/name/color`).
 
 - [ ] **Step 3: Verifikasi**
 
@@ -579,10 +579,10 @@ git add -A && git commit -m "feat(ui): executive-style dashboard with KPI tiles 
 **Interfaces:**
 - Consumes: `x-ui.card`, `x-ui.button`, `x-ui.input`, `x-ui.badge`, `x-ui.progress`, `x-icon.*`.
 
-- [ ] **Step 1: Index** — grid kartu motor (`x-ui.card hover`), tiap kartu: nama (Poppins), meta, odometer, badge status ringkas, tombol "Jadikan Aktif" (`x-ui.button variant=outline size=sm`) / label "Aktif" (`x-ui.badge green`). Header dengan judul + `x-ui.button variant=primary href=create` beri ikon plus. Empty state ramah.
-- [ ] **Step 2: Create/Edit** — form dalam `x-ui.card max-w-lg`, semua field `x-ui.input`, submit `x-ui.button`. Pertahankan `name` field & action/`@method`.
-- [ ] **Step 3: Show** — header motor + tombol Edit; tiap item perawatan `x-ui.card` berisi `x-ui.progress` + tombol "Tandai selesai" (Alpine toggle) + form biaya pakai `x-ui.input`. Link "Cari Bengkel" saat merah pakai `x-ui.button variant=accent size=sm`. Pertahankan semua route/field.
-- [ ] **Step 4: Verifikasi** — manual CRUD penuh: tambah, edit, aktifkan, tandai servis; pastikan berfungsi & rapi di 375px.
+- [ ] **Step 1: Index**  grid kartu motor (`x-ui.card hover`), tiap kartu: nama (Poppins), meta, odometer, badge status ringkas, tombol "Jadikan Aktif" (`x-ui.button variant=outline size=sm`) / label "Aktif" (`x-ui.badge green`). Header dengan judul + `x-ui.button variant=primary href=create` beri ikon plus. Empty state ramah.
+- [ ] **Step 2: Create/Edit**  form dalam `x-ui.card max-w-lg`, semua field `x-ui.input`, submit `x-ui.button`. Pertahankan `name` field & action/`@method`.
+- [ ] **Step 3: Show**  header motor + tombol Edit; tiap item perawatan `x-ui.card` berisi `x-ui.progress` + tombol "Tandai selesai" (Alpine toggle) + form biaya pakai `x-ui.input`. Link "Cari Bengkel" saat merah pakai `x-ui.button variant=accent size=sm`. Pertahankan semua route/field.
+- [ ] **Step 4: Verifikasi**  manual CRUD penuh: tambah, edit, aktifkan, tandai servis; pastikan berfungsi & rapi di 375px.
 - [ ] **Step 5: Commit**
 
 ```bash
@@ -597,10 +597,10 @@ git add -A && git commit -m "feat(ui): redesign motorcycle index/create/edit/sho
 - Modify: `resources/views/riding/index.blade.php`
 
 **Interfaces:**
-- Consumes: `x-ui.card`, `x-ui.button`, `x-icon.play/stop`. TIDAK mengubah `trip-recorder.js` maupun id elemen (`motor-select`, `distance`, `duration`, `start-btn`, `stop-btn`, `gps-msg`) — hanya styling.
+- Consumes: `x-ui.card`, `x-ui.button`, `x-icon.play/stop`. TIDAK mengubah `trip-recorder.js` maupun id elemen (`motor-select`, `distance`, `duration`, `start-btn`, `stop-btn`, `gps-msg`)  hanya styling.
 
-- [ ] **Step 1: Restyle** — kartu tengah `x-ui.card` dengan readout jarak besar (Poppins `text-6xl`, `tabular-nums`), durasi di bawah, select motor bergaya, tombol Start (`x-ui.button variant=primary size=lg w-full` + ikon play) & Stop (`variant=accent size=lg`). Pesan GPS `text-accent`. **JANGAN ubah `id=` elemen** (JS bergantung padanya). Empty state (belum ada motor) tetap.
-- [ ] **Step 2: Verifikasi** — DevTools Sensors set Location, Start→gerak→Stop, pastikan angka jalan & redirect ke dashboard (fungsi utuh).
+- [ ] **Step 1: Restyle**  kartu tengah `x-ui.card` dengan readout jarak besar (Poppins `text-6xl`, `tabular-nums`), durasi di bawah, select motor bergaya, tombol Start (`x-ui.button variant=primary size=lg w-full` + ikon play) & Stop (`variant=accent size=lg`). Pesan GPS `text-accent`. **JANGAN ubah `id=` elemen** (JS bergantung padanya). Empty state (belum ada motor) tetap.
+- [ ] **Step 2: Verifikasi**  DevTools Sensors set Location, Start→gerak→Stop, pastikan angka jalan & redirect ke dashboard (fungsi utuh).
 - [ ] **Step 3: Commit**
 
 ```bash
@@ -617,9 +617,9 @@ git add -A && git commit -m "feat(ui): redesign riding tracker screen"
 **Interfaces:**
 - Consumes: `x-ui.card`, `x-ui.button`, `x-ui.badge`, `x-icon.*`.
 
-- [ ] **Step 1: History timeline** — dua kolom (Perjalanan, Perawatan) jadi timeline: tiap entri kartu dengan garis/titik di kiri, ikon kategori, tanggal `tabular-nums`. Total biaya sebagai `x-ui.stat-tile` kecil. Tombol "Export PDF" `x-ui.button variant=outline`. `[data-reveal]` per entri. Pertahankan route `history.export`.
-- [ ] **Step 2: Map controls** — bungkus kontrol mode + tombol "Simpan Rencana" dalam `x-ui.card` bar di atas peta; select bergaya token; legenda warna kategori (momen/rawan/sepi) kecil. **JANGAN ubah `id="map"`, `id="mode"`, `id="save-plan"`, `@csrf`** (map.js bergantung). Peta tetap Leaflet.
-- [ ] **Step 3: Verifikasi** — manual: history tampil rapi & export PDF jalan; `/map` render, tambah pin & simpan rencana masih berfungsi.
+- [ ] **Step 1: History timeline**  dua kolom (Perjalanan, Perawatan) jadi timeline: tiap entri kartu dengan garis/titik di kiri, ikon kategori, tanggal `tabular-nums`. Total biaya sebagai `x-ui.stat-tile` kecil. Tombol "Export PDF" `x-ui.button variant=outline`. `[data-reveal]` per entri. Pertahankan route `history.export`.
+- [ ] **Step 2: Map controls**  bungkus kontrol mode + tombol "Simpan Rencana" dalam `x-ui.card` bar di atas peta; select bergaya token; legenda warna kategori (momen/rawan/sepi) kecil. **JANGAN ubah `id="map"`, `id="mode"`, `id="save-plan"`, `@csrf`** (map.js bergantung). Peta tetap Leaflet.
+- [ ] **Step 3: Verifikasi**  manual: history tampil rapi & export PDF jalan; `/map` render, tambah pin & simpan rencana masih berfungsi.
 - [ ] **Step 4: Commit**
 
 ```bash
@@ -632,10 +632,10 @@ git add -A && git commit -m "feat(ui): timeline history and restyled map control
 
 **Files:** lintas view (perbaikan kecil), hapus artefak sementara.
 
-- [ ] **Step 1: Reduced-motion audit** — dengan emulate reduce: landing, dashboard, semua reveal/countup/parallax tampil instan tanpa gerak; Lenis nonaktif (native scroll). Perbaiki bila ada yang tetap animasi.
-- [ ] **Step 2: Responsive audit** — cek 375 / 768 / 1024 / 1440 tiap halaman: tanpa horizontal scroll, touch target ≥44px, nav mobile jalan.
-- [ ] **Step 3: Kontras & focus** — pastikan teks muted `#64748B` di atas surface ≥4.5:1 (ganti ke `#475569` bila kurang di konteks kecil); semua elemen interaktif punya focus ring; badge kuning pakai teks gelap (`#B45309`) bukan kuning-di-putih.
-- [ ] **Step 4: Full test + build** — `php artisan test` (harus 39 passed) + `npm run build` sukses. Hapus route `/__ui` bila masih ada.
+- [ ] **Step 1: Reduced-motion audit**  dengan emulate reduce: landing, dashboard, semua reveal/countup/parallax tampil instan tanpa gerak; Lenis nonaktif (native scroll). Perbaiki bila ada yang tetap animasi.
+- [ ] **Step 2: Responsive audit**  cek 375 / 768 / 1024 / 1440 tiap halaman: tanpa horizontal scroll, touch target ≥44px, nav mobile jalan.
+- [ ] **Step 3: Kontras & focus**  pastikan teks muted `#64748B` di atas surface ≥4.5:1 (ganti ke `#475569` bila kurang di konteks kecil); semua elemen interaktif punya focus ring; badge kuning pakai teks gelap (`#B45309`) bukan kuning-di-putih.
+- [ ] **Step 4: Full test + build**  `php artisan test` (harus 39 passed) + `npm run build` sukses. Hapus route `/__ui` bila masih ada.
 - [ ] **Step 5: Commit**
 
 ```bash
@@ -650,5 +650,5 @@ git add -A && git commit -m "chore(ui): accessibility, responsive and reduced-mo
 - **Fungsi aman:** setiap task yang menyentuh view berfitur menegaskan "pertahankan route/field/id JS"; gate tiap task menjalankan test terkait; T10 memastikan 39 test tetap hijau. Perubahan perilaku satu-satunya yang disengaja: root `/` jadi landing (ExampleTest diperbarui).
 - **Konsistensi token:** semua warna via nama Tailwind token (bukan hex mentah di view); satu skala radius/shadow; ikon SVG stroke 1.5 seragam.
 - **Motion aman:** semua efek punya jalur reduced-motion; parallax hanya elemen dekoratif; tanpa SplitText berbayar.
-- **Catatan:** `muted: '#EFF7FB'` harus ditambahkan ke colors Tailwind (disebut di T0 & T2) — pastikan ada sebelum T2.
+- **Catatan:** `muted: '#EFF7FB'` harus ditambahkan ke colors Tailwind (disebut di T0 & T2)  pastikan ada sebelum T2.
 ```

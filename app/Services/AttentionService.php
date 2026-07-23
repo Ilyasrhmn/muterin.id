@@ -32,7 +32,7 @@ class AttentionService
                 if ($status['percent'] > 100) {
                     $items[] = [
                         'severity' => 'red',
-                        'text' => "Segera servis {$item->name} — {$motor->nickname}",
+                        'text' => "Segera servis {$item->name}  {$motor->nickname}",
                         'url' => route('motorcycles.show', $motor),
                     ];
                     continue;
@@ -64,7 +64,7 @@ class AttentionService
                     $overdueText = $doc['days_left'] === 0 ? 'hari ini' : abs($doc['days_left']).' hari lalu';
                     $items[] = [
                         'severity' => 'red',
-                        'text' => "Segera bayar {$doc['label']} — {$motor->nickname}, jatuh tempo {$overdueText}",
+                        'text' => "Segera bayar {$doc['label']}  {$motor->nickname}, jatuh tempo {$overdueText}",
                         'url' => route('motorcycles.show', $motor),
                     ];
                 } elseif ($doc['color'] === 'yellow') {

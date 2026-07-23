@@ -20,7 +20,7 @@
                 </div>
                 <p class="text-[10px] font-bold text-slate-500 uppercase tracking-[0.15em]">Biaya per KM</p>
                 <p class="text-2xl font-heading font-extrabold text-foreground mt-1 tracking-tight">
-                    @if ($costPerKm) Rp <span data-countup="{{ $costPerKm }}">0</span> @else — @endif
+                    @if ($costPerKm) Rp <span data-countup="{{ $costPerKm }}">0</span> @else  @endif
                 </p>
             </div>
             <div data-reveal class="bg-surface border border-border rounded-2xl p-5">
@@ -94,7 +94,7 @@
             @if ($efficiencySeries->flatten(1)->isNotEmpty())
             @php
                 // ponytail: align each series to the shared label list here (in PHP) so the
-                // Chart.js config below stays plain JSON — no per-dataset lookup logic in JS.
+                // Chart.js config below stays plain JSON  no per-dataset lookup logic in JS.
                 $efficiencyAligned = $efficiencySeries->map(
                     fn ($series) => $efficiencyLabels->map(
                         fn ($date) => optional(collect($series)->firstWhere('date', $date))['km_per_liter']

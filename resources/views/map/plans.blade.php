@@ -4,7 +4,7 @@
 
     <div class="p-4 sm:p-6 lg:p-8 max-w-[1400px] mx-auto space-y-6">
         <x-ui.hero badge="{{ $plans->count() }} rencana" title="Rencanakan Rute"
-                    subtitle="Cari tempat atau klik di peta, lalu pilih titik awal & tujuan — rute jalan otomatis dihitung." />
+                    subtitle="Cari tempat atau klik di peta, lalu pilih titik awal & tujuan  rute jalan otomatis dihitung." />
 
         <div class="grid lg:grid-cols-3 gap-6 items-start">
             {{-- LEFT: persistent planning panel + saved plans --}}

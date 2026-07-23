@@ -21,7 +21,7 @@ The dialog system consists of three main layers:
 ### 1. Dialog HTML Structure (dialog.blade.php)
 
 ```html
-<div id="amicta-dialog" 
+<div id="Muterin-dialog" 
      class="fixed inset-0 z-[9999] hidden opacity-0 transition-opacity duration-300"
      role="dialog" 
      aria-modal="true"
@@ -101,7 +101,7 @@ The dialog system consists of three main layers:
 
 ```javascript
 (function () {
-  const root = document.getElementById('amicta-dialog');
+  const root = document.getElementById('Muterin-dialog');
   if (!root) return;
 
   const backdrop = root.querySelector('[data-dialog-backdrop]');
@@ -256,7 +256,7 @@ The dialog system consists of three main layers:
     confirmBtn.disabled = !input.value.trim(); 
   });
 
-  window.AmictaDialog = {
+  window.MuterinDialog = {
     confirm(message, opts = {}) {
       mode = 'confirm'; 
       hasExtra = false;
@@ -389,7 +389,7 @@ No data model changes required - this is purely a UI/UX enhancement.
 
 ## Error Handling
 
-1. **Missing Dialog Element**: If `#amicta-dialog` doesn't exist, the IIFE returns early without errors
+1. **Missing Dialog Element**: If `#Muterin-dialog` doesn't exist, the IIFE returns early without errors
 2. **Focus Trap Edge Cases**: Filter out disabled and hidden elements from focusable list
 3. **Transition Timing**: Use `setTimeout` to ensure animations complete before state changes
 4. **Browser Compatibility**: Fallback to darker overlay if `backdrop-filter` is not supported

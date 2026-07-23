@@ -1,3 +1,40 @@
+# Sidebar Grup Lipat (Nutrio-style) Implementation Plan
+
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+
+**Goal:** Restrukturisasi nav sidebar jadi item datar + 2 section lipat (Alpine.js), gaya Nutrio, UI calm.
+
+**Architecture:** Satu file Blade (`resources/views/layouts/navigation.blade.php`). Item datar (Dashboard, Motor Saya, Riding) tetap; sisanya jadi 2 grup collapsible ("Perawatan & Biaya", "Peta & Navigasi"). Toggle via Alpine (`x-data`/`x-bind`), animasi tinggi via trik CSS `grid-template-rows: 0fr↔1fr` (plugin `x-collapse` tidak tersedia). Grup yang memuat rute aktif terbuka otomatis saat load (nilai awal `x-data` di-set server-side).
+
+**Tech Stack:** Laravel Blade, Alpine.js (sudah termuat), Tailwind (butuh `npm run build` untuk class arbitrary baru).
+
+## Global Constraints
+
+- Semua item nav sekarang tetap ada, tak boleh ada yang hilang. Footer "Sistem" + user-card tidak diubah.
+- Tidak ada JS custom baru — pakai Alpine yang sudah ada.
+- Hindari kombinasi `x-transition` + `x-cloak` (pernah bikin toggle stuck). Animasi pakai `grid-template-rows` + `x-bind:class`.
+- UI calm: header grup redup (`text-slate-500`), chevron kecil `opacity-50`, anak diindentasi, state aktif pill `bg-primary-soft text-primary`.
+- Grup aktif (memuat rute aktif) auto-expand saat load.
+- Struktur final:
+  - Datar: Dashboard (`dashboard`/gauge), Motor Saya (`motorcycles.index`,`motorcycles.*`/motorcycle), Riding (`riding`/play).
+  - Grup **Perawatan & Biaya** (icon `wallet`): Biaya & Servis (`history`/wallet), BBM (`bbm.index`,`bbm.*`/droplet), Laporan (`laporan`/bar-chart).
+  - Grup **Peta & Navigasi** (icon `map`): Peta Rute (`map.routes`/route), Titik Saya (`map.saved`/map-pin), Peta Komunitas (`map.community`/alert-triangle), Rencana Rute (`map.plans`/navigation).
+
+---
+
+### Task 1: Restrukturisasi navigation.blade.php jadi grup lipat
+
+**Files:**
+- Modify: `resources/views/layouts/navigation.blade.php`
+
+**Interfaces:**
+- Produces: sidebar baru. Tidak ada konsumen lain (murni tampilan).
+
+- [ ] **Step 1: Tulis ulang `navigation.blade.php`**
+
+Ganti seluruh isi `resources/views/layouts/navigation.blade.php` dengan:
+
+```blade
 @php
     $flat = [
         ['route' => 'dashboard', 'pattern' => 'dashboard', 'label' => 'Dashboard', 'icon' => 'gauge'],
@@ -112,3 +149,42 @@
         </div>
     </div>
 </aside>
+```
+
+- [ ] **Step 2: Build assets (class arbitrary baru)**
+
+Kelas baru `grid-rows-[0fr]`, `grid-rows-[1fr]`, `transition-[grid-template-rows]`, `-rotate-90` muncul literal di Blade sehingga terscan Tailwind, tapi bundle harus di-build ulang (tak ada vite dev server).
+
+Run: `npm run build`
+Expected: build sukses, `public/build/assets/app-*.css` baru.
+
+- [ ] **Step 3: Verifikasi manual di browser**
+
+Login, buka beberapa halaman:
+- Buka `/dashboard` → dua grup **tertutup** (tidak ada child aktif); Dashboard ter-highlight.
+- Buka `/history` (Biaya & Servis) → grup **"Perawatan & Biaya" terbuka otomatis**, "Biaya & Servis" ter-highlight pill; grup "Peta & Navigasi" tertutup.
+- Buka `/peta/komunitas` → grup **"Peta & Navigasi" terbuka otomatis**, "Peta Komunitas" ter-highlight.
+- Klik header grup yang tertutup → terbuka dengan animasi tinggi halus, chevron muter; klik lagi → tertutup.
+- Konfirmasi semua 10 item nav masih ada, "Riding" tetap datar, footer "Sistem" + user-card utuh.
+- Cek konsol tidak ada error Alpine.
+
+- [ ] **Step 4: Jalankan test suite**
+
+Run: `php artisan test`
+Expected: PASS semua (tidak ada file PHP tersentuh; perubahan murni Blade/CSS).
+
+- [ ] **Step 5: Commit**
+
+> Catatan: sesuai preferensi sesi ini, perubahan sengaja dibiarkan uncommitted untuk digabung user bersama rebrand Muterin. JANGAN commit kecuali user memintanya. Lewati step ini bila user masih menahan commit.
+
+```bash
+git add resources/views/layouts/navigation.blade.php public/build
+git commit -m "feat: collapsible grouped sidebar (Nutrio-style), calm UI"
+```
+
+---
+
+## Catatan penutup
+
+- Perubahan satu file Blade + rebuild CSS. Tanpa backend, test suite tetap hijau.
+- Verifikasi paling penting: auto-expand grup aktif saat load, animasi buka-tutup halus, tidak ada item nav yang hilang.

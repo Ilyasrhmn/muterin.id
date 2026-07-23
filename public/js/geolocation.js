@@ -2,7 +2,7 @@
  * Geolocation utility module
  * Provides current location functionality with error handling
  */
-window.AmictaGeolocation = (function() {
+window.MuterinGeolocation = (function() {
   
   /**
    * Check if geolocation is supported

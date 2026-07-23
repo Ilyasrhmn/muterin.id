@@ -1,4 +1,4 @@
-# Desain: Motor Maintenance Tracker (Amicta)
+# Desain: Motor Maintenance Tracker (Muterin)
 
 **Tanggal:** 2026-07-19
 **Status:** Disetujui (menunggu review spec sebelum implementasi)
@@ -9,7 +9,7 @@
 
 Aplikasi web untuk pengendara motor individu yang **otomatis menghitung jarak
 tempuh tiap motor lewat GPS selama riding**, lalu memberi tahu secara proaktif
-kapan tiap komponen (oli, ban, aki, servis rutin) perlu diganti — berdasarkan
+kapan tiap komponen (oli, ban, aki, servis rutin) perlu diganti  berdasarkan
 akumulasi km riil, bukan tebak-tebakan atau harus baca odometer manual.
 
 **Masalah:** Pengendara sering lupa/tidak tahu kapan harus ganti oli/ban/aki
@@ -56,7 +56,7 @@ oli.
 8. Peta Perjalanan (satu komponen Leaflet, 3 fungsi):
    a. Riwayat rute: gambar jalur GPS trip di peta.
    b. Planner sederhana: klik beberapa titik → simpan sebagai rencana rute
-      (tanpa routing engine / preferensi jalan — hanya menghubungkan titik).
+      (tanpa routing engine / preferensi jalan  hanya menghubungkan titik).
    c. CRUD pin Momen / Jalan Rawan / Sepi (lat-lng + kategori + icon +
       catatan).
 9. Push notification browser saat item transisi ke kuning/merah.
@@ -140,7 +140,7 @@ route_plans   // Stretch
   RoutePlanController.
 - **Models + relasi:** User hasMany Motorcycle; Motorcycle hasMany
   MaintenanceItem, Trip; MaintenanceItem hasMany MaintenanceLog.
-- **Service:** `MaintenanceStatusService` — satu tempat hitung persen & warna
+- **Service:** `MaintenanceStatusService`  satu tempat hitung persen & warna
   status (dipakai dashboard, detail motor, notifikasi). Menghindari duplikasi
   logika status di banyak tempat.
 - **Views (Blade):** layout + halaman dashboard, motor (list/form/detail),

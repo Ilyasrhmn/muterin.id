@@ -1,14 +1,14 @@
-# Desain: Manajemen Kendaraan (Amicta v3)
+# Desain: Manajemen Kendaraan (Muterin v3)
 
 **Tanggal:** 2026-07-19
-**Status:** Disetujui konsep (menunggu review spec) — **implementasi dikerjakan di model Sonnet 5, bukan Opus**
+**Status:** Disetujui konsep (menunggu review spec)  **implementasi dikerjakan di model Sonnet 5, bukan Opus**
 
 ---
 
 ## 1. Tujuan
 
-Melengkapi Amicta dari "pengingat oli" menjadi **sistem manajemen kendaraan** yang
-benar-benar menyelesaikan masalah pemilik motor — analog dengan modul "Manajemen
+Melengkapi Muterin dari "pengingat oli" menjadi **sistem manajemen kendaraan** yang
+benar-benar menyelesaikan masalah pemilik motor  analog dengan modul "Manajemen
 Produksi" di Nutrio, tetapi untuk operasional kepemilikan kendaraan. Tanpa IoT;
 semua berbasis data yang sudah dimiliki (odometer + trip GPS) plus input manual.
 
@@ -65,11 +65,11 @@ receipt_path   (string, nullable)   -- path foto nota di storage
 
 ### 3.3 Tidak ada perubahan model lain
 Prediksi, skor kesehatan, action center, dan laporan semuanya **turunan** (dihitung
-dari data yang ada) — tidak menambah tabel. Ponytail: jangan simpan yang bisa dihitung.
+dari data yang ada)  tidak menambah tabel. Ponytail: jangan simpan yang bisa dihitung.
 
 ---
 
-## 4. Modul 1 — Manajemen BBM
+## 4. Modul 1  Manajemen BBM
 
 **Halaman baru** `/bbm` (sidebar "BBM"). Controller `FuelController` (index, store, destroy).
 
@@ -97,7 +97,7 @@ full-to-full → efisiensi tampil "—" dengan pesan "butuh minimal 2x isi tank 
 
 ---
 
-## 5. Modul 2 — Prediksi Perawatan Cerdas
+## 5. Modul 2  Prediksi Perawatan Cerdas
 
 **Service baru `MaintenancePredictionService`** (tanpa tabel).
 
@@ -118,16 +118,16 @@ full-to-full → efisiensi tampil "—" dengan pesan "butuh minimal 2x isi tank 
 - Bila `avgKmPerDay` null → tampilkan "Belum cukup data trip untuk prediksi".
 
 **Ponytail:** ini heuristik linear sederhana; knob 30-hari & fallback ditandai komentar
-`ponytail:` sebagai parameter yang bisa dituning. Bukan ML — jujur ke user bahwa ini
+`ponytail:` sebagai parameter yang bisa dituning. Bukan ML  jujur ke user bahwa ini
 estimasi dari rata-rata.
 
 ---
 
-## 6. Modul 3 — Skor Kesehatan Motor
+## 6. Modul 3  Skor Kesehatan Motor
 
-**Service baru `HealthScoreService`** — komposit 0–100 per motor.
+**Service baru `HealthScoreService`**  komposit 0–100 per motor.
 
-**Formula MVP (didokumentasikan, tunable — ponytail calibration knob):**
+**Formula MVP (didokumentasikan, tunable  ponytail calibration knob):**
 ```
 skor = 100
 untuk tiap maintenance item:
@@ -151,7 +151,7 @@ Motor baru semua item hijau → skor 100.
 
 ---
 
-## 7. Modul 4 — Pusat Perhatian (Action Center)
+## 7. Modul 4  Pusat Perhatian (Action Center)
 
 **Agregator** (di `DashboardController`, atau service `AttentionService`) yang
 mengumpulkan aksi lintas semua motor user:
@@ -170,7 +170,7 @@ lokal, tapi hub ini jadi sumber utama in-app).
 
 ---
 
-## 8. Modul 5 — Riwayat Servis Detail + Foto Nota
+## 8. Modul 5  Riwayat Servis Detail + Foto Nota
 
 **Perluasan** flow "Tandai selesai" yang sudah ada (`MaintenanceController::complete`).
 
@@ -188,7 +188,7 @@ foto → tampil normal tanpa thumbnail.
 
 ---
 
-## 9. Modul 6 — Laporan / Analytics Mendalam
+## 9. Modul 6  Laporan / Analytics Mendalam
 
 **Halaman baru** `/laporan` (sidebar "Laporan"). Controller `ReportController` (invoke).
 
@@ -216,10 +216,10 @@ Laporan            (BARU)
 Peta Rute
 Titik Saya
 Rencana Rute
-—— Sistem ——
+— Sistem ——
 Pengaturan
 ```
-Prediksi, Skor Kesehatan, Pusat Perhatian TIDAK jadi menu sendiri — menyatu di Dashboard
+Prediksi, Skor Kesehatan, Pusat Perhatian TIDAK jadi menu sendiri  menyatu di Dashboard
 & detail motor (tempat user memutuskan tindakan).
 
 ---
@@ -228,10 +228,10 @@ Prediksi, Skor Kesehatan, Pusat Perhatian TIDAK jadi menu sendiri — menyatu di
 
 - **Model:** `FuelLog` (baru); `MaintenanceLog` (+3 kolom).
 - **Services (murni hitung, mudah dites terpisah):**
-  - `FuelStatsService` — konsumsi, biaya/km, efisiensi.
-  - `MaintenancePredictionService` — avg km/hari, prediksi per item.
-  - `HealthScoreService` — skor komposit.
-  - `AttentionService` — daftar aksi (boleh digabung ke DashboardController bila kecil).
+  - `FuelStatsService`  konsumsi, biaya/km, efisiensi.
+  - `MaintenancePredictionService`  avg km/hari, prediksi per item.
+  - `HealthScoreService`  skor komposit.
+  - `AttentionService`  daftar aksi (boleh digabung ke DashboardController bila kecil).
 - **Controllers:** `FuelController`, `ReportController` (baru); `MaintenanceController`,
   `DashboardController` (diperluas).
 - **Views:** `bbm/index`, `laporan/index` (baru); dashboard, motorcycles/show,

@@ -30,7 +30,7 @@ class CommunityPinService
     }
 
     // Pin yang jaraknya <= threshold meter dari vertex terdekat pada polyline rute.
-    // ponytail: jarak ke vertex terdekat (bukan titik-ke-segmen) — geometry ORS rapat,
+    // ponytail: jarak ke vertex terdekat (bukan titik-ke-segmen)  geometry ORS rapat,
     // aproksimasi ini cukup; naikkan ke titik-ke-segmen kalau meleset.
     public function nearRoute(array $geometry, float $thresholdMeters = 300): Collection
     {

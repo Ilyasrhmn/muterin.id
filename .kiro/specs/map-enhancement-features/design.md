@@ -27,7 +27,7 @@ The enhancement consists of three independent but complementary modules:
  * Geolocation utility module
  * Provides current location functionality with error handling
  */
-window.AmictaGeolocation = (function() {
+window.MuterinGeolocation = (function() {
   
   /**
    * Check if geolocation is supported
@@ -110,7 +110,7 @@ window.AmictaGeolocation = (function() {
  * Pin icon configuration
  * Maps categories to Font Awesome icons and colors
  */
-window.AmictaPinIcons = {
+window.MuterinPinIcons = {
   infrastruktur: {
     icon: 'fa-road-barrier',
     color: '#3B82F6', // blue
@@ -143,7 +143,7 @@ window.AmictaPinIcons = {
  * @returns {Object}
  */
 function getIconConfig(category) {
-  return window.AmictaPinIcons[category] || window.AmictaPinIcons.lainnya;
+  return window.MuterinPinIcons[category] || window.MuterinPinIcons.lainnya;
 }
 ```
 
@@ -241,7 +241,7 @@ map.on('click', async (e) => {
 
 // Add floating action button for current location
 function addCurrentLocationFAB() {
-  if (!window.AmictaGeolocation.isSupported()) return;
+  if (!window.MuterinGeolocation.isSupported()) return;
   
   const fab = document.createElement('button');
   fab.className = 'fixed bottom-24 right-6 z-[999] w-14 h-14 bg-primary text-white rounded-full shadow-lift hover:shadow-xl transition-all hover:scale-110 active:scale-95';
@@ -253,7 +253,7 @@ function addCurrentLocationFAB() {
       fab.innerHTML = '<i class="fas fa-spinner fa-spin text-xl"></i>';
       fab.disabled = true;
       
-      const pos = await window.AmictaGeolocation.getCurrentPosition();
+      const pos = await window.MuterinGeolocation.getCurrentPosition();
       
       fab.innerHTML = '<i class="fas fa-location-crosshairs text-xl"></i>';
       fab.disabled = false;
@@ -268,8 +268,8 @@ function addCurrentLocationFAB() {
       fab.innerHTML = '<i class="fas fa-location-crosshairs text-xl"></i>';
       fab.disabled = false;
       
-      const msg = window.AmictaGeolocation.getErrorMessage(error);
-      await window.AmictaDialog.alert(msg);
+      const msg = window.MuterinGeolocation.getErrorMessage(error);
+      await window.MuterinDialog.alert(msg);
     }
   };
   
@@ -279,7 +279,7 @@ function addCurrentLocationFAB() {
 async function promptPinCreation(lat, lng, isCurrentLocation = false) {
   const category = document.getElementById('pin-category').value;
   
-  const result = await window.AmictaDialog.prompt(
+  const result = await window.MuterinDialog.prompt(
     isCurrentLocation ? 'Tambah titik di lokasi Anda' : 'Judul titik?',
     {
       label: 'Judul',
@@ -307,7 +307,7 @@ async function promptPinCreation(lat, lng, isCurrentLocation = false) {
     method: 'POST',
     headers: { 
       'Content-Type': 'application/json', 
-      'X-CSRF-TOKEN': window.AmictaMap.token(), 
+      'X-CSRF-TOKEN': window.MuterinMap.token(), 
       Accept: 'application/json' 
     },
     body: JSON.stringify(payload),
@@ -323,7 +323,7 @@ function enhanceRoutePlanning() {
   const startContainer = document.querySelector('[data-route-start-container]');
   const endContainer = document.querySelector('[data-route-end-container]');
   
-  if (window.AmictaGeolocation.isSupported()) {
+  if (window.MuterinGeolocation.isSupported()) {
     // Add to start point
     const startBtn = createLocationButton('route-start');
     startBtn.onclick = () => handleRouteLocationClick('start');
@@ -342,7 +342,7 @@ async function handleRouteLocationClick(type) {
   try {
     setButtonLoading(button, true);
     
-    const pos = await window.AmictaGeolocation.getCurrentPosition();
+    const pos = await window.MuterinGeolocation.getCurrentPosition();
     
     // Reverse geocode to get location label
     const loc = await reverseGeocode(pos.lat, pos.lng);
@@ -364,8 +364,8 @@ async function handleRouteLocationClick(type) {
   } catch (error) {
     setButtonLoading(button, false);
     
-    const msg = window.AmictaGeolocation.getErrorMessage(error);
-    await window.AmictaDialog.alert(msg);
+    const msg = window.MuterinGeolocation.getErrorMessage(error);
+    await window.MuterinDialog.alert(msg);
   }
 }
 ```
