@@ -73,7 +73,7 @@ class SavedPlaceController extends Controller
             'lng' => 'required|numeric|between:-180,180',
             'title' => 'required|string|max:255',
             'description' => 'nullable|string|max:2000',
-            'photo' => 'nullable|image|max:4096',
+            'photo' => 'nullable|image|max:10240',
         ]);
         $this->assertOwnsList($data['place_list_id']);
 

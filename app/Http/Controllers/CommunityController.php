@@ -35,7 +35,7 @@ class CommunityController extends Controller
             'description' => 'nullable|string|max:2000',
             'time_context' => 'required|in:siang,malam,kapanpun',
             'is_anonymous' => 'boolean',
-            'photo' => 'nullable|image|max:4096',
+            'photo' => 'nullable|image|max:10240',
         ]);
 
         $data['photo_path'] = $request->file('photo')?->store('community', 'public');

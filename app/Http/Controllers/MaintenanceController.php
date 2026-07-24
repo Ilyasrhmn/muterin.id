@@ -17,7 +17,7 @@ class MaintenanceController extends Controller
             'note' => 'nullable|string|max:255',
             'workshop_name' => 'nullable|string|max:255',
             'parts' => 'nullable|string|max:255',
-            'receipt' => 'nullable|image|max:2048',
+            'receipt' => 'nullable|image|max:10240',
         ]);
 
         $receiptPath = $request->hasFile('receipt')
