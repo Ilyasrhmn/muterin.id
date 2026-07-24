@@ -49,11 +49,9 @@
                         <span class="text-xs font-semibold text-muted-fg">Simpan ke list</span>
                         <div id="pf-list"></div>
                     </div>
-                    <label id="pf-photo-wrap" class="block space-y-1">
-                        <span class="text-xs font-semibold text-muted-fg">Foto (opsional)</span>
-                        <input id="pf-photo" type="file" accept="image/*"
-                               class="w-full text-xs text-muted-fg file:mr-3 file:rounded-lg file:border-0 file:bg-muted file:px-3 file:py-1.5 file:text-xs file:font-semibold">
-                    </label>
+                    <div id="pf-photo-wrap">
+                        <x-ui.photo-picker id="pf-photo" name="photo" />
+                    </div>
                     <p id="pf-error" class="hidden text-xs text-accent"></p>
                     <div class="flex gap-2">
                         <x-ui.button id="pf-cancel" variant="outline" size="sm" type="button" class="flex-1 justify-center">Batal</x-ui.button>

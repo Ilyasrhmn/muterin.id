@@ -282,6 +282,7 @@
     $('add-form').classList.add('hidden');
     ['f-title', 'f-description'].forEach((id) => { $(id).value = ''; });
     $('f-photo').value = '';
+    $('f-photo').dispatchEvent(new Event('change'));
     $('f-anon').checked = false;
     newPinCategory = 'sepi';
     fCategorySelect.setSelected('sepi');

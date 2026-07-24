@@ -69,5 +69,6 @@
         <script src="{{ asset('js/geolocation.js') }}?v={{ filemtime(public_path('js/geolocation.js')) }}"></script>
         <script src="{{ asset('js/dialog.js') }}?v={{ filemtime(public_path('js/dialog.js')) }}"></script>
         <script src="{{ asset('js/pwa.js') }}?v={{ filemtime(public_path('js/pwa.js')) }}"></script>
+        <script src="{{ asset('js/photo-picker.js') }}?v={{ filemtime(public_path('js/photo-picker.js')) }}"></script>
     </body>
 </html>

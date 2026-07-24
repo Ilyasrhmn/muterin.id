@@ -216,7 +216,7 @@
     $('pf-error').classList.add('hidden');
     $('pf-title').value = '';
     $('pf-desc').value = '';
-    $('pf-photo').value = '';
+    $('pf-photo').value = ''; $('pf-photo').dispatchEvent(new Event('change'));
     $('pf-photo-wrap').classList.remove('hidden');
     pfListSelect.setSelected(lists[0] ? lists[0].id : null);
     $('place-form').classList.remove('hidden');
@@ -230,7 +230,7 @@
     $('pf-error').classList.add('hidden');
     $('pf-title').value = p.title;
     $('pf-desc').value = p.description || '';
-    $('pf-photo').value = '';
+    $('pf-photo').value = ''; $('pf-photo').dispatchEvent(new Event('change'));
     $('pf-photo-wrap').classList.add('hidden'); // foto tak diubah lewat edit (YAGNI)
     pfListSelect.setSelected(p.place_list_id);
     $('place-form').classList.remove('hidden');
@@ -316,7 +316,7 @@
       picked = null; placeFormMode = 'new';
       $('place-form').classList.add('hidden');
       ['pf-title', 'pf-desc'].forEach((id) => { $(id).value = ''; });
-      $('pf-photo').value = '';
+      $('pf-photo').value = ''; $('pf-photo').dispatchEvent(new Event('change'));
       refresh();
     };
     $('pf-save').disabled = true;

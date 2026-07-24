@@ -86,10 +86,7 @@
                         <x-ui.input name="cost" label="Biaya (opsional)" type="number" placeholder="0" />
                         <x-ui.input name="workshop_name" label="Nama Bengkel (opsional)" placeholder="Bengkel Jaya Motor" />
                         <x-ui.input name="parts" label="Sparepart diganti (opsional)" placeholder="Oli Federal 0.8L, filter oli" />
-                        <label class="space-y-1.5 block">
-                            <span class="block text-sm font-medium text-foreground">Foto Nota (opsional)</span>
-                            <input type="file" name="receipt" accept="image/*" class="w-full text-sm text-muted-fg file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:bg-primary-soft file:text-primary file:text-sm file:font-medium">
-                        </label>
+                        <x-ui.photo-picker id="receipt-{{ $i['item']->id }}" name="receipt" label="Foto Nota (opsional)" />
                         <x-ui.input name="serviced_at" label="Tanggal" type="date" :value="now()->toDateString()" required />
                         <x-ui.button variant="primary" size="sm" type="submit">
                             <x-icon.check class="w-4 h-4"/> Simpan

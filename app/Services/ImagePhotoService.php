@@ -16,6 +16,10 @@ class ImagePhotoService
 
     public function storeCompressed(UploadedFile $file, string $directory): string
     {
+        if (! extension_loaded('gd')) {
+            return $file->store($directory, 'public');
+        }
+
         $source = imagecreatefromstring(file_get_contents($file->getRealPath()));
 
         if ($source === false) {
