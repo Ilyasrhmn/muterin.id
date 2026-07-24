@@ -35,7 +35,7 @@
             </div>
             <div class="flex-1">
                 <p class="font-heading font-semibold">Pasang aplikasi Muterin di HP kamu</p>
-                <p class="text-sm text-white/80 mt-0.5">Akses lebih cepat dari layar utama dan tetap jalan walau sinyal lagi lemah.</p>
+                <p class="text-sm text-white/80 mt-0.5">Akses lebih cepat dari layar utama.</p>
             </div>
             <div class="flex items-center gap-2 shrink-0">
                 <button type="button" @click="window.mtnInstallApp()"

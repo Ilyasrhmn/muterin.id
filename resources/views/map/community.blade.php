@@ -52,9 +52,9 @@
 
                     <label class="block space-y-1">
                         <span class="text-xs font-semibold text-muted-fg">Foto (opsional)</span>
-                        <input id="f-photo" type="file" accept="image/*" capture="environment"
+                        <input id="f-photo" type="file" accept="image/*"
                                class="w-full text-xs text-muted-fg file:mr-3 file:rounded-lg file:border-0 file:bg-muted file:px-3 file:py-1.5 file:text-xs file:font-semibold">
-                        <span class="text-[11px] text-muted-fg">Di HP, ini bisa langsung buka kamera.</span>
+                        <span class="text-[11px] text-muted-fg">Di HP, bisa pilih dari galeri atau langsung ambil foto.</span>
                     </label>
 
                     <label class="flex items-center gap-2 text-sm text-foreground">
