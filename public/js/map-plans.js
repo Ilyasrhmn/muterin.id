@@ -25,12 +25,44 @@
   const CAT_COLOR = {
     sepi: '#D97706', gelap: '#6366F1', rawan: '#DC2626', rusak: '#78716C', banjir: '#0EA5E9', momen: '#0F766E',
   };
+  const CAT_ICON = {
+    sepi: 'fa-road', gelap: 'fa-lightbulb', rawan: 'fa-triangle-exclamation',
+    rusak: 'fa-road-barrier', banjir: 'fa-water', momen: 'fa-camera',
+  };
 
   function clearCommunity() {
     communityMarkers.forEach((m) => m.remove());
     communityMarkers = [];
     const w = document.getElementById('community-warning');
     if (w) w.classList.add('hidden');
+  }
+
+  function pinIcon(category) {
+    const color = CAT_COLOR[category] || '#64748B';
+    const icon = CAT_ICON[category] || 'fa-location-dot';
+    return L.divIcon({
+      html: `<div class="flex items-center justify-center w-9 h-9 rounded-full shadow-lg border-2 bg-white" style="border-color:${color}">
+               <i class="fas ${icon}" style="color:${color}"></i>
+             </div>`,
+      className: 'custom-pin-marker',
+      iconSize: [36, 36],
+      iconAnchor: [18, 36],
+      popupAnchor: [0, -36],
+    });
+  }
+
+  function popupHtml(p) {
+    const color = CAT_COLOR[p.category] || '#64748B';
+    const label = CAT_LABEL[p.category] || p.category;
+    const photo = p.photo_url
+      ? `<img src="${p.photo_url}" alt="" style="width:100%;height:80px;object-fit:cover;border-radius:6px;margin-bottom:6px">`
+      : '';
+    return `<div style="min-width:160px;max-width:190px">
+      ${photo}
+      <span style="display:inline-block;font-size:9px;font-weight:700;color:#fff;background:${color};padding:1px 7px;border-radius:999px">${label}</span>
+      <p style="font-weight:700;font-size:13px;color:#0F172A;margin:4px 0 0">${p.title}</p>
+      <p style="font-size:11px;color:#64748B;margin:2px 0 0">${p.contributor || 'Anonim'} · ${p.confirm_count || 0} konfirmasi</p>
+    </div>`;
   }
 
   function checkCommunity(geometry) {
@@ -46,10 +78,9 @@
         const counts = {};
         b.pins.forEach((p) => {
           counts[p.category] = (counts[p.category] || 0) + 1;
-          const color = CAT_COLOR[p.category] || '#64748B';
-          const m = L.circleMarker([p.lat, p.lng], {
-            color, radius: 7, fillColor: color, fillOpacity: 1, weight: 2,
-          }).addTo(map).bindPopup(`<b>${p.title}</b><br>${CAT_LABEL[p.category] || p.category}`);
+          const m = L.marker([p.lat, p.lng], { icon: pinIcon(p.category) })
+            .addTo(map)
+            .bindPopup(popupHtml(p));
           communityMarkers.push(m);
         });
         const parts = Object.entries(counts).map(([c, n]) => `${n} ${CAT_LABEL[c] || c}`);
