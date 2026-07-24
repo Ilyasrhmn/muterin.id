@@ -31,12 +31,16 @@
                             @csrf @method('PATCH')
                             <input name="name" value="{{ $category->name }}" maxlength="50" required
                                    class="flex-1 rounded-lg border border-border bg-surface px-3 py-2 text-sm focus:border-primary focus:ring-2 focus:ring-primary/20">
-                            <button type="submit" class="text-sm text-primary font-semibold hover:underline shrink-0">Simpan</button>
+                            <button type="submit" title="Simpan" aria-label="Simpan" class="p-2 rounded-lg text-primary hover:bg-primary-soft shrink-0">
+                                <x-icon.check class="w-4 h-4"/>
+                            </button>
                         </form>
                         <form method="POST" action="{{ route('expense-categories.destroy', $category) }}"
                               onsubmit="return confirm('Hapus kategori ini? Catatan lama tidak terpengaruh.')">
                             @csrf @method('DELETE')
-                            <button type="submit" class="text-sm text-accent hover:underline shrink-0">Hapus</button>
+                            <button type="submit" title="Hapus" aria-label="Hapus" class="p-2 rounded-lg text-accent hover:bg-accent/10 shrink-0">
+                                <x-icon.trash class="w-4 h-4"/>
+                            </button>
                         </form>
                     </div>
                 @empty
