@@ -12,7 +12,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        // Railway (dan platform sejenis) terminate TLS di proxy lalu terusin plain
+        // HTTP ke container — tanpa ini Laravel generate semua URL absolut pakai
+        // http:// dan browser nge-block sebagai mixed content.
+        $middleware->trustProxies(at: '*');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
