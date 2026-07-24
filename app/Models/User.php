@@ -54,4 +54,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(SavedPlace::class);
     }
+
+    public function expenseCategories(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(ExpenseCategory::class);
+    }
 }
