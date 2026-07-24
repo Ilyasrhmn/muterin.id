@@ -4,12 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Models\PlaceList;
 use App\Models\SavedPlace;
+use App\Services\ImagePhotoService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 class SavedPlaceController extends Controller
 {
+    public function __construct(private ImagePhotoService $photoService) {}
+
     public function index()
     {
         PlaceList::ensureDefaultsFor(auth()->user());
@@ -77,7 +80,9 @@ class SavedPlaceController extends Controller
         ]);
         $this->assertOwnsList($data['place_list_id']);
 
-        $data['photo_path'] = $request->file('photo')?->store('places', 'public');
+        $data['photo_path'] = $request->hasFile('photo')
+            ? $this->photoService->storeCompressed($request->file('photo'), 'places')
+            : null;
         unset($data['photo']);
 
         $place = $request->user()->savedPlaces()->create($data);

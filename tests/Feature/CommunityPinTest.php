@@ -68,6 +68,25 @@ class CommunityPinTest extends TestCase
         Storage::disk('public')->assertExists($pin->photo_path);
     }
 
+    public function test_large_photo_gets_resized_when_stored_via_endpoint(): void
+    {
+        Storage::fake('public');
+        $author = User::factory()->create();
+
+        $this->actingAs($author)->post('/peta/komunitas', [
+            'category' => 'momen', 'lat' => -6.2, 'lng' => 106.8,
+            'title' => 'Sunset besar', 'time_context' => 'kapanpun',
+            'photo' => UploadedFile::fake()->image('big.png', 2000, 2000),
+        ])->assertCreated();
+
+        $pin = CommunityPin::first();
+        $fullPath = Storage::disk('public')->path($pin->photo_path);
+        [$width, $height] = getimagesize($fullPath);
+
+        $this->assertLessThanOrEqual(1280, $width);
+        $this->assertLessThanOrEqual(1280, $height);
+    }
+
     public function test_anonymous_pin_hides_contributor_name(): void
     {
         $author = User::factory()->create(['name' => 'Budi']);

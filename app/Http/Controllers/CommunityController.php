@@ -4,12 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Models\CommunityPin;
 use App\Services\CommunityPinService;
+use App\Services\ImagePhotoService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class CommunityController extends Controller
 {
-    public function __construct(private CommunityPinService $service) {}
+    public function __construct(
+        private CommunityPinService $service,
+        private ImagePhotoService $photoService,
+    ) {}
 
     public function index()
     {
@@ -38,7 +42,9 @@ class CommunityController extends Controller
             'photo' => 'nullable|image|max:10240',
         ]);
 
-        $data['photo_path'] = $request->file('photo')?->store('community', 'public');
+        $data['photo_path'] = $request->hasFile('photo')
+            ? $this->photoService->storeCompressed($request->file('photo'), 'community')
+            : null;
         $data['is_anonymous'] = $request->boolean('is_anonymous');
         unset($data['photo']);
 

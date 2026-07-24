@@ -113,6 +113,26 @@ class SavedPlaceTest extends TestCase
         Storage::disk('public')->assertExists($place->photo_path);
     }
 
+    public function test_large_photo_gets_resized_when_stored_via_endpoint(): void
+    {
+        Storage::fake('public');
+        $user = User::factory()->create();
+        PlaceList::ensureDefaultsFor($user);
+        $favorit = $user->placeLists()->where('name', 'Favorit')->first();
+
+        $this->actingAs($user)->post('/peta/titik', [
+            'place_list_id' => $favorit->id, 'lat' => -7.7, 'lng' => 110.4,
+            'title' => 'Kafe Besar', 'photo' => UploadedFile::fake()->image('big.png', 2000, 2000),
+        ])->assertCreated();
+
+        $place = SavedPlace::first();
+        $fullPath = Storage::disk('public')->path($place->photo_path);
+        [$width, $height] = getimagesize($fullPath);
+
+        $this->assertLessThanOrEqual(1280, $width);
+        $this->assertLessThanOrEqual(1280, $height);
+    }
+
     public function test_cannot_save_to_another_users_list(): void
     {
         $me = User::factory()->create();
