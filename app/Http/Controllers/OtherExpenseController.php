@@ -12,7 +12,7 @@ class OtherExpenseController extends Controller
     {
         $data = $request->validate([
             'motorcycle_id' => 'required|exists:motorcycles,id',
-            'category' => 'required|in:asuransi,parkir,cuci_motor,aksesoris,lain_lain',
+            'category' => ['required', 'string', \Illuminate\Validation\Rule::in(auth()->user()->expenseCategories()->pluck('name'))],
             'amount' => 'required|integer|min:0',
             'expense_date' => 'required|date',
             'note' => 'nullable|string|max:255',

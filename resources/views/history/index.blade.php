@@ -139,13 +139,18 @@
                 <label class="space-y-1.5">
                     <span class="block text-sm font-medium text-foreground">Kategori</span>
                     <select name="category" required class="w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm focus:border-primary focus:ring-2 focus:ring-primary/20">
-                        @foreach (\App\Models\OtherExpense::CATEGORY_LABELS as $value => $label)
-                            <option value="{{ $value }}">{{ $label }}</option>
+                        @foreach (auth()->user()->expenseCategories()->orderBy('name')->get() as $category)
+                            <option value="{{ $category->name }}">{{ $category->name }}</option>
                         @endforeach
                     </select>
                 </label>
                 <x-ui.input name="amount" label="Jumlah (Rp)" type="number" required />
                 <x-ui.input name="expense_date" label="Tanggal" type="date" :value="now()->toDateString()" required />
+                <label class="space-y-1.5 sm:col-span-2">
+                    <span class="block text-sm font-medium text-foreground">Deskripsi (opsional)</span>
+                    <textarea name="note" rows="2" maxlength="255" placeholder="mis. Parkir di Mall X, dekat pintu utara"
+                              class="w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm focus:border-primary focus:ring-2 focus:ring-primary/20"></textarea>
+                </label>
                 <div class="sm:col-span-2">
                     <x-ui.button variant="primary" type="submit">Simpan</x-ui.button>
                 </div>
@@ -154,8 +159,11 @@
                 @forelse ($otherExpenses as $expense)
                     <div class="flex items-center justify-between p-3 rounded-xl hover:bg-muted/40">
                         <div>
-                            <p class="text-sm font-medium text-foreground">{{ \App\Models\OtherExpense::CATEGORY_LABELS[$expense->category] }}  {{ $expense->motorcycle->nickname }}</p>
+                            <p class="text-sm font-medium text-foreground">{{ $expense->category }} · {{ $expense->motorcycle->nickname }}</p>
                             <p class="text-[11px] text-muted-fg">{{ $expense->expense_date->format('d M Y') }}</p>
+                            @if ($expense->note)
+                                <p class="text-[11px] text-muted-fg mt-0.5">{{ $expense->note }}</p>
+                            @endif
                         </div>
                         <span class="text-sm font-bold text-foreground tabular-nums">Rp{{ number_format($expense->amount) }}</span>
                     </div>

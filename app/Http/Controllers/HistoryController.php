@@ -9,6 +9,8 @@ class HistoryController extends Controller
 {
     public function __invoke()
     {
+        \App\Models\ExpenseCategory::ensureDefaultsFor(auth()->user());
+
         $logs = $this->serviceLogs();
         $otherExpenses = $this->otherExpenses();
 
@@ -24,7 +26,7 @@ class HistoryController extends Controller
         $breakdown = $logs->groupBy(fn ($log) => $log->item->name)
             ->map(fn ($group) => $group->sum('cost'))
             ->mergeRecursive(
-                $otherExpenses->groupBy(fn ($e) => \App\Models\OtherExpense::CATEGORY_LABELS[$e->category])
+                $otherExpenses->groupBy(fn ($e) => $e->category)
                     ->map(fn ($group) => $group->sum('amount'))
             )
             ->map(fn ($value) => is_array($value) ? array_sum($value) : $value)

@@ -11,14 +11,6 @@ class OtherExpense extends Model
 
     protected $casts = ['expense_date' => 'date'];
 
-    public const CATEGORY_LABELS = [
-        'asuransi' => 'Asuransi',
-        'parkir' => 'Parkir',
-        'cuci_motor' => 'Cuci Motor',
-        'aksesoris' => 'Aksesoris',
-        'lain_lain' => 'Lain-lain',
-    ];
-
     public function motorcycle(): BelongsTo
     {
         return $this->belongsTo(Motorcycle::class);
