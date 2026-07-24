@@ -37,13 +37,13 @@
                 <p class="font-heading font-semibold">Pasang aplikasi Muterin di HP kamu</p>
                 <p class="text-sm text-white/80 mt-0.5">Akses lebih cepat dari layar utama.</p>
             </div>
-            <div class="flex items-center gap-2 shrink-0">
+            <div class="flex flex-col gap-1.5 shrink-0">
                 <button type="button" @click="window.mtnInstallApp()"
                         class="px-4 py-2 rounded-xl bg-white text-primary text-sm font-semibold hover:bg-white/90 transition">
                     Unduh Aplikasi
                 </button>
                 <button type="button" @click="localStorage.setItem('mtn_install_dismissed', '1'); show = false"
-                        class="px-3 py-2 rounded-xl text-sm text-white/80 hover:bg-white/10 transition">
+                        class="px-3 py-1.5 rounded-xl text-sm text-white/80 hover:bg-white/10 transition text-center">
                     Nanti saja
                 </button>
             </div>
