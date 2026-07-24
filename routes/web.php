@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CommunityController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ExpenseCategoryController;
 use App\Http\Controllers\FuelController;
 use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\MaintenanceController;
@@ -37,6 +38,11 @@ Route::middleware('auth')->group(function () {
 
     Route::post('other-expenses', [OtherExpenseController::class, 'store'])->name('other-expenses.store');
     Route::delete('other-expenses/{otherExpense}', [OtherExpenseController::class, 'destroy'])->name('other-expenses.destroy');
+
+    Route::get('kategori-biaya', [ExpenseCategoryController::class, 'index'])->name('expense-categories.index');
+    Route::post('kategori-biaya', [ExpenseCategoryController::class, 'store'])->name('expense-categories.store');
+    Route::patch('kategori-biaya/{expenseCategory}', [ExpenseCategoryController::class, 'update'])->name('expense-categories.update');
+    Route::delete('kategori-biaya/{expenseCategory}', [ExpenseCategoryController::class, 'destroy'])->name('expense-categories.destroy');
 
     Route::get('riding', [TripController::class, 'create'])->name('riding');
     Route::post('trips/start', [TripController::class, 'start'])->name('trips.start');

@@ -9,6 +9,7 @@
             'label' => 'Perawatan & Biaya', 'icon' => 'wallet',
             'children' => [
                 ['route' => 'history', 'pattern' => 'history', 'label' => 'Biaya & Servis', 'icon' => 'wallet'],
+                ['route' => 'expense-categories.index', 'pattern' => 'expense-categories.*', 'label' => 'Kategori Biaya', 'icon' => 'wrench'],
                 ['route' => 'bbm.index', 'pattern' => 'bbm.*', 'label' => 'BBM', 'icon' => 'droplet'],
                 ['route' => 'laporan', 'pattern' => 'laporan', 'label' => 'Laporan', 'icon' => 'bar-chart'],
             ],
