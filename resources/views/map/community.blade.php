@@ -61,7 +61,10 @@
 
                     <div class="flex gap-2 pt-1">
                         <x-ui.button id="add-cancel" variant="outline" size="sm" type="button" class="flex-1 justify-center">Batal</x-ui.button>
-                        <x-ui.button id="add-submit" variant="primary" size="sm" type="button" class="flex-1 justify-center">Tandai</x-ui.button>
+                        <x-ui.button id="add-submit" variant="primary" size="sm" type="button" class="flex-1 justify-center gap-2">
+                            <span class="mtn-loader hidden" id="add-submit-spinner" style="font-size:13px"></span>
+                            <span id="add-submit-text">Tandai</span>
+                        </x-ui.button>
                     </div>
                 </div>
 

@@ -50,14 +50,20 @@
   }
 
   /* Spinner pemuatan bersama -- border pakai currentColor jadi otomatis
-     ikut warna teks elemen pembungkus, tinggal atur font-size buat ukuran. */
+     ikut warna teks elemen pembungkus, tinggal atur font-size buat ukuran.
+     display taruh di :not(.hidden) (spesifisitas 2 class) supaya kalah kalau
+     dipasangi utility .hidden Tailwind (yang cuma 1 class) -- kalau display
+     ditaruh di rule dasar, dia menang urutan cascade dan .hidden gak ngefek. */
   .mtn-loader {
-    display: inline-block;
     width: 1em;
     aspect-ratio: 1;
     border-radius: 50%;
     border: 0.18em solid currentColor;
     animation: mtn-loader-1 0.8s infinite linear alternate, mtn-loader-2 1.6s infinite linear;
+  }
+
+  .mtn-loader:not(.hidden) {
+    display: inline-block;
   }
 
   @keyframes mtn-loader-1 {

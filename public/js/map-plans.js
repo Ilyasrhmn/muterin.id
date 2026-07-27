@@ -51,12 +51,21 @@
     });
   }
 
+  // Foto dengan placeholder+loader sampai gambar kelar dimuat (atau
+  // ilang aja kalau gagal, biar gak ninggalin ikon gambar rusak).
+  function photoHtml(url, height, marginBottom) {
+    if (!url) return '';
+    return `<div style="position:relative;width:100%;height:${height}px;border-radius:6px;overflow:hidden;background:#F1F5F9;margin-bottom:${marginBottom}px">
+      <div class="mtn-loader" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:18px;color:#94A3B8"></div>
+      <img src="${url}" alt="" style="width:100%;height:100%;object-fit:cover;position:relative;z-index:1;opacity:0;transition:opacity .25s"
+           onload="this.style.opacity=1;this.previousElementSibling.remove()" onerror="this.remove()">
+    </div>`;
+  }
+
   function popupHtml(p) {
     const color = CAT_COLOR[p.category] || '#64748B';
     const label = CAT_LABEL[p.category] || p.category;
-    const photo = p.photo_url
-      ? `<img src="${p.photo_url}" alt="" style="width:100%;height:80px;object-fit:cover;border-radius:6px;margin-bottom:6px">`
-      : '';
+    const photo = photoHtml(p.photo_url, 80, 6);
     return `<div style="min-width:160px;max-width:190px">
       ${photo}
       <span style="display:inline-block;font-size:9px;font-weight:700;color:#fff;background:${color};padding:1px 7px;border-radius:999px">${label}</span>

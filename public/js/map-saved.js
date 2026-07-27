@@ -36,9 +36,19 @@
     });
   }
 
+  // Foto dengan placeholder+loader sampai gambar kelar dimuat (atau
+  // ilang aja kalau gagal, biar gak ninggalin ikon gambar rusak).
+  function photoHtml(url, height, marginBottom) {
+    if (!url) return '';
+    return `<div style="position:relative;width:100%;height:${height}px;border-radius:8px;overflow:hidden;background:#F1F5F9;margin-bottom:${marginBottom}px">
+      <div class="mtn-loader" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:20px;color:#94A3B8"></div>
+      <img src="${esc(url)}" alt="" style="width:100%;height:100%;object-fit:cover;position:relative;z-index:1;opacity:0;transition:opacity .25s"
+           onload="this.style.opacity=1;this.previousElementSibling.remove()" onerror="this.remove()">
+    </div>`;
+  }
+
   function tooltipHtml(p) {
-    const photo = p.photo_url
-      ? `<img src="${esc(p.photo_url)}" alt="" style="width:100%;height:80px;object-fit:cover;border-radius:6px;margin-bottom:6px">` : '';
+    const photo = photoHtml(p.photo_url, 80, 6);
     return `<div style="min-width:150px;max-width:190px">${photo}
       <span style="display:inline-block;font-size:9px;font-weight:700;color:#fff;background:${p.list_color || '#64748B'};padding:1px 7px;border-radius:999px">${esc(p.list_name || '')}</span>
       <p style="font-weight:700;font-size:13px;color:#0F172A;margin:4px 0 0">${esc(p.title)}</p>
@@ -48,8 +58,7 @@
   // --- Popup penuh dengan edit/hapus ---
   function openPlacePopup(p, latlng) {
     const el = document.createElement('div');
-    const photo = p.photo_url
-      ? `<img src="${esc(p.photo_url)}" alt="" style="width:100%;height:110px;object-fit:cover;border-radius:8px;margin-bottom:8px">` : '';
+    const photo = photoHtml(p.photo_url, 110, 8);
     el.innerHTML = `<div style="min-width:210px;max-width:230px">${photo}
       <span style="display:inline-block;font-size:10px;font-weight:700;color:#fff;background:${p.list_color || '#64748B'};padding:2px 8px;border-radius:999px">${esc(p.list_name || '')}</span>
       <p style="font-weight:700;font-size:14px;color:#0F172A;margin:6px 0 2px">${esc(p.title)}</p>

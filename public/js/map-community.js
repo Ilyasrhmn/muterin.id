@@ -38,10 +38,20 @@
     });
   }
 
+  // Foto dengan placeholder+loader sampai gambar kelar dimuat (atau
+  // ilang aja kalau gagal, biar gak ninggalin ikon gambar rusak).
+  function photoHtml(url, height, marginBottom) {
+    if (!url) return '';
+    return `<div style="position:relative;width:100%;height:${height}px;border-radius:8px;overflow:hidden;background:#F1F5F9;margin-bottom:${marginBottom}px">
+      <div class="mtn-loader" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:20px;color:#94A3B8"></div>
+      <img src="${esc(url)}" alt="" style="width:100%;height:100%;object-fit:cover;position:relative;z-index:1;opacity:0;transition:opacity .25s"
+           onload="this.style.opacity=1;this.previousElementSibling.remove()" onerror="this.remove()">
+    </div>`;
+  }
+
   // Kartu ringkas untuk hover: foto (jika ada) + judul + kategori.
   function tooltipHtml(p) {
-    const photo = p.photo_url
-      ? `<img src="${esc(p.photo_url)}" alt="" style="width:100%;height:80px;object-fit:cover;border-radius:6px;margin-bottom:6px">` : '';
+    const photo = photoHtml(p.photo_url, 80, 6);
     return `
       <div style="min-width:160px;max-width:190px">
         ${photo}
@@ -57,8 +67,7 @@
 
   // --- Popup kartu titik ---
   function popupHtml(p) {
-    const photo = p.photo_url
-      ? `<img src="${esc(p.photo_url)}" alt="" style="width:100%;height:110px;object-fit:cover;border-radius:8px;margin-bottom:8px">` : '';
+    const photo = photoHtml(p.photo_url, 110, 8);
     const who = p.contributor ? `Ditandai oleh ${esc(p.contributor)}` : 'Ditandai oleh pengguna anonim';
     const del = p.is_mine
       ? `<button data-act="del" style="font-size:11px;color:#B91C1C;background:none;border:0;cursor:pointer;padding:0;margin-top:6px">Hapus titik</button>` : '';
@@ -249,6 +258,8 @@
     if ($('f-photo').files[0]) fd.append('photo', $('f-photo').files[0]);
 
     $('add-submit').disabled = true;
+    $('add-submit-spinner').classList.remove('hidden');
+    $('add-submit-text').textContent = 'Menyimpan...';
     fetch('/peta/komunitas', {
       method: 'POST',
       headers: { 'X-CSRF-TOKEN': token, Accept: 'application/json' },
@@ -261,7 +272,11 @@
         refresh();
       })
       .catch(() => showAddError('Gagal menyimpan titik. Coba lagi.'))
-      .finally(() => { $('add-submit').disabled = false; });
+      .finally(() => {
+        $('add-submit').disabled = false;
+        $('add-submit-spinner').classList.add('hidden');
+        $('add-submit-text').textContent = 'Tandai';
+      });
   };
 
   function firstError(body) {
