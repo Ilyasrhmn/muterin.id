@@ -32,7 +32,7 @@
                             <input name="name" value="{{ $category->name }}" maxlength="50" required
                                    class="flex-1 rounded-lg border border-border bg-surface px-3 py-2 text-sm focus:border-primary focus:ring-2 focus:ring-primary/20">
                             <button type="submit" title="Simpan" aria-label="Simpan" class="p-2 rounded-lg text-primary hover:bg-primary-soft shrink-0">
-                                <x-icon.check class="w-4 h-4"/>
+                                <x-icon.pencil class="w-4 h-4"/>
                             </button>
                         </form>
                         <form method="POST" action="{{ route('expense-categories.destroy', $category) }}"
