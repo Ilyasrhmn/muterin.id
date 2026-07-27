@@ -39,6 +39,8 @@
                 </div>
             </div>
         </div>
+        <script src="{{ asset('js/toast.js') }}?v={{ filemtime(public_path('js/toast.js')) }}"></script>
+        @include('partials.toast-flash')
         <script src="{{ asset('js/pwa.js') }}?v={{ filemtime(public_path('js/pwa.js')) }}"></script>
     </body>
 </html>

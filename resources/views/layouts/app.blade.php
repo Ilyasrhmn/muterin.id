@@ -66,6 +66,8 @@
         </div>
 
         <x-ui.dialog />
+        <script src="{{ asset('js/toast.js') }}?v={{ filemtime(public_path('js/toast.js')) }}"></script>
+        @include('partials.toast-flash')
         <script src="{{ asset('js/geolocation.js') }}?v={{ filemtime(public_path('js/geolocation.js')) }}"></script>
         <script src="{{ asset('js/dialog.js') }}?v={{ filemtime(public_path('js/dialog.js')) }}"></script>
         <script src="{{ asset('js/pwa.js') }}?v={{ filemtime(public_path('js/pwa.js')) }}"></script>

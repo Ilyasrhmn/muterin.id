@@ -77,6 +77,8 @@
             <p class="text-center text-xs text-muted-fg pt-4">&copy; {{ date('Y') }} Muterin. Rawat motor berbasis jarak tempuh asli.</p>
         </div>
     </footer>
+    <script src="{{ asset('js/toast.js') }}?v={{ filemtime(public_path('js/toast.js')) }}"></script>
+    @include('partials.toast-flash')
     <script src="{{ asset('js/pwa.js') }}?v={{ filemtime(public_path('js/pwa.js')) }}"></script>
 </body>
 </html>
