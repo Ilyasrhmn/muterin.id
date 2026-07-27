@@ -26,13 +26,20 @@
             </div>
             <div class="divide-y divide-border">
                 @forelse ($categories as $category)
-                    <div class="flex items-center gap-3 p-4">
+                    <div class="flex items-center gap-3 p-4" x-data="{ editing: false }">
                         <form method="POST" action="{{ route('expense-categories.update', $category) }}" class="flex-1 flex gap-2">
                             @csrf @method('PATCH')
                             <input name="name" value="{{ $category->name }}" maxlength="50" required
-                                   class="flex-1 rounded-lg border border-border bg-surface px-3 py-2 text-sm focus:border-primary focus:ring-2 focus:ring-primary/20">
-                            <button type="submit" title="Simpan" aria-label="Simpan" class="p-2 rounded-lg text-primary hover:bg-primary-soft shrink-0">
+                                   x-ref="input" :readonly="!editing" @click="if (!editing) { editing = true; $refs.input.focus(); }"
+                                   :class="editing ? 'bg-surface focus:border-primary focus:ring-2 focus:ring-primary/20' : 'bg-muted/40 cursor-pointer'"
+                                   class="flex-1 rounded-lg border border-border px-3 py-2 text-sm outline-none">
+                            <button type="button" x-show="!editing" @click="editing = true; $refs.input.focus()"
+                                    title="Edit" aria-label="Edit" class="p-2 rounded-lg text-primary hover:bg-primary-soft shrink-0">
                                 <x-icon.pencil class="w-4 h-4"/>
+                            </button>
+                            <button type="submit" x-show="editing" x-cloak
+                                    title="Simpan" aria-label="Simpan" class="p-2 rounded-lg text-primary hover:bg-primary-soft shrink-0">
+                                <x-icon.check class="w-4 h-4"/>
                             </button>
                         </form>
                         <form method="POST" action="{{ route('expense-categories.destroy', $category) }}"
