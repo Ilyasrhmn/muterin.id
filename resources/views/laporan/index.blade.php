@@ -55,7 +55,7 @@
                 @if ($trend->sum('fuel') + $trend->sum('service') + $trend->sum('other') === 0)
                     <p class="text-sm text-muted-fg text-center py-10">Belum ada data pengeluaran.</p>
                 @else
-                    <canvas id="trend-chart" height="220" role="img" aria-label="Grafik tren pengeluaran bulanan BBM dan servis"></canvas>
+                    <div id="trend-chart" role="img" aria-label="Grafik tren pengeluaran bulanan BBM dan servis"></div>
                 @endif
             </div>
         </div>
@@ -73,25 +73,29 @@
         @endif
     </div>
 
-    @if ($trend->sum('fuel') + $trend->sum('service') + $trend->sum('other') > 0 || $efficiencySeries->flatten(1)->isNotEmpty())
+    @if ($trend->sum('fuel') + $trend->sum('service') + $trend->sum('other') > 0)
+        <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.49.1/dist/apexcharts.min.js"></script>
+        <script>
+            new ApexCharts(document.getElementById('trend-chart'), {
+                series: [
+                    { name: 'BBM', data: {!! json_encode($trend->pluck('fuel')) !!} },
+                    { name: 'Servis', data: {!! json_encode($trend->pluck('service')) !!} },
+                    { name: 'Lainnya', data: {!! json_encode($trend->pluck('other')) !!} },
+                ],
+                chart: { type: 'bar', height: 260, stacked: true, toolbar: { show: false } },
+                plotOptions: { bar: { borderRadius: 4, borderRadiusApplication: 'end', borderRadiusWhenStacked: 'last' } },
+                colors: ['#0F766E', '#D97706', '#64748B'],
+                xaxis: { categories: {!! json_encode($trend->pluck('month')) !!} },
+                yaxis: { labels: { formatter: (val) => 'Rp' + val.toLocaleString('id-ID') } },
+                dataLabels: { enabled: false },
+                legend: { position: 'bottom' },
+            }).render();
+        </script>
+    @endif
+
+    @if ($efficiencySeries->flatten(1)->isNotEmpty())
         <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
         <script>
-            @if ($trend->sum('fuel') + $trend->sum('service') + $trend->sum('other') > 0)
-            new Chart(document.getElementById('trend-chart'), {
-                type: 'bar',
-                data: {
-                    labels: {!! json_encode($trend->pluck('month')) !!},
-                    datasets: [
-                        { label: 'BBM', data: {!! json_encode($trend->pluck('fuel')) !!}, backgroundColor: '#0F766E' },
-                        { label: 'Servis', data: {!! json_encode($trend->pluck('service')) !!}, backgroundColor: '#D97706' },
-                        { label: 'Lainnya', data: {!! json_encode($trend->pluck('other')) !!}, backgroundColor: '#64748B' },
-                    ],
-                },
-                options: { scales: { x: { stacked: true }, y: { stacked: true } } },
-            });
-            @endif
-
-            @if ($efficiencySeries->flatten(1)->isNotEmpty())
             @php
                 // ponytail: align each series to the shared label list here (in PHP) so the
                 // Chart.js config below stays plain JSON  no per-dataset lookup logic in JS.
@@ -125,7 +129,6 @@
                 },
                 options: { scales: { x: { type: 'category' } } },
             });
-            @endif
         </script>
     @endif
 </x-app-layout>
