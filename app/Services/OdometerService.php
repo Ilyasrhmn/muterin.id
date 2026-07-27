@@ -36,6 +36,11 @@ class OdometerService
      * MaintenancePredictionService's original trip-based logic  tuning
      * knob, not a fixed law.
      */
+    // Di bawah ini dianggap "belum cukup data buat prediksi" -- avg sekecil
+    // ini (dari rentang waktu jauh dgn totalKm kecil) bikin days_left
+    // membengkak jadi ratusan/ribuan tahun kalau dipakai mentah.
+    private const MIN_RELIABLE_KM_PER_DAY = 0.1;
+
     public function avgKmPerDay(Motorcycle $motorcycle): ?float
     {
         $readings = $motorcycle->odometerReadings()
@@ -47,7 +52,7 @@ class OdometerService
         if ($readings->count() >= 2) {
             $delta = $readings->last()->reading_km - $readings->first()->reading_km;
             if ($delta > 0) {
-                return round($delta / 30, 2);
+                return $this->reliableOrNull(round($delta / 30, 2));
             }
         }
 
@@ -58,6 +63,11 @@ class OdometerService
             return null;
         }
 
-        return round($totalKm / $daysSinceCreated, 2);
+        return $this->reliableOrNull(round($totalKm / $daysSinceCreated, 2));
+    }
+
+    private function reliableOrNull(float $avg): ?float
+    {
+        return $avg >= self::MIN_RELIABLE_KM_PER_DAY ? $avg : null;
     }
 }

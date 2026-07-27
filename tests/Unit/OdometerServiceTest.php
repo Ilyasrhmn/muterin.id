@@ -84,4 +84,21 @@ class OdometerServiceTest extends TestCase
 
         $this->assertNull($this->svc->avgKmPerDay($motor));
     }
+
+    // Bug: motor tercatat lama (created_at jauh di masa lalu) tapi baru
+    // sedikit dipakai (totalKm kecil) menghasilkan avg nyaris nol, yang
+    // bikin estimasi hari lebih membengkak jadi ratusan tahun (Estimasi
+    // ~499967 hari lagi). Avg sekecil ini nggak reliable buat diprediksi,
+    // jadi harus dianggap "belum cukup data" (null), bukan dipakai mentah.
+    public function test_avg_km_per_day_returns_null_when_average_is_unreliably_tiny(): void
+    {
+        $user = User::factory()->create();
+        $motor = Motorcycle::create([
+            'user_id' => $user->id, 'nickname' => 'A',
+            'initial_odometer_km' => 0, 'current_odometer_km' => 12,
+        ]);
+        $motor->forceFill(['created_at' => now()->subDays(400)])->save();
+
+        $this->assertNull($this->svc->avgKmPerDay($motor));
+    }
 }
