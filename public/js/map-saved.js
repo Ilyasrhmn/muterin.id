@@ -72,7 +72,8 @@
       const ok = await window.MuterinDialog.confirm('Hapus tempat ini?', { danger: true, confirmText: 'Hapus' });
       if (!ok) return;
       fetch(`/peta/titik/${p.id}`, { method: 'DELETE', headers: { 'X-CSRF-TOKEN': token, Accept: 'application/json' } })
-        .then(() => {
+        .then((r) => {
+          if (!r.ok) { window.MuterinToast.error('Gagal menghapus titik. Coba lagi.'); return; }
           map.closePopup();
           refresh();
           window.MuterinToast.success('Titik dihapus.');
@@ -120,7 +121,8 @@
           const ok = await window.MuterinDialog.confirm(`Hapus list "${l.name}" beserta ${l.place_count} tempat di dalamnya?`, { danger: true, confirmText: 'Hapus' });
           if (!ok) return;
           fetch(`/peta/titik/lists/${l.id}`, { method: 'DELETE', headers: { 'X-CSRF-TOKEN': token, Accept: 'application/json' } })
-            .then(() => {
+            .then((r) => {
+              if (!r.ok) { window.MuterinToast.error('Gagal menghapus list. Coba lagi.'); return; }
               if (filter === l.id) filter = '';
               refresh();
               window.MuterinToast.success('List dihapus.');

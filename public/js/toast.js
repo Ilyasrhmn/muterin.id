@@ -37,8 +37,10 @@
       + 'max-width:380px;width:calc(100vw - 32px);background:#fff;border-radius:14px;'
       + 'box-shadow:0 10px 30px rgba(15,23,42,.15);padding:12px 14px;cursor:pointer;';
     el.innerHTML = `<div style="width:28px;height:28px;border-radius:999px;background:${c.bg};color:${c.icon};display:flex;align-items:center;justify-content:center;flex-shrink:0">${ICONS[type]}</div>`
-      + `<p style="flex:1;font-size:13px;font-weight:600;color:${c.fg};margin:5px 0 0;line-height:1.4">${message}</p>`
+      + `<p style="flex:1;font-size:13px;font-weight:600;color:${c.fg};margin:5px 0 0;line-height:1.4"></p>`
       + `<button type="button" aria-label="Tutup" style="background:none;border:0;color:#94A3B8;cursor:pointer;padding:4px;font-size:16px;line-height:1">&times;</button>`;
+    // ponytail: message is user-controllable (e.g. motorcycle nickname) -- textContent, never innerHTML
+    el.querySelector('p').textContent = message;
 
     let timer;
     function dismiss() {

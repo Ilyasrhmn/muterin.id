@@ -385,7 +385,8 @@
         start_label: start.label,
         end_label: end.label,
       }),
-    }).then(() => {
+    }).then((r) => {
+      if (!r.ok) { window.MuterinToast.error('Gagal menyimpan rencana rute. Coba lagi.'); return; }
       sessionStorage.setItem('mtn_pending_toast', JSON.stringify({ type: 'success', message: 'Rencana rute disimpan.' }));
       location.reload();
     }).catch(() => window.MuterinToast.error('Gagal menyimpan rencana rute. Coba lagi.'));
@@ -423,7 +424,8 @@
       fetch(`/map/plans/${btn.dataset.deletePlan}`, {
         method: 'DELETE',
         headers: { 'X-CSRF-TOKEN': token, Accept: 'application/json' },
-      }).then(() => {
+      }).then((r) => {
+        if (!r.ok) { window.MuterinToast.error('Gagal menghapus rencana rute. Coba lagi.'); return; }
         sessionStorage.setItem('mtn_pending_toast', JSON.stringify({ type: 'success', message: 'Rencana rute dihapus.' }));
         location.reload();
       }).catch(() => window.MuterinToast.error('Gagal menghapus rencana rute. Coba lagi.'));
