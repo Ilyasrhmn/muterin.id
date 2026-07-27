@@ -67,7 +67,7 @@
                     <p class="text-xs text-muted-fg mt-0.5">Km per liter dari tiap pengisian tank penuh.</p>
                 </div>
                 <div class="p-5">
-                    <canvas id="efficiency-chart" height="220" role="img" aria-label="Grafik tren efisiensi bahan bakar per motor"></canvas>
+                    <div id="efficiency-chart" role="img" aria-label="Grafik tren efisiensi bahan bakar per motor"></div>
                 </div>
             </div>
         @endif
@@ -94,41 +94,31 @@
     @endif
 
     @if ($efficiencySeries->flatten(1)->isNotEmpty())
-        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+        @if ($trend->sum('fuel') + $trend->sum('service') + $trend->sum('other') === 0)
+            <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.49.1/dist/apexcharts.min.js"></script>
+        @endif
         <script>
-            @php
-                // ponytail: align each series to the shared label list here (in PHP) so the
-                // Chart.js config below stays plain JSON  no per-dataset lookup logic in JS.
-                $efficiencyAligned = $efficiencySeries->map(
-                    fn ($series) => $efficiencyLabels->map(
-                        fn ($date) => optional(collect($series)->firstWhere('date', $date))['km_per_liter']
-                    )->values()
-                );
-            @endphp
-            new Chart(document.getElementById('efficiency-chart'), {
-                type: 'line',
-                data: {
-                    labels: {!! json_encode($efficiencyLabels) !!},
-                    datasets: [
-                        @php $palette = ['#0F766E', '#D97706', '#2563EB', '#DB2777', '#7C3AED']; @endphp
-                        @foreach ($efficiencyAligned as $name => $data)
-                            @if (count($efficiencySeries[$name]))
-                            {
-                                label: {!! json_encode($name) !!},
-                                data: {!! json_encode($data) !!},
-                                borderColor: {!! json_encode($palette[$loop->index % count($palette)]) !!},
-                                backgroundColor: {!! json_encode($palette[$loop->index % count($palette)].'33') !!},
-                                tension: 0.4,
-                                spanGaps: true,
-                                fill: true,
-                                pointRadius: 3,
-                            },
-                            @endif
-                        @endforeach
-                    ],
-                },
-                options: { scales: { x: { type: 'category' } } },
-            });
+            @php $palette = ['#0F766E', '#D97706', '#2563EB', '#DB2777', '#7C3AED']; @endphp
+            new ApexCharts(document.getElementById('efficiency-chart'), {
+                series: [
+                    @foreach ($efficiencySeries as $name => $points)
+                        @if (count($points))
+                        {
+                            name: {!! json_encode($name) !!},
+                            data: {!! json_encode(collect($points)->map(fn ($p) => ['x' => $p['date'], 'y' => $p['km_per_liter']])->values()) !!},
+                        },
+                        @endif
+                    @endforeach
+                ],
+                chart: { type: 'line', height: 260, toolbar: { show: false } },
+                colors: {!! json_encode($palette) !!},
+                stroke: { curve: 'smooth', width: 2.5 },
+                markers: { size: 4 },
+                dataLabels: { enabled: false },
+                xaxis: { type: 'datetime' },
+                yaxis: { labels: { formatter: (val) => val + ' km/l' } },
+                legend: { position: 'bottom' },
+            }).render();
         </script>
     @endif
 </x-app-layout>
