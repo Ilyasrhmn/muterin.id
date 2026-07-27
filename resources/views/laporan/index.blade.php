@@ -114,6 +114,12 @@
         @endif
         <script>
             @php $palette = ['#0F766E', '#D97706', '#2563EB', '#DB2777', '#7C3AED']; @endphp
+            {{--
+                Area + gradient + monotoneCubic, bukan stacked: km/l tiap motor
+                itu independen, "stacked" bakal jumlahin nilai antar motor jadi
+                angka gabungan yang gak ada artinya (beda sama grafik traffic
+                per-channel yang emang bagian dari total).
+            --}}
             new ApexCharts(document.getElementById('efficiency-chart'), {
                 series: [
                     @foreach ($efficiencySeries as $name => $points)
@@ -125,12 +131,13 @@
                         @endif
                     @endforeach
                 ],
-                chart: { type: 'line', height: 260, toolbar: { show: false } },
+                chart: { type: 'area', height: 260, toolbar: { show: false } },
                 colors: {!! json_encode($palette) !!},
-                stroke: { curve: 'straight', width: 2.5 },
-                markers: { size: 6, hover: { size: 10 } },
+                stroke: { curve: 'monotoneCubic', width: 2.5 },
+                fill: { type: 'gradient', gradient: { opacityFrom: 0.35, opacityTo: 0.05 } },
+                markers: { size: 5, hover: { size: 8 } },
                 dataLabels: { enabled: false },
-                grid: { clipMarkers: false },
+                grid: { borderColor: '#E2E8F0', clipMarkers: false },
                 tooltip: { theme: 'dark' },
                 xaxis: { type: 'datetime' },
                 yaxis: { tickAmount: 2, labels: { formatter: (val) => val + ' km/l' } },
