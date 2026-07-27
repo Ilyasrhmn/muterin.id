@@ -183,6 +183,7 @@
                 chart: { type: 'pie', height: 300 },
                 colors: ['#0F766E', '#2563EB', '#D97706', '#64748B', '#DC2626'],
                 legend: { show: false },
+                dataLabels: { formatter: (val, { seriesIndex, w }) => w.globals.labels[seriesIndex] },
                 plotOptions: { pie: { dataLabels: { external: { show: true } } } },
                 tooltip: { y: { formatter: (val) => 'Rp' + val.toLocaleString('id-ID') } },
                 responsive: [{ breakpoint: 480, options: { chart: { width: 280 } } }],
