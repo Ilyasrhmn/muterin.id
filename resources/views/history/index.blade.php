@@ -47,7 +47,7 @@
                     @if ($breakdown->isEmpty())
                         <p class="text-sm text-muted-fg text-center py-10">Belum ada data biaya.</p>
                     @else
-                        <canvas id="allocation-chart" height="220" role="img" aria-label="Diagram alokasi pengeluaran per jenis perawatan"></canvas>
+                        <div id="allocation-chart" role="img" aria-label="Diagram alokasi pengeluaran per jenis perawatan"></div>
                         <div class="mt-4 space-y-2">
                             @php $colors = ['#0F766E', '#2563EB', '#D97706', '#64748B', '#DC2626']; @endphp
                             @foreach ($breakdown as $name => $cost)
@@ -175,23 +175,18 @@
     </div>
 
     @if ($breakdown->isNotEmpty())
-        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.49.1/dist/apexcharts.min.js"></script>
         <script>
-            new Chart(document.getElementById('allocation-chart'), {
-                type: 'doughnut',
-                data: {
-                    labels: {!! json_encode($breakdown->keys()) !!},
-                    datasets: [{
-                        data: {!! json_encode($breakdown->values()) !!},
-                        backgroundColor: ['#0F766E', '#2563EB', '#D97706', '#64748B', '#DC2626'],
-                        borderWidth: 0,
-                    }],
-                },
-                options: {
-                    cutout: '68%',
-                    plugins: { legend: { display: false } },
-                },
-            });
+            new ApexCharts(document.getElementById('allocation-chart'), {
+                series: {!! json_encode($breakdown->values()) !!},
+                labels: {!! json_encode($breakdown->keys()) !!},
+                chart: { type: 'donut', height: 260 },
+                colors: ['#0F766E', '#2563EB', '#D97706', '#64748B', '#DC2626'],
+                legend: { show: false },
+                dataLabels: { enabled: false },
+                plotOptions: { pie: { donut: { size: '68%' } } },
+                tooltip: { y: { formatter: (val) => 'Rp' + val.toLocaleString('id-ID') } },
+            }).render();
         </script>
     @endif
 </x-app-layout>
