@@ -24,7 +24,8 @@ class OtherExpenseControllerTest extends TestCase
             'amount' => 500000,
             'expense_date' => '2026-07-19',
             'note' => 'Premi tahunan',
-        ])->assertRedirect();
+        ])->assertRedirect()
+            ->assertSessionHas('toast_success', 'Pengeluaran dicatat.');
 
         $this->assertDatabaseHas('other_expenses', [
             'motorcycle_id' => $motor->id, 'category' => 'Asuransi', 'amount' => 500000,

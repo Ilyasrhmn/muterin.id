@@ -25,7 +25,8 @@ class ExpenseCategoryControllerTest extends TestCase
         $user = User::factory()->create();
 
         $this->actingAs($user)->post('/kategori-biaya', ['name' => 'Tol'])
-            ->assertRedirect();
+            ->assertRedirect()
+            ->assertSessionHas('toast_success', 'Kategori ditambahkan.');
 
         $this->assertTrue($user->expenseCategories()->where('name', 'Tol')->exists());
     }
