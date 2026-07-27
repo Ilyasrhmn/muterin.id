@@ -56,9 +56,9 @@ class CommunityController extends Controller
     public function confirm(Request $request, CommunityPin $pin)
     {
         $data = $request->validate(['still_there' => 'required|boolean']);
-        $count = $this->service->confirm($pin, $request->user(), $data['still_there']);
+        [$still, $gone] = $this->service->confirm($pin, $request->user(), $data['still_there']);
 
-        return response()->json(['confirm_count' => $count]);
+        return response()->json(['still_count' => $still, 'gone_count' => $gone]);
     }
 
     public function nearRoute(Request $request)
@@ -97,7 +97,8 @@ class CommunityController extends Controller
             'description' => $p->description,
             'photo_url' => $p->photo_path ? Storage::disk('public')->url($p->photo_path) : null,
             'time_context' => $p->time_context,
-            'confirm_count' => $p->confirm_count,
+            'still_count' => $p->still_count,
+            'gone_count' => $p->gone_count,
             'contributor' => $p->is_anonymous ? null : $p->user?->name,
             'is_mine' => $p->user_id === auth()->id(),
         ];

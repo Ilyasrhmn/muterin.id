@@ -22,16 +22,19 @@ class CommunityPinServiceTest extends TestCase
 
     public function test_confirm_counts_one_vote_per_user_and_updates_count(): void
     {
-        // count = (#still_there true) - (#false)
+        // return = [still_there_count, no_longer_count]; confirm_count net juga diupdate internal.
         $svc = new CommunityPinService;
         $owner = User::factory()->create();
         $a = User::factory()->create();
         $b = User::factory()->create();
         $pin = $this->pin($owner, -6.2, 106.8);
 
-        $this->assertSame(1, $svc->confirm($pin, $a, true));   // a=true                 -> 1
-        $this->assertSame(0, $svc->confirm($pin, $b, false));  // a=true, b=false        -> 0
-        $this->assertSame(-2, $svc->confirm($pin, $a, false)); // a flips to false, b=false -> -2
+        $this->assertSame([1, 0], $svc->confirm($pin, $a, true));   // a=true          -> still 1, gone 0
+        $this->assertSame(1, $pin->fresh()->confirm_count);
+        $this->assertSame([1, 1], $svc->confirm($pin, $b, false));  // a=true, b=false -> still 1, gone 1
+        $this->assertSame(0, $pin->fresh()->confirm_count);
+        $this->assertSame([0, 2], $svc->confirm($pin, $a, false)); // a flips to false -> still 0, gone 2
+        $this->assertSame(-2, $pin->fresh()->confirm_count);
     }
 
     public function test_confirm_replaces_existing_vote_not_duplicates(): void

@@ -71,10 +71,10 @@
         <p style="font-size:11px;color:#64748B;margin:0">Berlaku: ${esc(TIME[p.time_context] || p.time_context)}</p>
         <p style="font-size:11px;color:#64748B;margin:2px 0 8px">${who}</p>
         <div style="display:flex;align-items:center;gap:6px">
-          <button data-act="yes" style="flex:1;font-size:11px;font-weight:600;padding:6px;border-radius:8px;border:0;cursor:pointer;background:#ECFDF5;color:#047857">Masih di sini</button>
-          <button data-act="no" style="flex:1;font-size:11px;font-weight:600;padding:6px;border-radius:8px;border:0;cursor:pointer;background:#FEF2F2;color:#B91C1C">Udah nggak</button>
+          <button data-act="yes" style="flex:1;font-size:11px;font-weight:600;padding:6px;border-radius:8px;border:0;cursor:pointer;background:#ECFDF5;color:#047857">Masih Berlaku</button>
+          <button data-act="no" style="flex:1;font-size:11px;font-weight:600;padding:6px;border-radius:8px;border:0;cursor:pointer;background:#FEF2F2;color:#B91C1C">Sudah Tidak Berlaku</button>
         </div>
-        <p style="font-size:11px;color:#64748B;margin:6px 0 0" data-count>Dikonfirmasi ${p.confirm_count} orang</p>
+        <p style="font-size:11px;color:#64748B;margin:6px 0 0" data-count>${p.still_count} masih berlaku · ${p.gone_count} sudah tidak berlaku</p>
         ${del}
       </div>`;
   }
@@ -88,8 +88,9 @@
         headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': token, Accept: 'application/json' },
         body: JSON.stringify({ still_there: still }),
       }).then((r) => r.json()).then((b) => {
-        p.confirm_count = b.confirm_count;
-        el.querySelector('[data-count]').textContent = `Dikonfirmasi ${b.confirm_count} orang`;
+        p.still_count = b.still_count;
+        p.gone_count = b.gone_count;
+        el.querySelector('[data-count]').textContent = `${b.still_count} masih berlaku · ${b.gone_count} sudah tidak berlaku`;
       });
     };
     el.querySelector('[data-act="yes"]').onclick = () => vote(true);
@@ -143,7 +144,7 @@
       row.innerHTML =
         `<div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full shrink-0" style="background:${catColor(p.category)}"></span>` +
         `<p class="font-bold text-sm text-foreground truncate">${esc(p.title)}</p></div>` +
-        `<p class="text-[11px] text-muted-fg mt-0.5 ml-4.5">${esc(catLabel(p.category))} · ${p.contributor ? esc(p.contributor) : 'anonim'} · ${p.confirm_count} konfirmasi</p>`;
+        `<p class="text-[11px] text-muted-fg mt-0.5 ml-4.5">${esc(catLabel(p.category))} · ${p.contributor ? esc(p.contributor) : 'anonim'} · ${p.still_count} masih berlaku</p>`;
       row.onclick = () => { map.setView([p.lat, p.lng], 15); openPinPopup(p, [p.lat, p.lng]); };
       list.appendChild(row);
     });

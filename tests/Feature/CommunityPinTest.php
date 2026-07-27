@@ -123,7 +123,7 @@ class CommunityPinTest extends TestCase
 
         $voter = User::factory()->create();
         $this->actingAs($voter)->postJson("/peta/komunitas/{$id}/confirm", ['still_there' => true])
-            ->assertOk()->assertJson(['confirm_count' => 1]);
+            ->assertOk()->assertJson(['still_count' => 1, 'gone_count' => 0]);
     }
 
     public function test_store_requires_authentication(): void

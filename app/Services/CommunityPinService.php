@@ -14,7 +14,12 @@ class CommunityPinService
         return CommunityPin::visible()->with('user')->latest()->get();
     }
 
-    public function confirm(CommunityPin $pin, User $user, bool $stillThere): int
+    // Return: [still_there_count, no_longer_count]. confirm_count (net skor,
+    // bisa negatif) tetap disimpan buat scopeVisible -- ini cuma dipakai
+    // internal buat auto-hide pin lama yang mayoritas dibantah, BUKAN buat
+    // ditampilkan ke user (angka net signed nggak masuk akal ditampilkan
+    // sebagai "dikonfirmasi N orang").
+    public function confirm(CommunityPin $pin, User $user, bool $stillThere): array
     {
         CommunityPinConfirmation::updateOrCreate(
             ['community_pin_id' => $pin->id, 'user_id' => $user->id],
@@ -23,10 +28,9 @@ class CommunityPinService
 
         $true = $pin->confirmations()->where('still_there', true)->count();
         $false = $pin->confirmations()->where('still_there', false)->count();
-        $count = $true - $false;
-        $pin->update(['confirm_count' => $count]);
+        $pin->update(['confirm_count' => $true - $false, 'still_count' => $true, 'gone_count' => $false]);
 
-        return $count;
+        return [$true, $false];
     }
 
     // Pin yang jaraknya <= threshold meter dari vertex terdekat pada polyline rute.

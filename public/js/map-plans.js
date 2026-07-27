@@ -61,7 +61,7 @@
       ${photo}
       <span style="display:inline-block;font-size:9px;font-weight:700;color:#fff;background:${color};padding:1px 7px;border-radius:999px">${label}</span>
       <p style="font-weight:700;font-size:13px;color:#0F172A;margin:4px 0 0">${p.title}</p>
-      <p style="font-size:11px;color:#64748B;margin:2px 0 0">${p.contributor || 'Anonim'} · ${p.confirm_count || 0} konfirmasi</p>
+      <p style="font-size:11px;color:#64748B;margin:2px 0 0">${p.contributor || 'Anonim'} · ${p.still_count || 0} masih berlaku</p>
     </div>`;
   }
 

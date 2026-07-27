@@ -11,7 +11,7 @@ class CommunityPin extends Model
 {
     protected $fillable = [
         'user_id', 'category', 'lat', 'lng', 'title', 'description',
-        'photo_path', 'time_context', 'is_anonymous', 'confirm_count',
+        'photo_path', 'time_context', 'is_anonymous', 'confirm_count', 'still_count', 'gone_count',
     ];
 
     protected $casts = [
@@ -19,6 +19,8 @@ class CommunityPin extends Model
         'lat' => 'float',
         'lng' => 'float',
         'confirm_count' => 'integer',
+        'still_count' => 'integer',
+        'gone_count' => 'integer',
     ];
 
     public function user(): BelongsTo
