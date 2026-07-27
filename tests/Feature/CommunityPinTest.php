@@ -126,6 +126,26 @@ class CommunityPinTest extends TestCase
             ->assertOk()->assertJson(['still_count' => 1, 'gone_count' => 0]);
     }
 
+    public function test_confirm_response_reflects_my_own_vote_state_and_toggles_off(): void
+    {
+        $author = User::factory()->create();
+        $id = $this->actingAs($author)->postJson('/peta/komunitas', [
+            'category' => 'sepi', 'lat' => -6.2, 'lng' => 106.8,
+            'title' => 'Sepi', 'time_context' => 'malam',
+        ])->json('id');
+
+        $voter = User::factory()->create();
+        $this->actingAs($voter)->postJson("/peta/komunitas/{$id}/confirm", ['still_there' => true])
+            ->assertOk()->assertJson(['is_liked' => true, 'is_disliked' => false]);
+
+        // Klik like lagi -> toggle off, keduanya balik false.
+        $this->actingAs($voter)->postJson("/peta/komunitas/{$id}/confirm", ['still_there' => true])
+            ->assertOk()->assertJson(['is_liked' => false, 'is_disliked' => false]);
+
+        $this->actingAs($voter)->postJson("/peta/komunitas/{$id}/confirm", ['still_there' => false])
+            ->assertOk()->assertJson(['is_liked' => false, 'is_disliked' => true]);
+    }
+
     public function test_store_requires_authentication(): void
     {
         $this->postJson('/peta/komunitas', [

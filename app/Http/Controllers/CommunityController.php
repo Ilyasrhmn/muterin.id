@@ -12,6 +12,8 @@ class CommunityController extends Controller
 {
     private ?array $likedIds = null;
 
+    private ?array $dislikedIds = null;
+
     private ?array $favoritedIds = null;
 
     public function __construct(
@@ -64,7 +66,16 @@ class CommunityController extends Controller
         $data = $request->validate(['still_there' => 'required|boolean']);
         [$still, $gone] = $this->service->confirm($pin, $request->user(), $data['still_there']);
 
-        return response()->json(['still_count' => $still, 'gone_count' => $gone]);
+        // Vote user sendiri setelah toggle (null = baru saja dibatalkan) --
+        // dipakai frontend buat nyalain/matiin warna ikon like/dislike.
+        $myVote = $pin->confirmations()->where('user_id', $request->user()->id)->first()?->still_there;
+
+        return response()->json([
+            'still_count' => $still,
+            'gone_count' => $gone,
+            'is_liked' => $myVote === true,
+            'is_disliked' => $myVote === false,
+        ]);
     }
 
     public function favorite(Request $request, CommunityPin $pin)
@@ -95,6 +106,7 @@ class CommunityController extends Controller
     private function loadUserSets(): void
     {
         $this->likedIds = $this->service->likedPinIds(auth()->user());
+        $this->dislikedIds = $this->service->dislikedPinIds(auth()->user());
         $this->favoritedIds = $this->service->favoritedPinIds(auth()->user());
     }
 
@@ -125,6 +137,7 @@ class CommunityController extends Controller
             'contributor' => $p->is_anonymous ? null : $p->user?->name,
             'is_mine' => $p->user_id === auth()->id(),
             'is_liked' => in_array($p->id, $this->likedIds ?? [], true),
+            'is_disliked' => in_array($p->id, $this->dislikedIds ?? [], true),
             'is_favorited' => in_array($p->id, $this->favoritedIds ?? [], true),
         ];
     }

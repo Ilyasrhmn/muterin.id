@@ -40,6 +40,14 @@ class CommunityPinService
             ->where('still_there', true)->pluck('community_pin_id')->all();
     }
 
+    // Sama pola dengan likedPinIds(), arah sebaliknya -- dipakai buat kasih
+    // warna aktif ikon dislike (bukan cuma like) di popup.
+    public function dislikedPinIds(User $user): array
+    {
+        return CommunityPinConfirmation::where('user_id', $user->id)
+            ->where('still_there', false)->pluck('community_pin_id')->all();
+    }
+
     // Pin id yang difavoritkan user ini. Sama pola dengan likedPinIds().
     public function favoritedPinIds(User $user): array
     {

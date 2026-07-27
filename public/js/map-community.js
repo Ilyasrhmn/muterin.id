@@ -67,11 +67,13 @@
   }
 
   // --- Popup kartu titik ---
-  function favBtnStyle(favorited) {
-    return favorited
-      ? 'background:#FEE2E2;color:#DC2626'
-      : 'background:#F1F5F9;color:#64748B';
-  }
+  // Ikon polos (tanpa card/background) -- cuma warna berubah pas aktif,
+  // gaya kayak tombol like/dislike YouTube.
+  const ICON_COLOR_ACTIVE = { like: '#0F766E', dislike: '#DC2626', fav: '#DC2626' };
+  const ICON_COLOR_IDLE = '#64748B';
+  const iconBtnStyle = () =>
+    'display:flex;align-items:center;gap:5px;font-size:13px;font-weight:600;border:0;background:transparent;cursor:pointer;padding:4px 2px;';
+  const divider = '<div style="width:1px;height:16px;background:#E2E8F0"></div>';
 
   function popupHtml(p) {
     const photo = photoHtml(p.photo_url, 110, 8);
@@ -88,18 +90,20 @@
         ${p.description ? `<p style="font-size:12px;color:#475569;margin:0 0 4px">${esc(p.description)}</p>` : ''}
         <p style="font-size:11px;color:#64748B;margin:0">Berlaku: ${esc(TIME[p.time_context] || p.time_context)}</p>
         <p style="font-size:11px;color:#64748B;margin:2px 0 8px">${who}</p>
-        <div style="display:flex;align-items:center;gap:6px">
+        <div style="display:flex;align-items:center;gap:10px">
           <button data-act="yes" title="Masih Berlaku" aria-label="Masih Berlaku"
-                  style="display:flex;align-items:center;gap:5px;flex:1;justify-content:center;font-size:12px;font-weight:600;padding:7px;border-radius:8px;border:0;cursor:pointer;background:#ECFDF5;color:#047857">
+                  style="${iconBtnStyle()}color:${p.is_liked ? ICON_COLOR_ACTIVE.like : ICON_COLOR_IDLE}">
             <i class="fas fa-thumbs-up"></i><span data-still-count>${p.still_count}</span>
           </button>
+          ${divider}
           <button data-act="no" title="Sudah Tidak Berlaku" aria-label="Sudah Tidak Berlaku"
-                  style="display:flex;align-items:center;gap:5px;flex:1;justify-content:center;font-size:12px;font-weight:600;padding:7px;border-radius:8px;border:0;cursor:pointer;background:#FEF2F2;color:#B91C1C">
+                  style="${iconBtnStyle()}color:${p.is_disliked ? ICON_COLOR_ACTIVE.dislike : ICON_COLOR_IDLE}">
             <i class="fas fa-thumbs-down"></i><span data-gone-count>${p.gone_count}</span>
           </button>
+          ${divider}
           <button data-act="fav" title="${p.is_favorited ? 'Batal favorit' : 'Favoritkan'}" aria-label="Favorit"
-                  style="display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:8px;border:0;cursor:pointer;${favBtnStyle(p.is_favorited)}">
-            <i class="fas fa-heart" data-fav-icon></i>
+                  style="${iconBtnStyle()}color:${p.is_favorited ? ICON_COLOR_ACTIVE.fav : ICON_COLOR_IDLE}">
+            <i class="fas fa-heart"></i>
           </button>
         </div>
         ${del}
@@ -109,6 +113,8 @@
   function openPinPopup(p, latlng) {
     const el = document.createElement('div');
     el.innerHTML = popupHtml(p);
+    const likeBtn = el.querySelector('[data-act="yes"]');
+    const dislikeBtn = el.querySelector('[data-act="no"]');
     const vote = (still) => {
       fetch(`/peta/komunitas/${p.id}/confirm`, {
         method: 'POST',
@@ -117,12 +123,17 @@
       }).then((r) => r.json()).then((b) => {
         p.still_count = b.still_count;
         p.gone_count = b.gone_count;
+        p.is_liked = b.is_liked;
+        p.is_disliked = b.is_disliked;
         el.querySelector('[data-still-count]').textContent = b.still_count;
         el.querySelector('[data-gone-count]').textContent = b.gone_count;
+        likeBtn.style.color = p.is_liked ? ICON_COLOR_ACTIVE.like : ICON_COLOR_IDLE;
+        dislikeBtn.style.color = p.is_disliked ? ICON_COLOR_ACTIVE.dislike : ICON_COLOR_IDLE;
+        if (scope === 'liked') refresh();
       });
     };
-    el.querySelector('[data-act="yes"]').onclick = () => vote(true);
-    el.querySelector('[data-act="no"]').onclick = () => vote(false);
+    likeBtn.onclick = () => vote(true);
+    dislikeBtn.onclick = () => vote(false);
 
     const favBtn = el.querySelector('[data-act="fav"]');
     favBtn.onclick = () => {
@@ -131,7 +142,7 @@
         headers: { 'X-CSRF-TOKEN': token, Accept: 'application/json' },
       }).then((r) => r.json()).then((b) => {
         p.is_favorited = b.favorited;
-        favBtn.setAttribute('style', `display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:8px;border:0;cursor:pointer;${favBtnStyle(p.is_favorited)}`);
+        favBtn.style.color = p.is_favorited ? ICON_COLOR_ACTIVE.fav : ICON_COLOR_IDLE;
         favBtn.title = p.is_favorited ? 'Batal favorit' : 'Favoritkan';
         if (scope === 'favorited') refresh();
       });
