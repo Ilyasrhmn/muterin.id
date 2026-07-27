@@ -130,7 +130,7 @@
         likeBtn.style.color = p.is_liked ? ICON_COLOR_ACTIVE.like : ICON_COLOR_IDLE;
         dislikeBtn.style.color = p.is_disliked ? ICON_COLOR_ACTIVE.dislike : ICON_COLOR_IDLE;
         if (scope === 'liked') refresh();
-      });
+      }).catch(() => window.MuterinToast.error('Gagal menyimpan konfirmasi. Coba lagi.'));
     };
     likeBtn.onclick = () => vote(true);
     dislikeBtn.onclick = () => vote(false);
@@ -145,7 +145,7 @@
         favBtn.style.color = p.is_favorited ? ICON_COLOR_ACTIVE.fav : ICON_COLOR_IDLE;
         favBtn.title = p.is_favorited ? 'Batal favorit' : 'Favoritkan';
         if (scope === 'favorited') refresh();
-      });
+      }).catch(() => window.MuterinToast.error('Gagal memperbarui favorit. Coba lagi.'));
     };
 
     const delBtn = el.querySelector('[data-act="del"]');
@@ -156,7 +156,11 @@
         fetch(`/peta/komunitas/${p.id}`, {
           method: 'DELETE',
           headers: { 'X-CSRF-TOKEN': token, Accept: 'application/json' },
-        }).then(() => { map.closePopup(); refresh(); });
+        }).then(() => {
+          map.closePopup();
+          refresh();
+          window.MuterinToast.success('Titik dihapus.');
+        }).catch(() => window.MuterinToast.error('Gagal menghapus titik. Coba lagi.'));
       };
     }
     L.popup({ maxWidth: 250 }).setLatLng(latlng).setContent(el).openOn(map);
@@ -321,6 +325,7 @@
         if (!ok) { showAddError(firstError(body) || 'Gagal menyimpan titik.'); return; }
         resetForm();
         refresh();
+        window.MuterinToast.success('Titik berhasil ditandai.');
       })
       .catch(() => showAddError('Gagal menyimpan titik. Coba lagi.'))
       .finally(() => {

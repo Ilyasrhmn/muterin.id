@@ -72,7 +72,11 @@
       const ok = await window.MuterinDialog.confirm('Hapus tempat ini?', { danger: true, confirmText: 'Hapus' });
       if (!ok) return;
       fetch(`/peta/titik/${p.id}`, { method: 'DELETE', headers: { 'X-CSRF-TOKEN': token, Accept: 'application/json' } })
-        .then(() => { map.closePopup(); refresh(); });
+        .then(() => {
+          map.closePopup();
+          refresh();
+          window.MuterinToast.success('Titik dihapus.');
+        }).catch(() => window.MuterinToast.error('Gagal menghapus titik. Coba lagi.'));
     };
     L.popup({ maxWidth: 250 }).setLatLng(latlng).setContent(el).openOn(map);
   }
@@ -116,7 +120,11 @@
           const ok = await window.MuterinDialog.confirm(`Hapus list "${l.name}" beserta ${l.place_count} tempat di dalamnya?`, { danger: true, confirmText: 'Hapus' });
           if (!ok) return;
           fetch(`/peta/titik/lists/${l.id}`, { method: 'DELETE', headers: { 'X-CSRF-TOKEN': token, Accept: 'application/json' } })
-            .then(() => { if (filter === l.id) filter = ''; refresh(); });
+            .then(() => {
+              if (filter === l.id) filter = '';
+              refresh();
+              window.MuterinToast.success('List dihapus.');
+            }).catch(() => window.MuterinToast.error('Gagal menghapus list. Coba lagi.'));
         };
         row.appendChild(del);
       }
@@ -214,7 +222,9 @@
       .then(({ ok, body }) => {
         if (!ok) { showErr('lf-error', firstError(body) || 'Gagal menyimpan list.'); return; }
         listFormMode = null; $('list-form').classList.add('hidden'); refresh();
-      });
+        window.MuterinToast.success(isNew ? 'List ditambahkan.' : 'List diperbarui.');
+      })
+      .catch(() => window.MuterinToast.error('Gagal menyimpan list. Coba lagi.'));
   };
 
   // --- Place form (tambah / edit) ---
@@ -352,6 +362,7 @@
       .then(({ ok, body }) => {
         if (!ok) { showErr('pf-error', firstError(body) || 'Gagal menyimpan.'); return; }
         done();
+        window.MuterinToast.success(isNew ? 'Tempat ditambahkan.' : 'Tempat diperbarui.');
       })
       .catch(() => showErr('pf-error', 'Gagal menyimpan. Coba lagi.'))
       .finally(() => { $('pf-save').disabled = false; });
