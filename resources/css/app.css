@@ -82,4 +82,17 @@
     50%    { transform: scaleY(-1) rotate(0deg); }
     100%   { transform: scaleY(-1) rotate(-135deg); }
   }
+
+  /* Toast masuk dari atas + fade; keluar lebih cepat dari masuk (exit
+     ~70% durasi enter) biar responsif dipencet berkali-kali. */
+  @keyframes mtn-toast-in {
+    from { opacity: 0; transform: translateY(-12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes mtn-toast-out {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(-8px); }
+  }
+  .mtn-toast-enter { animation: mtn-toast-in 220ms ease-out; }
+  .mtn-toast-exit { animation: mtn-toast-out 150ms ease-in forwards; }
 }
