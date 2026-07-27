@@ -48,4 +48,32 @@
   .leaflet-popup-content {
     margin: 12px 14px;
   }
+
+  /* Spinner pemuatan bersama -- border pakai currentColor jadi otomatis
+     ikut warna teks elemen pembungkus, tinggal atur font-size buat ukuran. */
+  .mtn-loader {
+    display: inline-block;
+    width: 1em;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 0.18em solid currentColor;
+    animation: mtn-loader-1 0.8s infinite linear alternate, mtn-loader-2 1.6s infinite linear;
+  }
+
+  @keyframes mtn-loader-1 {
+    0%    { clip-path: polygon(50% 50%, 0 0, 50% 0%, 50% 0%, 50% 0%, 50% 0%, 50% 0%); }
+    12.5% { clip-path: polygon(50% 50%, 0 0, 50% 0%, 100% 0%, 100% 0%, 100% 0%, 100% 0%); }
+    25%   { clip-path: polygon(50% 50%, 0 0, 50% 0%, 100% 0%, 100% 100%, 100% 100%, 100% 100%); }
+    50%   { clip-path: polygon(50% 50%, 0 0, 50% 0%, 100% 0%, 100% 100%, 50% 100%, 0% 100%); }
+    62.5% { clip-path: polygon(50% 50%, 100% 0, 100% 0%, 100% 0%, 100% 100%, 50% 100%, 0% 100%); }
+    75%   { clip-path: polygon(50% 50%, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 50% 100%, 0% 100%); }
+    100%  { clip-path: polygon(50% 50%, 50% 100%, 50% 100%, 50% 100%, 50% 100%, 50% 100%, 0% 100%); }
+  }
+
+  @keyframes mtn-loader-2 {
+    0%     { transform: scaleY(1) rotate(0deg); }
+    49.99% { transform: scaleY(1) rotate(135deg); }
+    50%    { transform: scaleY(-1) rotate(0deg); }
+    100%   { transform: scaleY(-1) rotate(-135deg); }
+  }
 }
