@@ -180,12 +180,12 @@
             new ApexCharts(document.getElementById('allocation-chart'), {
                 series: {!! json_encode($breakdown->values()) !!},
                 labels: {!! json_encode($breakdown->keys()) !!},
-                chart: { type: 'donut', height: 260 },
+                chart: { type: 'pie', height: 300 },
                 colors: ['#0F766E', '#2563EB', '#D97706', '#64748B', '#DC2626'],
                 legend: { show: false },
-                dataLabels: { enabled: false },
-                plotOptions: { pie: { donut: { size: '68%' } } },
+                plotOptions: { pie: { dataLabels: { external: { show: true } } } },
                 tooltip: { y: { formatter: (val) => 'Rp' + val.toLocaleString('id-ID') } },
+                responsive: [{ breakpoint: 480, options: { chart: { width: 280 } } }],
             }).render();
         </script>
     @endif
