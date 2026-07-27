@@ -62,7 +62,7 @@ class FuelControllerTest extends TestCase
             'is_full_tank' => '1',
         ]);
 
-        $response->assertSessionHas('warning');
+        $response->assertSessionHas('toast_warning');
     }
 
     public function test_cannot_store_fuel_log_for_other_users_motorcycle(): void

@@ -23,7 +23,7 @@ class OtherExpenseController extends Controller
 
         $motor->otherExpenses()->create($data);
 
-        return back()->with('status', 'Pengeluaran dicatat.');
+        return back()->with('toast_success', 'Pengeluaran dicatat.');
     }
 
     public function destroy(OtherExpense $otherExpense)
@@ -31,6 +31,6 @@ class OtherExpenseController extends Controller
         abort_unless($otherExpense->motorcycle->user_id === auth()->id(), 403);
         $otherExpense->delete();
 
-        return back()->with('status', 'Pengeluaran dihapus.');
+        return back()->with('toast_success', 'Pengeluaran dihapus.');
     }
 }

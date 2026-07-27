@@ -2,10 +2,6 @@
     <x-slot name="header">Kelola Kategori Biaya</x-slot>
 
     <div class="p-4 sm:p-6 lg:p-8 max-w-2xl mx-auto space-y-6">
-        @if (session('status'))
-            <div class="rounded-xl bg-primary-soft text-primary text-sm px-4 py-3">{{ session('status') }}</div>
-        @endif
-
         <div class="bg-surface border border-border rounded-2xl overflow-hidden">
             <div class="p-5 border-b border-border bg-muted/40">
                 <h3 class="font-heading font-bold text-foreground text-sm">Tambah Kategori</h3>

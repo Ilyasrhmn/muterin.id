@@ -24,7 +24,7 @@ class ExpenseCategoryController extends Controller
         ]);
         auth()->user()->expenseCategories()->create($data);
 
-        return back()->with('status', 'Kategori ditambahkan.');
+        return back()->with('toast_success', 'Kategori ditambahkan.');
     }
 
     public function update(Request $request, ExpenseCategory $expenseCategory)
@@ -35,7 +35,7 @@ class ExpenseCategoryController extends Controller
         ]);
         $expenseCategory->update($data);
 
-        return back()->with('status', 'Kategori diperbarui.');
+        return back()->with('toast_success', 'Kategori diperbarui.');
     }
 
     public function destroy(ExpenseCategory $expenseCategory)
@@ -43,6 +43,6 @@ class ExpenseCategoryController extends Controller
         abort_unless($expenseCategory->user_id === auth()->id(), 403);
         $expenseCategory->delete();
 
-        return back()->with('status', 'Kategori dihapus.');
+        return back()->with('toast_success', 'Kategori dihapus.');
     }
 }

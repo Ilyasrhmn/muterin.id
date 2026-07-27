@@ -36,6 +36,6 @@ class MaintenanceController extends Controller
         ]);
         $item->update(['last_service_odometer_km' => $odometer]);
 
-        return back()->with('status', "{$item->name} ditandai selesai di {$odometer} km.");
+        return back()->with('toast_success', "{$item->name} ditandai selesai di {$odometer} km.");
     }
 }

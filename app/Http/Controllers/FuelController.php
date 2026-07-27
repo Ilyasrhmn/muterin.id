@@ -64,8 +64,8 @@ class FuelController extends Controller
         }
 
         return redirect()->route('bbm.index')
-            ->with('status', 'Isi bensin dicatat.')
-            ->with('warning', $warning);
+            ->with('toast_success', 'Isi bensin dicatat.')
+            ->with('toast_warning', $warning);
     }
 
     public function destroy(FuelLog $fuelLog)
@@ -73,6 +73,6 @@ class FuelController extends Controller
         abort_unless($fuelLog->motorcycle->user_id === auth()->id(), 403);
         $fuelLog->delete();
 
-        return back()->with('status', 'Catatan BBM dihapus.');
+        return back()->with('toast_success', 'Catatan BBM dihapus.');
     }
 }

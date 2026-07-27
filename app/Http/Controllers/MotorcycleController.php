@@ -34,7 +34,7 @@ class MotorcycleController extends Controller
         $odometer->record($motorcycle, $data['initial_odometer_km'], Carbon::today(), 'initial');
         $this->applyOnboardingChecklist($motorcycle, $onboarding);
 
-        return redirect()->route('motorcycles.index')->with('status', 'Motor ditambahkan.');
+        return redirect()->route('motorcycles.index')->with('toast_success', 'Motor ditambahkan.');
     }
 
     public function show(Motorcycle $motorcycle, MaintenanceStatusService $status, VehicleDocumentService $documents)
@@ -64,7 +64,7 @@ class MotorcycleController extends Controller
         $this->authorizeOwner($motorcycle);
         $motorcycle->update($this->validated($request));
 
-        return redirect()->route('motorcycles.show', $motorcycle)->with('status', 'Motor diperbarui.');
+        return redirect()->route('motorcycles.show', $motorcycle)->with('toast_success', 'Motor diperbarui.');
     }
 
     public function destroy(Motorcycle $motorcycle)
@@ -72,7 +72,7 @@ class MotorcycleController extends Controller
         $this->authorizeOwner($motorcycle);
         $motorcycle->delete();
 
-        return redirect()->route('motorcycles.index')->with('status', 'Motor dihapus.');
+        return redirect()->route('motorcycles.index')->with('toast_success', 'Motor dihapus.');
     }
 
     public function activate(Motorcycle $motorcycle)
@@ -81,7 +81,7 @@ class MotorcycleController extends Controller
         auth()->user()->motorcycles()->update(['is_active' => false]);
         $motorcycle->update(['is_active' => true]);
 
-        return back()->with('status', "Motor aktif: {$motorcycle->nickname}");
+        return back()->with('toast_success', "Motor aktif: {$motorcycle->nickname}");
     }
 
     private function validated(Request $request): array

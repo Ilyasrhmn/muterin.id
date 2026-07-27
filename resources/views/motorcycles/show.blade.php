@@ -2,10 +2,6 @@
     <x-slot name="header">{{ $motorcycle->nickname }}</x-slot>
 
     <div class="max-w-2xl mx-auto p-4 sm:p-6 lg:p-8 space-y-4">
-        @if (session('status'))
-            <div class="p-3 rounded-token bg-status-green/10 text-status-green text-sm font-medium">{{ session('status') }}</div>
-        @endif
-
         <div class="flex items-center justify-between bg-surface border border-border rounded-2xl shadow-soft p-5">
             <div class="flex items-center gap-3">
                 <div class="size-11 rounded-xl bg-primary/10 text-primary flex items-center justify-center">

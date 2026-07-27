@@ -23,6 +23,6 @@ class OdometerReadingController extends Controller
 
         $odometer->record($motor, $data['reading_km'], Carbon::parse($data['recorded_at']), 'manual', $data['note'] ?? null);
 
-        return back()->with('status', 'Odometer diperbarui.');
+        return back()->with('toast_success', 'Odometer diperbarui.');
     }
 }

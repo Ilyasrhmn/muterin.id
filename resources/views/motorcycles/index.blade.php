@@ -10,10 +10,6 @@
             </x-slot:side>
         </x-ui.hero>
 
-        @if (session('status'))
-            <div class="p-3 rounded-xl bg-emerald-50 text-emerald-700 text-sm font-medium">{{ session('status') }}</div>
-        @endif
-
         <div data-reveal-group class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             @forelse ($motorcycles as $motor)
                 <div data-reveal class="bg-surface border rounded-2xl overflow-hidden {{ $motor->is_active ? 'border-primary/40' : 'border-border' }}">
