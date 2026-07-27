@@ -180,9 +180,18 @@
     el.innerHTML = `
       <p style="font-weight:600;font-size:13px;color:#0F172A;margin:0 0 8px">${loc.label}</p>
       <div style="display:flex;flex-direction:column;gap:6px">
-        <button data-act="start" style="text-align:left;font-size:12px;font-weight:600;padding:7px 10px;border-radius:8px;border:0;cursor:pointer;background:#ECFDF5;color:#047857">Jadikan Titik Awal</button>
-        <button data-act="via" style="text-align:left;font-size:12px;font-weight:600;padding:7px 10px;border-radius:8px;border:0;cursor:pointer;background:#FFFBEB;color:#B45309;${(start && end) ? '' : 'display:none'}">Tambah Titik Singgah</button>
-        <button data-act="end" style="text-align:left;font-size:12px;font-weight:600;padding:7px 10px;border-radius:8px;border:0;cursor:pointer;background:#FEF2F2;color:#B91C1C">Jadikan Titik Tujuan</button>
+        <button data-act="start" style="display:flex;align-items:center;gap:7px;text-align:left;font-size:12px;font-weight:600;padding:7px 10px;border-radius:8px;border:0;cursor:pointer;background:#ECFDF5;color:#047857">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2" fill="currentColor" stroke="none"/></svg>
+          Jadikan Titik Awal
+        </button>
+        <button data-act="via" style="display:flex;align-items:center;gap:7px;text-align:left;font-size:12px;font-weight:600;padding:7px 10px;border-radius:8px;border:0;cursor:pointer;background:#FFFBEB;color:#B45309;${(start && end) ? '' : 'display:none'}">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+          Tambah Titik Singgah
+        </button>
+        <button data-act="end" style="display:flex;align-items:center;gap:7px;text-align:left;font-size:12px;font-weight:600;padding:7px 10px;border-radius:8px;border:0;cursor:pointer;background:#FEF2F2;color:#B91C1C">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M12 21c-4-4.5-7-8-7-11a7 7 0 0 1 14 0c0 3-3 6.5-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
+          Jadikan Titik Tujuan
+        </button>
       </div>`;
     el.querySelector('[data-act="start"]').onclick = () => { setStart(loc); map.closePopup(); };
     el.querySelector('[data-act="end"]').onclick = () => { setEnd(loc); map.closePopup(); };
