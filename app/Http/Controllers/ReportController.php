@@ -41,8 +41,20 @@ class ReportController extends Controller
 
         $efficiencyLabels = $efficiencySeries->flatten(1)->pluck('date')->sort()->unique()->values();
 
+        // Motor yang sudah punya log BBM tapi belum cukup pengisian penuh (min. 2)
+        // buat menghitung km/l -- tanpa ini, motor baru terlihat "hilang" dari grafik
+        // padahal datanya memang belum cukup, bukan bug.
+        $efficiencyPending = $motorcycles
+            ->filter(fn ($m) => empty($efficiencySeries[$m->nickname]) && $m->fuelLogs()->count() > 0)
+            ->map(fn ($m) => [
+                'nickname' => $m->nickname,
+                'full_tank_count' => $m->fuelLogs()->where('is_full_tank', true)->count(),
+            ])
+            ->filter(fn ($x) => $x['full_tank_count'] > 0)
+            ->values();
+
         return view('laporan.index', compact(
-            'totalFuelCost', 'totalServiceCost', 'totalOtherCost', 'tco', 'costPerKm', 'trend', 'efficiencySeries', 'efficiencyLabels'
+            'totalFuelCost', 'totalServiceCost', 'totalOtherCost', 'tco', 'costPerKm', 'trend', 'efficiencySeries', 'efficiencyLabels', 'efficiencyPending'
         ));
     }
 }

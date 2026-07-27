@@ -60,14 +60,29 @@
             </div>
         </div>
 
-        @if ($efficiencySeries->flatten(1)->isNotEmpty())
+        @if ($efficiencySeries->flatten(1)->isNotEmpty() || $efficiencyPending->isNotEmpty())
             <div class="bg-surface border border-border rounded-2xl overflow-hidden">
                 <div class="p-5 border-b border-border bg-muted/40">
                     <h3 class="font-heading font-bold text-foreground text-sm">Tren Efisiensi BBM</h3>
                     <p class="text-xs text-muted-fg mt-0.5">Km per liter dari tiap pengisian tank penuh.</p>
                 </div>
                 <div class="p-5">
-                    <div id="efficiency-chart" role="img" aria-label="Grafik tren efisiensi bahan bakar per motor"></div>
+                    @if ($efficiencySeries->flatten(1)->isNotEmpty())
+                        <div id="efficiency-chart" role="img" aria-label="Grafik tren efisiensi bahan bakar per motor"></div>
+                    @else
+                        <p class="text-sm text-muted-fg text-center py-6">Belum ada motor dengan data efisiensi yang cukup.</p>
+                    @endif
+
+                    @if ($efficiencyPending->isNotEmpty())
+                        <div class="mt-4 space-y-2">
+                            @foreach ($efficiencyPending as $p)
+                                <div class="flex items-start gap-2.5 text-xs bg-amber-50 text-amber-800 rounded-xl px-3 py-2.5">
+                                    <svg class="w-4 h-4 shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                                    <span><strong>{{ $p['nickname'] }}</strong> perlu {{ max(1, 2 - $p['full_tank_count']) }} pengisian penuh lagi sebelum efisiensi BBM bisa dihitung.</span>
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
                 </div>
             </div>
         @endif
@@ -112,11 +127,13 @@
                 ],
                 chart: { type: 'line', height: 260, toolbar: { show: false } },
                 colors: {!! json_encode($palette) !!},
-                stroke: { curve: 'smooth', width: 2.5 },
-                markers: { size: 4 },
+                stroke: { curve: 'straight', width: 2.5 },
+                markers: { size: 6, hover: { size: 10 } },
                 dataLabels: { enabled: false },
+                grid: { clipMarkers: false },
+                tooltip: { theme: 'dark' },
                 xaxis: { type: 'datetime' },
-                yaxis: { labels: { formatter: (val) => val + ' km/l' } },
+                yaxis: { tickAmount: 2, labels: { formatter: (val) => val + ' km/l' } },
                 legend: { position: 'bottom' },
             }).render();
         </script>
