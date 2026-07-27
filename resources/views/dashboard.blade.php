@@ -92,26 +92,28 @@
                 @forelse ($dashboard as $row)
                     @php $needsAttention = $row['items']->contains(fn ($i) => $i['status']['color'] !== 'green'); @endphp
                     <div data-reveal class="bg-surface border border-border rounded-2xl overflow-hidden">
-                        <div class="flex items-center justify-between p-5 border-b border-border bg-muted/40">
-                            <div class="flex items-center gap-3">
-                                <div class="size-10 rounded-xl bg-primary-soft text-primary flex items-center justify-center">
+                        <div class="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 p-5 border-b border-border bg-muted/40">
+                            <div class="flex items-center gap-3 min-w-0">
+                                <div class="size-10 rounded-xl bg-primary-soft text-primary flex items-center justify-center shrink-0">
                                     <x-icon.motorcycle class="w-5 h-5"/>
                                 </div>
-                                <div>
-                                    <p class="font-heading font-bold text-foreground text-sm">{{ $row['motor']->nickname }}</p>
-                                    <p class="text-[11px] text-muted-fg tabular-nums">{{ $row['motor']->plat_nomor }} &middot; {{ number_format($row['motor']->current_odometer_km) }} km</p>
+                                <div class="min-w-0">
+                                    <p class="font-heading font-bold text-foreground text-sm truncate">{{ $row['motor']->nickname }}</p>
+                                    <p class="text-[11px] text-muted-fg tabular-nums truncate">{{ $row['motor']->plat_nomor }} &middot; {{ number_format($row['motor']->current_odometer_km) }} km</p>
                                     <a href="{{ route('motorcycles.show', $row['motor']) }}#update-km" class="text-[11px] text-primary font-semibold hover:underline">Update KM</a>
                                 </div>
                             </div>
-                            @if ($needsAttention)
-                                <span class="text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-lg bg-red-50 text-red-600">Perhatian</span>
-                            @else
-                                <span class="text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700">Aman</span>
-                            @endif
-                            <span class="text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-lg
-                                {{ $row['health']['color'] === 'green' ? 'bg-emerald-50 text-emerald-700' : ($row['health']['color'] === 'yellow' ? 'bg-amber-50 text-amber-700' : 'bg-red-50 text-red-600') }}">
-                                Skor {{ $row['health']['score'] }}
-                            </span>
+                            <div class="flex items-center gap-2 shrink-0">
+                                @if ($needsAttention)
+                                    <span class="text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-lg bg-red-50 text-red-600 whitespace-nowrap">Perhatian</span>
+                                @else
+                                    <span class="text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 whitespace-nowrap">Aman</span>
+                                @endif
+                                <span class="text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-lg whitespace-nowrap
+                                    {{ $row['health']['color'] === 'green' ? 'bg-emerald-50 text-emerald-700' : ($row['health']['color'] === 'yellow' ? 'bg-amber-50 text-amber-700' : 'bg-red-50 text-red-600') }}">
+                                    Skor {{ $row['health']['score'] }}
+                                </span>
+                            </div>
                         </div>
                         <div class="p-5 space-y-3">
                             @foreach ($row['items'] as $i)
