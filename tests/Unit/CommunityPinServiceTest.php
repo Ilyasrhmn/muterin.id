@@ -37,6 +37,25 @@ class CommunityPinServiceTest extends TestCase
         $this->assertSame(-2, $pin->fresh()->confirm_count);
     }
 
+    public function test_confirm_same_value_twice_toggles_vote_off(): void
+    {
+        $svc = new CommunityPinService;
+        $owner = User::factory()->create();
+        $a = User::factory()->create();
+        $pin = $this->pin($owner, -6.2, 106.8);
+
+        $this->assertSame([1, 0], $svc->confirm($pin, $a, true));  // klik like pertama -> nyala
+        $this->assertSame(1, $pin->confirmations()->where('user_id', $a->id)->count());
+
+        $this->assertSame([0, 0], $svc->confirm($pin, $a, true));  // klik like lagi -> mati (toggle off)
+        $this->assertSame(0, $pin->confirmations()->where('user_id', $a->id)->count());
+        $this->assertSame(0, $pin->fresh()->confirm_count);
+
+        $this->assertSame([0, 1], $svc->confirm($pin, $a, false)); // klik dislike -> nyala lagi (arah beda)
+        $this->assertSame([0, 0], $svc->confirm($pin, $a, false)); // klik dislike lagi -> mati (toggle off)
+        $this->assertSame(0, $pin->confirmations()->where('user_id', $a->id)->count());
+    }
+
     public function test_confirm_replaces_existing_vote_not_duplicates(): void
     {
         $svc = new CommunityPinService;

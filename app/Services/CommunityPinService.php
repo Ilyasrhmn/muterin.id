@@ -53,10 +53,18 @@ class CommunityPinService
     // sebagai "dikonfirmasi N orang").
     public function confirm(CommunityPin $pin, User $user, bool $stillThere): array
     {
-        CommunityPinConfirmation::updateOrCreate(
-            ['community_pin_id' => $pin->id, 'user_id' => $user->id],
-            ['still_there' => $stillThere],
-        );
+        $existing = CommunityPinConfirmation::where('community_pin_id', $pin->id)
+            ->where('user_id', $user->id)->first();
+
+        if ($existing && $existing->still_there === $stillThere) {
+            // Klik ulang arah yang sama -> toggle off (batal vote), sama pola kayak favorit.
+            $existing->delete();
+        } else {
+            CommunityPinConfirmation::updateOrCreate(
+                ['community_pin_id' => $pin->id, 'user_id' => $user->id],
+                ['still_there' => $stillThere],
+            );
+        }
 
         $true = $pin->confirmations()->where('still_there', true)->count();
         $false = $pin->confirmations()->where('still_there', false)->count();
