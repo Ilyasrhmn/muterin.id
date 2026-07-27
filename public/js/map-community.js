@@ -17,6 +17,7 @@
   let markers = new Map(); // id -> layer
   let picked = null;       // {lat, lng} lokasi yang sedang ditandai
   let filter = '';
+  let scope = '';          // '' | 'favorited' | 'liked' | 'mine' -- filter personal, jalan bareng (AND) sama filter kategori
   let newPinCategory = 'sepi'; // kategori terpilih di form "Tandai Titik Baru"
   let hasFitted = false;   // fitTo once when pins first arrive, so user pans/zooms freely after
 
@@ -66,11 +67,19 @@
   }
 
   // --- Popup kartu titik ---
+  function favBtnStyle(favorited) {
+    return favorited
+      ? 'background:#FEE2E2;color:#DC2626'
+      : 'background:#F1F5F9;color:#64748B';
+  }
+
   function popupHtml(p) {
     const photo = photoHtml(p.photo_url, 110, 8);
     const who = p.contributor ? `Ditandai oleh ${esc(p.contributor)}` : 'Ditandai oleh pengguna anonim';
     const del = p.is_mine
-      ? `<button data-act="del" style="font-size:11px;color:#B91C1C;background:none;border:0;cursor:pointer;padding:0;margin-top:6px">Hapus titik</button>` : '';
+      ? `<button data-act="del" style="display:flex;align-items:center;gap:5px;font-size:11px;color:#B91C1C;background:none;border:0;cursor:pointer;padding:0;margin-top:8px">
+           <i class="fas fa-trash" style="font-size:10px"></i> Hapus titik
+         </button>` : '';
     return `
       <div style="min-width:210px;max-width:230px">
         ${photo}
@@ -80,10 +89,19 @@
         <p style="font-size:11px;color:#64748B;margin:0">Berlaku: ${esc(TIME[p.time_context] || p.time_context)}</p>
         <p style="font-size:11px;color:#64748B;margin:2px 0 8px">${who}</p>
         <div style="display:flex;align-items:center;gap:6px">
-          <button data-act="yes" style="flex:1;font-size:11px;font-weight:600;padding:6px;border-radius:8px;border:0;cursor:pointer;background:#ECFDF5;color:#047857">Masih Berlaku</button>
-          <button data-act="no" style="flex:1;font-size:11px;font-weight:600;padding:6px;border-radius:8px;border:0;cursor:pointer;background:#FEF2F2;color:#B91C1C">Sudah Tidak Berlaku</button>
+          <button data-act="yes" title="Masih Berlaku" aria-label="Masih Berlaku"
+                  style="display:flex;align-items:center;gap:5px;flex:1;justify-content:center;font-size:12px;font-weight:600;padding:7px;border-radius:8px;border:0;cursor:pointer;background:#ECFDF5;color:#047857">
+            <i class="fas fa-thumbs-up"></i><span data-still-count>${p.still_count}</span>
+          </button>
+          <button data-act="no" title="Sudah Tidak Berlaku" aria-label="Sudah Tidak Berlaku"
+                  style="display:flex;align-items:center;gap:5px;flex:1;justify-content:center;font-size:12px;font-weight:600;padding:7px;border-radius:8px;border:0;cursor:pointer;background:#FEF2F2;color:#B91C1C">
+            <i class="fas fa-thumbs-down"></i><span data-gone-count>${p.gone_count}</span>
+          </button>
+          <button data-act="fav" title="${p.is_favorited ? 'Batal favorit' : 'Favoritkan'}" aria-label="Favorit"
+                  style="display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:8px;border:0;cursor:pointer;${favBtnStyle(p.is_favorited)}">
+            <i class="fas fa-heart" data-fav-icon></i>
+          </button>
         </div>
-        <p style="font-size:11px;color:#64748B;margin:6px 0 0" data-count>${p.still_count} masih berlaku · ${p.gone_count} sudah tidak berlaku</p>
         ${del}
       </div>`;
   }
@@ -99,11 +117,26 @@
       }).then((r) => r.json()).then((b) => {
         p.still_count = b.still_count;
         p.gone_count = b.gone_count;
-        el.querySelector('[data-count]').textContent = `${b.still_count} masih berlaku · ${b.gone_count} sudah tidak berlaku`;
+        el.querySelector('[data-still-count]').textContent = b.still_count;
+        el.querySelector('[data-gone-count]').textContent = b.gone_count;
       });
     };
     el.querySelector('[data-act="yes"]').onclick = () => vote(true);
     el.querySelector('[data-act="no"]').onclick = () => vote(false);
+
+    const favBtn = el.querySelector('[data-act="fav"]');
+    favBtn.onclick = () => {
+      fetch(`/peta/komunitas/${p.id}/favorite`, {
+        method: 'POST',
+        headers: { 'X-CSRF-TOKEN': token, Accept: 'application/json' },
+      }).then((r) => r.json()).then((b) => {
+        p.is_favorited = b.favorited;
+        favBtn.setAttribute('style', `display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:8px;border:0;cursor:pointer;${favBtnStyle(p.is_favorited)}`);
+        favBtn.title = p.is_favorited ? 'Batal favorit' : 'Favoritkan';
+        if (scope === 'favorited') refresh();
+      });
+    };
+
     const delBtn = el.querySelector('[data-act="del"]');
     if (delBtn) {
       delBtn.onclick = async () => {
@@ -119,8 +152,15 @@
   }
 
   // --- Render markers + list ---
+  function matchesScope(p) {
+    if (scope === 'favorited') return p.is_favorited;
+    if (scope === 'liked') return p.is_liked;
+    if (scope === 'mine') return p.is_mine;
+    return true;
+  }
+
   function render() {
-    const shown = pins.filter((p) => !filter || p.category === filter);
+    const shown = pins.filter((p) => (!filter || p.category === filter) && matchesScope(p));
     const keep = new Set(shown.map((p) => p.id));
 
     markers.forEach((layer, id) => {
@@ -304,6 +344,20 @@
     fCategorySelect.setSelected('sepi');
     updateTimeFieldVisibility();
   }
+
+  document.querySelectorAll('.scope-chip').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const value = btn.dataset.scope;
+      scope = scope === value ? '' : value;
+      document.querySelectorAll('.scope-chip').forEach((b) => {
+        b.classList.toggle('bg-primary', b.dataset.scope === scope);
+        b.classList.toggle('text-white', b.dataset.scope === scope);
+        b.classList.toggle('border-primary', b.dataset.scope === scope);
+        b.classList.toggle('text-muted-fg', b.dataset.scope !== scope);
+      });
+      render();
+    });
+  });
 
   const filterCategorySelect = window.MuterinFoldSelect.render(
     $('filter-category'),

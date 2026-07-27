@@ -133,4 +133,42 @@ class CommunityPinTest extends TestCase
             'title' => 'X', 'time_context' => 'malam',
         ])->assertStatus(401);
     }
+
+    public function test_favorite_toggles_and_reflects_in_data_payload(): void
+    {
+        $author = User::factory()->create();
+        $id = $this->actingAs($author)->postJson('/peta/komunitas', [
+            'category' => 'sepi', 'lat' => -6.2, 'lng' => 106.8,
+            'title' => 'Sepi', 'time_context' => 'malam',
+        ])->json('id');
+
+        $user = User::factory()->create();
+
+        $this->actingAs($user)->postJson("/peta/komunitas/{$id}/favorite")
+            ->assertOk()->assertJson(['favorited' => true]);
+
+        $this->actingAs($user)->getJson('/peta/komunitas/data')
+            ->assertJsonFragment(['id' => $id, 'is_favorited' => true, 'is_liked' => false]);
+
+        $this->actingAs($user)->postJson("/peta/komunitas/{$id}/favorite")
+            ->assertOk()->assertJson(['favorited' => false]);
+
+        $this->actingAs($user)->getJson('/peta/komunitas/data')
+            ->assertJsonFragment(['id' => $id, 'is_favorited' => false]);
+    }
+
+    public function test_liking_a_pin_reflects_in_data_payload(): void
+    {
+        $author = User::factory()->create();
+        $id = $this->actingAs($author)->postJson('/peta/komunitas', [
+            'category' => 'sepi', 'lat' => -6.2, 'lng' => 106.8,
+            'title' => 'Sepi', 'time_context' => 'malam',
+        ])->json('id');
+
+        $user = User::factory()->create();
+        $this->actingAs($user)->postJson("/peta/komunitas/{$id}/confirm", ['still_there' => true])->assertOk();
+
+        $this->actingAs($user)->getJson('/peta/komunitas/data')
+            ->assertJsonFragment(['id' => $id, 'is_liked' => true]);
+    }
 }

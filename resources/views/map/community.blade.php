@@ -11,6 +11,17 @@
             <div class="space-y-6 order-2 lg:order-none">
                 <div class="bg-surface border border-border rounded-2xl p-5 space-y-3">
                     <h3 class="font-heading font-bold text-foreground text-sm">Filter</h3>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button type="button" data-scope="favorited" class="scope-chip flex flex-col items-center gap-1 py-2 rounded-xl border border-border text-muted-fg hover:bg-muted transition text-[11px] font-semibold">
+                            <i class="fas fa-heart"></i> Favorit
+                        </button>
+                        <button type="button" data-scope="liked" class="scope-chip flex flex-col items-center gap-1 py-2 rounded-xl border border-border text-muted-fg hover:bg-muted transition text-[11px] font-semibold">
+                            <i class="fas fa-thumbs-up"></i> Like
+                        </button>
+                        <button type="button" data-scope="mine" class="scope-chip flex flex-col items-center gap-1 py-2 rounded-xl border border-border text-muted-fg hover:bg-muted transition text-[11px] font-semibold">
+                            <i class="fas fa-location-dot"></i> Titik Saya
+                        </button>
+                    </div>
                     <div id="filter-category"></div>
                     <button id="btn-my-location" type="button"
                             class="w-full inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition">

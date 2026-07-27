@@ -86,6 +86,7 @@ Route::middleware('auth')->group(function () {
     Route::post('peta/komunitas', [CommunityController::class, 'store'])->name('map.community.store');
     Route::post('peta/komunitas/near-route', [CommunityController::class, 'nearRoute'])->name('map.community.near-route');
     Route::post('peta/komunitas/{pin}/confirm', [CommunityController::class, 'confirm'])->name('map.community.confirm');
+    Route::post('peta/komunitas/{pin}/favorite', [CommunityController::class, 'favorite'])->name('map.community.favorite');
     Route::delete('peta/komunitas/{pin}', [CommunityController::class, 'destroy'])->name('map.community.destroy');
 });
 

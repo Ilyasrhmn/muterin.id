@@ -33,6 +33,11 @@ class CommunityPin extends Model
         return $this->hasMany(CommunityPinConfirmation::class);
     }
 
+    public function favorites(): HasMany
+    {
+        return $this->hasMany(CommunityPinFavorite::class);
+    }
+
     // Sembunyikan hanya bila tua (>30 hari) DAN mayoritas bilang "udah nggak".
     // ponytail: ambang 30 hari adalah tuning-knob.
     public function scopeVisible(Builder $query): Builder

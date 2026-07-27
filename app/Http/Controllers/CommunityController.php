@@ -10,6 +10,10 @@ use Illuminate\Support\Facades\Storage;
 
 class CommunityController extends Controller
 {
+    private ?array $likedIds = null;
+
+    private ?array $favoritedIds = null;
+
     public function __construct(
         private CommunityPinService $service,
         private ImagePhotoService $photoService,
@@ -24,6 +28,8 @@ class CommunityController extends Controller
 
     public function data()
     {
+        $this->loadUserSets();
+
         return response()->json([
             'pins' => $this->service->visiblePins()->map(fn (CommunityPin $p) => $this->present($p)),
         ]);
@@ -61,6 +67,13 @@ class CommunityController extends Controller
         return response()->json(['still_count' => $still, 'gone_count' => $gone]);
     }
 
+    public function favorite(Request $request, CommunityPin $pin)
+    {
+        $favorited = $this->service->toggleFavorite($pin, $request->user());
+
+        return response()->json(['favorited' => $favorited]);
+    }
+
     public function nearRoute(Request $request)
     {
         $data = $request->validate([
@@ -70,9 +83,19 @@ class CommunityController extends Controller
             'geometry.*.1' => 'required|numeric|between:-180,180',
         ]);
 
+        $this->loadUserSets();
+
         return response()->json([
             'pins' => $this->service->nearRoute($data['geometry'])->map(fn (CommunityPin $p) => $this->present($p)),
         ]);
+    }
+
+    // Ambil sekali per-request pin id yang di-like/difavoritkan user login,
+    // dipakai present() lewat in_array() supaya nggak query per-pin (N+1).
+    private function loadUserSets(): void
+    {
+        $this->likedIds = $this->service->likedPinIds(auth()->user());
+        $this->favoritedIds = $this->service->favoritedPinIds(auth()->user());
     }
 
     public function destroy(CommunityPin $pin)
@@ -101,6 +124,8 @@ class CommunityController extends Controller
             'gone_count' => $p->gone_count,
             'contributor' => $p->is_anonymous ? null : $p->user?->name,
             'is_mine' => $p->user_id === auth()->id(),
+            'is_liked' => in_array($p->id, $this->likedIds ?? [], true),
+            'is_favorited' => in_array($p->id, $this->favoritedIds ?? [], true),
         ];
     }
 }

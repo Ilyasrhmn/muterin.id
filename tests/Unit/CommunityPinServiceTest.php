@@ -70,4 +70,34 @@ class CommunityPinServiceTest extends TestCase
         $svc = new CommunityPinService;
         $this->assertCount(0, $svc->nearRoute([], 300));
     }
+
+    public function test_toggle_favorite_creates_then_removes(): void
+    {
+        $svc = new CommunityPinService;
+        $owner = User::factory()->create();
+        $user = User::factory()->create();
+        $pin = $this->pin($owner, -6.2, 106.8);
+
+        $this->assertTrue($svc->toggleFavorite($pin, $user));
+        $this->assertDatabaseHas('community_pin_favorites', ['community_pin_id' => $pin->id, 'user_id' => $user->id]);
+
+        $this->assertFalse($svc->toggleFavorite($pin, $user));
+        $this->assertDatabaseMissing('community_pin_favorites', ['community_pin_id' => $pin->id, 'user_id' => $user->id]);
+    }
+
+    public function test_liked_and_favorited_pin_ids(): void
+    {
+        $svc = new CommunityPinService;
+        $owner = User::factory()->create();
+        $user = User::factory()->create();
+        $liked = $this->pin($owner, -6.2, 106.8);
+        $notLiked = $this->pin($owner, -6.3, 106.9);
+
+        $svc->confirm($liked, $user, true);
+        $svc->confirm($notLiked, $user, false);
+        $svc->toggleFavorite($liked, $user);
+
+        $this->assertSame([$liked->id], $svc->likedPinIds($user));
+        $this->assertSame([$liked->id], $svc->favoritedPinIds($user));
+    }
 }
