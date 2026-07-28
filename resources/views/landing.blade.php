@@ -25,7 +25,7 @@
             <div data-reveal class="relative">
                 <x-ui.card class="shadow-lift">
                     <div class="flex items-center justify-between mb-4">
-                        <p class="font-heading font-semibold">Beat Ilyas</p>
+                        <p class="font-heading font-semibold">Beat Street</p>
                         <x-ui.badge variant="yellow">Perlu Perhatian</x-ui.badge>
                     </div>
                     <div class="space-y-4">
@@ -218,14 +218,14 @@
                             <span class="w-2.5 h-2.5 rounded-full bg-border"></span>
                         </div>
                         <div class="flex gap-1 bg-muted p-1 rounded-lg">
-                            <button type="button" @click="motor = 'beat'" :class="motor === 'beat' ? 'bg-surface shadow-sm text-primary' : 'text-muted-fg'" class="text-xs font-semibold px-3 py-1.5 rounded-md transition-colors">Beat Ilyas</button>
+                            <button type="button" @click="motor = 'beat'" :class="motor === 'beat' ? 'bg-surface shadow-sm text-primary' : 'text-muted-fg'" class="text-xs font-semibold px-3 py-1.5 rounded-md transition-colors">Beat street</button>
                             <button type="button" @click="motor = 'nmax'" :class="motor === 'nmax' ? 'bg-surface shadow-sm text-primary' : 'text-muted-fg'" class="text-xs font-semibold px-3 py-1.5 rounded-md transition-colors">NMAX Kantor</button>
                         </div>
                     </div>
                     <div class="p-6">
                         <div x-show="motor === 'beat'">
                             <div class="flex items-center justify-between mb-4">
-                                <p class="font-heading font-semibold">Beat Ilyas</p>
+                                <p class="font-heading font-semibold">Beat Street</p>
                                 <x-ui.badge variant="yellow">Perhatian &middot; Skor 75</x-ui.badge>
                             </div>
                             <div class="space-y-3">

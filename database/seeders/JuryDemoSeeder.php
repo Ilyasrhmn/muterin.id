@@ -6,6 +6,7 @@ use App\Models\CommunityPin;
 use App\Models\CommunityPinConfirmation;
 use App\Models\CommunityPinFavorite;
 use App\Models\Motorcycle;
+use App\Models\PlaceList;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
@@ -29,6 +30,7 @@ class JuryDemoSeeder extends Seeder
         }
 
         $users = $this->seedCommunityUsers();
+        $this->cleanCommunityUserPins($users);
 
         $allPinOwners = $presenter ? [$presenter, ...$users] : $users;
         $pins = $this->seedCommunityPins($allPinOwners);
@@ -36,6 +38,7 @@ class JuryDemoSeeder extends Seeder
 
         if ($presenter) {
             $this->seedPresenterPins($presenter);
+            $this->seedPresenterPlaces($presenter);
         }
     }
 
@@ -53,10 +56,16 @@ class JuryDemoSeeder extends Seeder
             $nmax->odometerReadings()->where('reading_km', 13000)->delete();
 
             $nmax->fuelLogs()->create([
-                'filled_at' => '2026-07-20', 'odometer_km' => 6100, 'liters' => 4.1, 'total_cost' => 64000, 'is_full_tank' => true,
+                'filled_at' => '2026-07-20',
+                'odometer_km' => 6100,
+                'liters' => 4.1,
+                'total_cost' => 64000,
+                'is_full_tank' => true,
             ]);
             $nmax->odometerReadings()->create([
-                'reading_km' => 6100, 'recorded_at' => '2026-07-20', 'source' => 'fuel',
+                'reading_km' => 6100,
+                'recorded_at' => '2026-07-20',
+                'source' => 'fuel',
             ]);
             $nmax->update(['current_odometer_km' => 6400]);
         }
@@ -67,18 +76,28 @@ class JuryDemoSeeder extends Seeder
         $supra = $presenter->motorcycles()->where('nickname', 'Supra Bapak')->first();
         if ($supra && $supra->fuelLogs()->count() < 2) {
             $supra->fuelLogs()->create([
-                'filled_at' => '2026-07-24', 'odometer_km' => 12010, 'liters' => 1.6, 'total_cost' => 16000, 'is_full_tank' => false,
+                'filled_at' => '2026-07-24',
+                'odometer_km' => 12010,
+                'liters' => 1.6,
+                'total_cost' => 16000,
+                'is_full_tank' => false,
             ]);
             $supra->fuelLogs()->create([
-                'filled_at' => '2026-08-01', 'odometer_km' => 12130, 'liters' => 4.8, 'total_cost' => 48000, 'is_full_tank' => true,
+                'filled_at' => '2026-08-01',
+                'odometer_km' => 12130,
+                'liters' => 4.8,
+                'total_cost' => 48000,
+                'is_full_tank' => true,
             ]);
             $supra->update(['current_odometer_km' => 12130]);
 
             $servisRutin = $supra->maintenanceItems()->where('name', 'Servis Rutin')->first();
             if ($servisRutin && $servisRutin->logs()->count() === 0) {
                 $servisRutin->logs()->create([
-                    'serviced_at_odometer_km' => 12000, 'cost' => 95000,
-                    'serviced_at' => '2026-07-15', 'note' => 'Servis rutin + ganti oli',
+                    'serviced_at_odometer_km' => 12000,
+                    'cost' => 95000,
+                    'serviced_at' => '2026-07-15',
+                    'note' => 'Servis rutin + ganti oli',
                 ]);
                 $servisRutin->update(['last_service_odometer_km' => 12000]);
             }
@@ -106,19 +125,74 @@ class JuryDemoSeeder extends Seeder
     private function seedPresenterPins(User $presenter): void
     {
         CommunityPin::create([
-            'user_id' => $presenter->id, 'category' => 'momen',
-            'lat' => -7.8146, 'lng' => 110.3628,
+            'user_id' => $presenter->id,
+            'category' => 'momen',
+            'lat' => -7.8146,
+            'lng' => 110.3628,
             'title' => 'Sunset di Alun-Alun Kidul',
             'description' => 'Spot enak buat nongkrong sore, ramai pas weekend tapi worth it.',
-            'time_context' => 'kapanpun', 'is_anonymous' => false,
+            'time_context' => 'kapanpun',
+            'is_anonymous' => false,
         ]);
         CommunityPin::create([
-            'user_id' => $presenter->id, 'category' => 'rusak',
-            'lat' => -7.7925, 'lng' => 110.3679,
+            'user_id' => $presenter->id,
+            'category' => 'rusak',
+            'lat' => -7.7925,
+            'lng' => 110.3679,
             'title' => 'Jalan bergelombang dekat Jembatan Kewek',
             'description' => 'Ada beberapa lubang, hati-hati kalau malam soalnya lampu jalan minim.',
-            'time_context' => 'malam', 'is_anonymous' => false,
+            'time_context' => 'malam',
+            'is_anonymous' => false,
         ]);
+    }
+
+    /**
+     * "Titik Saya" (saved places) is thin -- 2 spots with no description,
+     * only the 3 default lists plus one the presenter made themselves. Adds
+     * two more custom lists (different icon + color each, to show off
+     * marker customization) and fills every list with realistic Yogyakarta
+     * spots. Existing lists/places are untouched, only added to.
+     */
+    private function seedPresenterPlaces(User $presenter): void
+    {
+        PlaceList::ensureDefaultsFor($presenter);
+
+        $kuliner = $presenter->placeLists()->firstOrCreate(
+            ['name' => 'Kuliner Favorit'],
+            ['icon' => 'fa-utensils', 'color' => '#DC2626', 'is_default' => false],
+        );
+        $nongkrong = $presenter->placeLists()->firstOrCreate(
+            ['name' => 'Spot Nongkrong'],
+            ['icon' => 'fa-mug-hot', 'color' => '#7C3AED', 'is_default' => false],
+        );
+
+        $byName = fn (string $name) => $presenter->placeLists()->where('name', $name)->first();
+
+        $spec = [
+            ['list' => 'Favorit', 'title' => 'Rumah Orang Tua di Kotagede', 'lat' => -7.8258, 'lng' => 110.3968, 'description' => 'Mampir tiap akhir pekan buat makan siang bareng.'],
+            ['list' => 'Mau ke sana', 'title' => 'Candi Prambanan', 'lat' => -7.7520, 'lng' => 110.4915, 'description' => 'Belum pernah ke sini pas sunset, katanya bagus.'],
+            ['list' => 'Mau ke sana', 'title' => 'Pantai Parangtritis', 'lat' => -8.0257, 'lng' => 110.3312, 'description' => 'Rencana motoran akhir bulan kalau cuaca cerah.'],
+            ['list' => 'Mau ke sana', 'title' => 'Kaliurang', 'lat' => -7.5993, 'lng' => 110.4247, 'description' => 'Udara sejuk, cocok buat kabur dari panas kota.'],
+            ['list' => 'Bengkel Langganan', 'title' => 'Bengkel Pak Slamet - Jl. Magelang Km 5', 'lat' => -7.7550, 'lng' => 110.3600, 'description' => 'Servis CVT paling teliti, harga bersahabat.'],
+            ['list' => 'Bengkel Langganan', 'title' => 'AHASS Sudirman', 'lat' => -7.7828, 'lng' => 110.3672, 'description' => 'Servis resmi kalau lagi masa garansi.'],
+            ['list' => 'Simpan', 'title' => 'Stasiun Tugu', 'lat' => -7.7930, 'lng' => 110.3630, 'description' => null],
+            ['list' => 'Kuliner Favorit', 'title' => 'Gudeg Yu Djum Wijilan', 'lat' => -7.8030, 'lng' => 110.3690, 'description' => 'Gudeg kering favorit, buka dari pagi.'],
+            ['list' => 'Kuliner Favorit', 'title' => 'Angkringan Lik Man Tugu', 'lat' => -7.7830, 'lng' => 110.3690, 'description' => 'Kopi joss + sate usus, buka malam.'],
+            ['list' => 'Kuliner Favorit', 'title' => 'Bakmi Kadin', 'lat' => -7.7970, 'lng' => 110.3720, 'description' => null],
+            ['list' => 'Spot Nongkrong', 'title' => 'Kopi Klotok Kaliurang', 'lat' => -7.6100, 'lng' => 110.4250, 'description' => 'Rame banget kalau weekend, dateng pagi biar gak antre.'],
+            ['list' => 'Spot Nongkrong', 'title' => 'Legend Coffee Colombo', 'lat' => -7.7690, 'lng' => 110.3850, 'description' => 'Deket kampus, enak buat kerja santai.'],
+        ];
+
+        foreach ($spec as $s) {
+            $list = $byName($s['list']);
+            if (! $list) {
+                continue;
+            }
+            $list->places()->firstOrCreate(
+                ['title' => $s['title']],
+                ['user_id' => $presenter->id, 'lat' => $s['lat'], 'lng' => $s['lng'], 'description' => $s['description']],
+            );
+        }
     }
 
     // --- New community users ------------------------------------------------
@@ -144,9 +218,15 @@ class JuryDemoSeeder extends Seeder
 
             $user->motorcycles()->delete();
             $motor = Motorcycle::create([
-                'user_id' => $user->id, 'nickname' => $r['nickname'], 'plat_nomor' => $r['plat'],
-                'brand' => $r['brand'], 'model' => $r['model'], 'year' => $r['year'],
-                'initial_odometer_km' => 1000, 'current_odometer_km' => 7400, 'is_active' => true,
+                'user_id' => $user->id,
+                'nickname' => $r['nickname'],
+                'plat_nomor' => $r['plat'],
+                'brand' => $r['brand'],
+                'model' => $r['model'],
+                'year' => $r['year'],
+                'initial_odometer_km' => 1000,
+                'current_odometer_km' => 7400,
+                'is_active' => true,
             ]);
             $this->seedMotorcycleData($motor);
 
@@ -173,11 +253,26 @@ class JuryDemoSeeder extends Seeder
         $servis?->update(['last_service_odometer_km' => 4200]);
 
         $motor->otherExpenses()->create([
-            'category' => 'cuci_motor', 'amount' => 20000, 'expense_date' => '2026-07-19',
+            'category' => 'cuci_motor',
+            'amount' => 20000,
+            'expense_date' => '2026-07-19',
         ]);
     }
 
     // --- Community pins -----------------------------------------------------
+
+    /**
+     * Wipe the 6 demo users' pins from a previous run before reseeding --
+     * without this, re-running the seeder duplicates every community pin
+     * (confirmations/favorites cascade-delete with the pin, per the FKs on
+     * both tables, so this alone is enough to fully reset engagement too).
+     *
+     * @param  list<User>  $users
+     */
+    private function cleanCommunityUserPins(array $users): void
+    {
+        CommunityPin::whereIn('user_id', collect($users)->pluck('id'))->delete();
+    }
 
     /**
      * @param  list<User>  $owners  index 0 = presenter (skipped here, seeded separately), 1.. = new users
@@ -186,7 +281,7 @@ class JuryDemoSeeder extends Seeder
     private function seedCommunityPins(array $owners): array
     {
         $byEmail = collect($owners)->keyBy('email');
-        $u = fn (string $email) => $byEmail->get($email);
+        $u = fn(string $email) => $byEmail->get($email);
 
         $spec = [
             ['email' => 'budi.santoso@warga-jogja.demo', 'category' => 'sepi', 'lat' => -7.9021, 'lng' => 110.5872, 'title' => 'Jalan Wonosari km 12 sepi banget malam', 'description' => 'Jarang ada motor lewat setelah jam 9 malam, sinyal HP juga kadang ilang.', 'time_context' => 'malam', 'anon' => false],
@@ -205,10 +300,14 @@ class JuryDemoSeeder extends Seeder
 
         return collect($spec)->map(function ($s) use ($u) {
             return CommunityPin::create([
-                'user_id' => $u($s['email'])->id, 'category' => $s['category'],
-                'lat' => $s['lat'], 'lng' => $s['lng'],
-                'title' => $s['title'], 'description' => $s['description'],
-                'time_context' => $s['time_context'], 'is_anonymous' => $s['anon'],
+                'user_id' => $u($s['email'])->id,
+                'category' => $s['category'],
+                'lat' => $s['lat'],
+                'lng' => $s['lng'],
+                'title' => $s['title'],
+                'description' => $s['description'],
+                'time_context' => $s['time_context'],
+                'is_anonymous' => $s['anon'],
             ]);
         })->all();
     }
@@ -236,7 +335,9 @@ class JuryDemoSeeder extends Seeder
                 // "sudah tidak berlaku" pushback.
                 $stillThere = ($i + $offset) % 4 !== 0;
                 CommunityPinConfirmation::create([
-                    'community_pin_id' => $pin->id, 'user_id' => $voter->id, 'still_there' => $stillThere,
+                    'community_pin_id' => $pin->id,
+                    'user_id' => $voter->id,
+                    'still_there' => $stillThere,
                 ]);
             }
 

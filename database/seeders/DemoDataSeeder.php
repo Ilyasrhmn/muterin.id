@@ -18,7 +18,7 @@ class DemoDataSeeder extends Seeder
     {
         $user = User::firstOrCreate(
             ['email' => 'demo@Muterin.test'],
-            ['name' => 'Ilyas', 'password' => bcrypt('password123')]
+            ['name' => 'street', 'password' => bcrypt('password123')]
         );
 
         // Wipe any previous demo motorcycles so the seeder is re-runnable.
@@ -32,7 +32,7 @@ class DemoDataSeeder extends Seeder
     {
         $motor = Motorcycle::create([
             'user_id' => $user->id,
-            'nickname' => 'Beat Ilyas',
+            'nickname' => 'Beat street',
             'plat_nomor' => 'B 3421 XYZ',
             'brand' => 'Honda',
             'model' => 'BeAT Street',
