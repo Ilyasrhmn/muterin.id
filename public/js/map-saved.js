@@ -64,8 +64,14 @@
       <p style="font-weight:700;font-size:14px;color:#0F172A;margin:6px 0 2px">${esc(p.title)}</p>
       ${p.description ? `<p style="font-size:12px;color:#475569;margin:0 0 6px">${esc(p.description)}</p>` : ''}
       <div style="display:flex;gap:6px;margin-top:4px">
-        <button data-act="edit" style="flex:1;font-size:11px;font-weight:600;padding:6px;border-radius:8px;border:0;cursor:pointer;background:#F1F5F9;color:#0F172A">Edit</button>
-        <button data-act="del" style="flex:1;font-size:11px;font-weight:600;padding:6px;border-radius:8px;border:0;cursor:pointer;background:#FEF2F2;color:#B91C1C">Hapus</button>
+        <button data-act="edit" style="display:flex;align-items:center;justify-content:center;gap:5px;flex:1;font-size:11px;font-weight:600;padding:6px;border-radius:8px;border:0;cursor:pointer;background:#F1F5F9;color:#0F172A">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
+          Edit
+        </button>
+        <button data-act="del" style="display:flex;align-items:center;justify-content:center;gap:5px;flex:1;font-size:11px;font-weight:600;padding:6px;border-radius:8px;border:0;cursor:pointer;background:#FEF2F2;color:#B91C1C">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+          Hapus
+        </button>
       </div></div>`;
     el.querySelector('[data-act="edit"]').onclick = () => { map.closePopup(); editPlace(p); };
     el.querySelector('[data-act="del"]').onclick = async () => {

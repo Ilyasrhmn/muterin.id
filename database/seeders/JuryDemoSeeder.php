@@ -9,6 +9,7 @@ use App\Models\Motorcycle;
 use App\Models\PlaceList;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Carbon;
 
 class JuryDemoSeeder extends Seeder
 {
@@ -55,48 +56,41 @@ class JuryDemoSeeder extends Seeder
             $nmax->fuelLogs()->where('odometer_km', 13000)->delete();
             $nmax->odometerReadings()->where('reading_km', 13000)->delete();
 
-            $nmax->fuelLogs()->create([
-                'filled_at' => '2026-07-20',
-                'odometer_km' => 6100,
-                'liters' => 4.1,
-                'total_cost' => 64000,
-                'is_full_tank' => true,
-            ]);
-            $nmax->odometerReadings()->create([
-                'reading_km' => 6100,
-                'recorded_at' => '2026-07-20',
-                'source' => 'fuel',
-            ]);
+            $nmax->fuelLogs()->firstOrCreate(
+                ['odometer_km' => 6100],
+                ['filled_at' => '2026-07-20', 'liters' => 22.5, 'total_cost' => 292500, 'is_full_tank' => true],
+            );
+            $nmax->odometerReadings()->firstOrCreate(
+                ['reading_km' => 6100],
+                ['recorded_at' => '2026-07-20', 'source' => 'fuel'],
+            );
             $nmax->update(['current_odometer_km' => 6400]);
         }
 
         // Supra Bapak only had 1 full-tank fill (not enough to compute
         // km/l) and no maintenance/expense history -- flesh it out to the
-        // same depth as the other two motorcycles.
+        // same depth as the other two motorcycles. Presenter's own real
+        // entry (27 Jul, odo 12050, full tank) is left untouched -- the
+        // synthetic fill below sits BEFORE it with a lower odometer so the
+        // sequence stays chronologically increasing (an earlier version of
+        // this seeder added fills AFTER it with inconsistent odometer
+        // values -- whereIn() below cleans up anything left from that).
         $supra = $presenter->motorcycles()->where('nickname', 'Supra Bapak')->first();
-        if ($supra && $supra->fuelLogs()->count() < 2) {
-            $supra->fuelLogs()->create([
-                'filled_at' => '2026-07-24',
-                'odometer_km' => 12010,
-                'liters' => 1.6,
-                'total_cost' => 16000,
-                'is_full_tank' => false,
-            ]);
-            $supra->fuelLogs()->create([
-                'filled_at' => '2026-08-01',
-                'odometer_km' => 12130,
-                'liters' => 4.8,
-                'total_cost' => 48000,
-                'is_full_tank' => true,
-            ]);
-            $supra->update(['current_odometer_km' => 12130]);
+        if ($supra) {
+            $supra->fuelLogs()->whereIn('odometer_km', [12010, 12130])->delete();
+            $supra->odometerReadings()->whereIn('reading_km', [12010, 12130])->delete();
+
+            $supra->fuelLogs()->firstOrCreate(
+                ['odometer_km' => 11900],
+                ['filled_at' => '2026-07-15', 'liters' => 3.6, 'total_cost' => 36000, 'is_full_tank' => true],
+            );
 
             $servisRutin = $supra->maintenanceItems()->where('name', 'Servis Rutin')->first();
             if ($servisRutin && $servisRutin->logs()->count() === 0) {
                 $servisRutin->logs()->create([
                     'serviced_at_odometer_km' => 12000,
                     'cost' => 95000,
-                    'serviced_at' => '2026-07-15',
+                    'serviced_at' => '2026-07-18',
                     'note' => 'Servis rutin + ganti oli',
                 ]);
                 $servisRutin->update(['last_service_odometer_km' => 12000]);
@@ -107,11 +101,105 @@ class JuryDemoSeeder extends Seeder
                 ['amount' => 20000],
             );
 
-            $supra->odometerReadings()->firstOrCreate(
-                ['reading_km' => 12130, 'recorded_at' => '2026-08-01'],
-                ['source' => 'fuel'],
-            );
+            $supra->update(['current_odometer_km' => max($supra->current_odometer_km, 12100)]);
         }
+
+        // "Beat Ilyas" uses the presenter's own name -- rename to a
+        // generic nickname so demo/presentation screenshots don't expose it.
+        $presenter->motorcycles()->where('nickname', 'Beat Ilyas')->update(['nickname' => 'Beat Harian']);
+
+        $this->fixPresenterTrips($presenter);
+        $this->spreadPresenterOtherExpenses($presenter);
+        $this->fixPresenterFuelRealism($presenter);
+    }
+
+    /**
+     * The original demo fuel logs recorded ~900-1200km between full-tank
+     * fills but only 4L consumed for it -- 200-300 km/l, which is
+     * physically impossible and stands out immediately on the efficiency
+     * chart. "Liters" at a full-tank fill means "consumed since the last
+     * full tank" (see FuelStatsService::consumptionSeries), so the fix is
+     * to raise liters/cost to match the logged distance, not touch the
+     * odometer readings themselves.
+     */
+    private function fixPresenterFuelRealism(User $presenter): void
+    {
+        $harian = $presenter->motorcycles()->where('nickname', 'Beat Harian')->first();
+        $harian?->fuelLogs()->where('odometer_km', 8900)->update(['liters' => 19.5, 'total_cost' => 253000]);
+        $harian?->fuelLogs()->where('odometer_km', 9800)->update(['liters' => 19.8, 'total_cost' => 257000]);
+
+        $nmax = $presenter->motorcycles()->where('nickname', 'NMAX Kantor')->first();
+        $nmax?->fuelLogs()->where('odometer_km', 5200)->update(['liters' => 30.0, 'total_cost' => 390000]);
+        $nmax?->fuelLogs()->where('odometer_km', 6100)->update(['liters' => 22.5, 'total_cost' => 292500]);
+    }
+
+    /**
+     * A handful of trips have distance_km=0 and 1-40s duration -- abandoned
+     * GPS-recording taps from earlier manual testing, not real rides.
+     * Delete those and top each motorcycle up to a believable trip count.
+     */
+    private function fixPresenterTrips(User $presenter): void
+    {
+        foreach ($presenter->motorcycles as $motor) {
+            $motor->trips()->where('distance_km', 0)->delete();
+        }
+
+        $harian = $presenter->motorcycles()->where('nickname', 'Beat Harian')->first();
+        if ($harian && $harian->trips()->count() < 5) {
+            $this->trip($harian, '2026-07-23 07:45:00', 7.9, 1260, [[-7.7828, 110.3672], [-7.7900, 110.3700], [-7.7960, 110.3750]]);
+            $this->trip($harian, '2026-07-25 17:20:00', 9.3, 1440, [[-7.7960, 110.3750], [-7.7900, 110.3700], [-7.7828, 110.3672]]);
+        }
+
+        $nmax = $presenter->motorcycles()->where('nickname', 'NMAX Kantor')->first();
+        if ($nmax && $nmax->trips()->count() < 4) {
+            $this->trip($nmax, '2026-07-21 08:10:00', 6.1, 900, [[-7.7683, 110.3766], [-7.7750, 110.3800]]);
+            $this->trip($nmax, '2026-07-23 17:35:00', 6.0, 870, [[-7.7750, 110.3800], [-7.7683, 110.3766]]);
+        }
+
+        $supra = $presenter->motorcycles()->where('nickname', 'Supra Bapak')->first();
+        if ($supra && $supra->trips()->count() < 3) {
+            $this->trip($supra, '2026-07-25 06:30:00', 4.5, 660, [[-7.8258, 110.3968], [-7.8150, 110.3900]]);
+            $this->trip($supra, '2026-07-27 16:00:00', 5.2, 720, [[-7.8150, 110.3900], [-7.8258, 110.3968]]);
+        }
+    }
+
+    private function trip(Motorcycle $motor, string $startedAt, float $distanceKm, int $durationSeconds, array $path): void
+    {
+        $motor->trips()->create([
+            'distance_km' => $distanceKm,
+            'duration_seconds' => $durationSeconds,
+            'path_json' => $path,
+            'started_at' => $startedAt,
+            'ended_at' => Carbon::parse($startedAt)->addSeconds($durationSeconds),
+        ]);
+    }
+
+    /**
+     * Monthly cost trend only had "Lainnya" (other expenses) in Feb and Jul
+     * -- adds one small expense per motorcycle in the in-between months so
+     * the stacked bar chart doesn't look empty for 4 of 6 months.
+     */
+    private function spreadPresenterOtherExpenses(User $presenter): void
+    {
+        $harian = $presenter->motorcycles()->where('nickname', 'Beat Harian')->first();
+        $harian?->otherExpenses()->firstOrCreate(
+            ['category' => 'cuci_motor', 'expense_date' => '2026-04-10'],
+            ['amount' => 20000],
+        );
+        $harian?->otherExpenses()->firstOrCreate(
+            ['category' => 'parkir', 'expense_date' => '2026-05-22'],
+            ['amount' => 10000],
+        );
+
+        $nmax = $presenter->motorcycles()->where('nickname', 'NMAX Kantor')->first();
+        $nmax?->otherExpenses()->firstOrCreate(
+            ['category' => 'cuci_motor', 'expense_date' => '2026-03-15'],
+            ['amount' => 25000],
+        );
+        $nmax?->otherExpenses()->firstOrCreate(
+            ['category' => 'parkir', 'expense_date' => '2026-06-08'],
+            ['amount' => 15000],
+        );
     }
 
     private function cleanPresenterPins(User $presenter): void
