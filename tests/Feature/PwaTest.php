@@ -15,7 +15,7 @@ class PwaTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('<link rel="manifest" href="/manifest.json">', false);
-        $response->assertSee('<meta name="theme-color" content="#0F766E">', false);
+        $response->assertSee('<meta name="theme-color" content="#086B59">', false);
     }
 
     public function test_login_page_has_manifest_link(): void

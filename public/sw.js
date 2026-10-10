@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'v1';
+const CACHE_VERSION = 'v5-mapbox';
 const PRECACHE = `muterin-precache-${CACHE_VERSION}`;
 const PAGES = `muterin-pages-${CACHE_VERSION}`;
 const ASSETS = `muterin-assets-${CACHE_VERSION}`;
@@ -79,6 +79,9 @@ self.addEventListener('fetch', (event) => {
   if (request.method !== 'GET') return;
 
   const url = new URL(request.url);
+
+  // Let Mapbox's HTTP cache headers control the lifetime of its resources.
+  if (url.hostname === 'api.mapbox.com') return;
 
   // Page navigations: network-first -> cache -> offline fallback.
   if (request.mode === 'navigate') {
