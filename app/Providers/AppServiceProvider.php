@@ -19,6 +19,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        \Illuminate\Support\Facades\View::composer('layouts.app', function ($view) {
+            $view->with('navbarNotifications', auth()->check()
+                ? app(\App\Services\NotificationCenterService::class)->forUser(auth()->user())
+                : collect());
+        });
     }
 }

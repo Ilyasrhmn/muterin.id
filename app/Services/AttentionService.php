@@ -32,6 +32,7 @@ class AttentionService
                 if ($status['percent'] > 100) {
                     $items[] = [
                         'severity' => 'red',
+                        'key' => "maintenance:{$item->id}:{$item->last_service_odometer_km}:red",
                         'text' => "Segera servis {$item->name}  {$motor->nickname}",
                         'url' => route('motorcycles.show', $motor),
                     ];
@@ -42,6 +43,7 @@ class AttentionService
                 if ($prediction['days_left'] !== null && $prediction['days_left'] <= 14) {
                     $items[] = [
                         'severity' => 'yellow',
+                        'key' => "maintenance:{$item->id}:{$item->last_service_odometer_km}:yellow",
                         'text' => "{$item->name} {$motor->nickname} diperkirakan ~{$prediction['days_left']} hari lagi",
                         'url' => route('motorcycles.show', $motor),
                     ];
@@ -54,6 +56,7 @@ class AttentionService
             if ($avg && $latest && $latest < 0.85 * $avg) {
                 $items[] = [
                     'severity' => 'yellow',
+                    'key' => "fuel:{$motor->id}:".$motor->fuelLogs()->max('id'),
                     'text' => "Konsumsi BBM {$motor->nickname} turun, cek kondisi mesin",
                     'url' => route('bbm.index'),
                 ];
@@ -64,12 +67,14 @@ class AttentionService
                     $overdueText = $doc['days_left'] === 0 ? 'hari ini' : abs($doc['days_left']).' hari lalu';
                     $items[] = [
                         'severity' => 'red',
+                        'key' => "document:{$motor->id}:{$doc['label']}:{$doc['due_date']}:red",
                         'text' => "Segera bayar {$doc['label']}  {$motor->nickname}, jatuh tempo {$overdueText}",
                         'url' => route('motorcycles.show', $motor),
                     ];
                 } elseif ($doc['color'] === 'yellow') {
                     $items[] = [
                         'severity' => 'yellow',
+                        'key' => "document:{$motor->id}:{$doc['label']}:{$doc['due_date']}:yellow",
                         'text' => "{$doc['label']} {$motor->nickname} jatuh tempo {$doc['days_left']} hari lagi",
                         'url' => route('motorcycles.show', $motor),
                     ];
