@@ -36,16 +36,7 @@
     });
   }
 
-  // Foto dengan placeholder+loader sampai gambar kelar dimuat (atau
-  // ilang aja kalau gagal, biar gak ninggalin ikon gambar rusak).
-  function photoHtml(url, height, marginBottom) {
-    if (!url) return '';
-    return `<div style="position:relative;width:100%;height:${height}px;border-radius:8px;overflow:hidden;background:#F1F5F9;margin-bottom:${marginBottom}px">
-      <div class="mtn-loader" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:20px;color:#94A3B8"></div>
-      <img src="${esc(url)}" alt="" style="width:100%;height:100%;object-fit:cover;position:relative;z-index:1;opacity:0;transition:opacity .25s"
-           onload="this.style.opacity=1;this.previousElementSibling.remove()" onerror="this.remove()">
-    </div>`;
-  }
+  const photoHtml = window.MuterinMap.photoHtml;
 
   function tooltipHtml(p) {
     const photo = photoHtml(p.photo_url, 80, 6);
@@ -142,6 +133,7 @@
 
   // --- Render markers + daftar tempat ---
   function render() {
+    if (!hasLoaded) return;
     renderLists();
     const shown = places.filter((p) => filter === '' || p.place_list_id === filter);
     const keep = new Set(shown.map((p) => p.id));
@@ -159,7 +151,7 @@
 
     const list = $('place-list');
     list.innerHTML = '';
-    if (!shown.length) { list.innerHTML = '<div class="p-6 text-center text-sm text-muted-fg">Belum ada tempat.</div>'; return; }
+    if (!shown.length) { list.innerHTML = '<div class="p-6 text-center text-sm text-muted-fg">Belum ada tempat.</div>';  return; }
     shown.forEach((p) => {
       const row = document.createElement('button');
       row.type = 'button';
@@ -172,16 +164,31 @@
     });
   }
 
+  let hasLoaded = false;
+  let refreshSeq = 0;
   function refresh() {
+    const seq = ++refreshSeq;
+    const containers = [$('place-list'), $('list-manager')];
+    if (!hasLoaded) containers.forEach((el, i) => window.MuterinMap.loadingList(el, 3, i === 1));
     fetch('/peta/titik/data', { headers: { Accept: 'application/json' } })
-      .then((r) => r.json())
+      .then((r) => {
+        if (!r.ok) throw new Error('Data request failed');
+        return r.json();
+      })
       .then((b) => {
+        if (seq !== refreshSeq) return;
         lists = b.lists || [];
         places = b.places || [];
         pfListSelect.setItems(listItems());
+        hasLoaded = true;
+        containers.forEach(window.MuterinMap.finishLoading);
         render();
       })
-      .catch(() => {});
+      .catch(() => {
+        if (seq !== refreshSeq) return;
+        if (!hasLoaded) containers.forEach((el) => window.MuterinMap.listError(el, 'Gagal memuat tempat tersimpan.', refresh));
+        else window.MuterinToast.error('Gagal memuat tempat tersimpan. Coba lagi sebentar.');
+      });
   }
 
   // --- List form (buat/edit) ---
@@ -266,17 +273,29 @@
 
   map.on('click', (e) => pickLocation(e.latlng.lat, e.latlng.lng));
 
-  $('btn-my-location').onclick = () => {
-    if (!navigator.geolocation) return;
-    navigator.geolocation.getCurrentPosition((pos) => {
-      map.setView([pos.coords.latitude, pos.coords.longitude], 15);
-      pickLocation(pos.coords.latitude, pos.coords.longitude);
-    });
+  $('btn-my-location').onclick = async () => {
+    const button = $('btn-my-location');
+    button.disabled = true;
+    button.setAttribute('aria-busy', 'true');
+    const icon = button.innerHTML;
+    button.innerHTML = '<span class="mtn-loader" style="font-size:20px"></span>';
+    try {
+      const position = await window.MuterinGeolocation.getCurrentPosition();
+      map.setView([position.lat, position.lng], 15);
+      pickLocation(position.lat, position.lng);
+    } catch (error) {
+      window.MuterinToast.error(window.MuterinGeolocation.getErrorMessage(error));
+    } finally {
+      button.disabled = false;
+      button.removeAttribute('aria-busy');
+      button.innerHTML = icon;
+    }
   };
 
   // --- Search lokasi ---
   let searchTimeout;
   const searchInput = $('search-location');
+  $('search-btn').onclick = () => searchInput.dispatchEvent(new Event('input', { bubbles: true }));
   const searchResults = $('search-results');
 
   searchInput.addEventListener('input', (e) => {

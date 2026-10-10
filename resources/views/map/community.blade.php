@@ -2,37 +2,33 @@
     <x-slot name="header">Peta Komunitas</x-slot>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
-    <div class="p-4 sm:p-6 lg:p-8 max-w-[1400px] mx-auto space-y-6">
-        <x-ui.hero badge="{{ $pins->count() }} titik" title="Peta Keamanan Komunitas"
-                    subtitle="Titik dari semua pengguna. Tandai jalan sepi, gelap, rawan, rusak, atau banjir untuk bantu yang lain tetap aman." />
+    <div class="mtn-page mtn-map-page mtn-map-community space-y-6">
+        <header class="mtn-map-header"><div><p class="mtn-map-eyebrow">Kondisi jalan bersama</p><h1>Peta Keamanan Komunitas</h1><p class="mtn-map-description">Titik dari semua pengguna. Tandai jalan sepi, gelap, rawan, rusak, atau banjir untuk bantu yang lain tetap aman.</p></div><span class="mtn-map-count">{{ $pins->count() }} titik</span></header>
 
-        <div class="grid lg:grid-cols-3 gap-6 items-start">
+        <div class="mtn-map-workspace">
             {{-- LEFT: filter + form + daftar (below the map on mobile, since the map is the primary surface there) --}}
-            <div class="space-y-6 order-2 lg:order-none">
-                <div class="bg-surface border border-border rounded-2xl p-5 space-y-3">
-                    <h3 class="font-heading font-bold text-foreground text-sm">Filter</h3>
-                    <div class="grid grid-cols-3 gap-2">
+            <div class="mtn-map-controls space-y-5">
+                <div class="mtn-panel space-y-3">
+                    <h3 class="mtn-section-title">Titik komunitas</h3>
+                    <div class="mtn-map-personal grid grid-cols-3 gap-2" role="group" aria-label="Filter personal">
                         <button type="button" data-scope="favorited" class="scope-chip flex flex-col items-center gap-1 py-2 rounded-xl border border-border text-muted-fg hover:bg-muted transition text-[11px] font-semibold">
                             <i class="fas fa-heart"></i> Favorit
                         </button>
                         <button type="button" data-scope="liked" class="scope-chip flex flex-col items-center gap-1 py-2 rounded-xl border border-border text-muted-fg hover:bg-muted transition text-[11px] font-semibold">
                             <i class="fas fa-thumbs-up"></i> Like
                         </button>
-                        <button type="button" data-scope="mine" class="scope-chip flex flex-col items-center gap-1 py-2 rounded-xl border border-border text-muted-fg hover:bg-muted transition text-[11px] font-semibold">
-                            <i class="fas fa-location-dot"></i> Titik Saya
+                        <button type="button" data-scope="saved" class="scope-chip flex flex-col items-center gap-1 py-2 rounded-xl border border-border text-muted-fg hover:bg-muted transition text-[11px] font-semibold">
+                            <i class="fas fa-bookmark"></i> Tersimpan
                         </button>
                     </div>
-                    <div id="filter-category"></div>
-                    <button id="btn-my-location" type="button"
-                            class="w-full inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition">
-                        <x-icon.navigation class="w-4 h-4"/> Tandai Lokasi Saya
-                    </button>
+                    <div class="mtn-map-category"><p class="text-xs font-semibold text-muted-fg mb-2">Kategori kondisi jalan</p><div id="filter-category"></div></div>
+
                     <p class="text-xs text-muted-fg leading-relaxed">Atau klik di mana saja di peta untuk menandai titik di sana.</p>
                 </div>
 
                 {{-- Form tambah titik (inline, tersembunyi sampai ada lokasi dipilih) --}}
-                <div id="add-form" class="hidden bg-surface border border-primary/30 rounded-2xl p-5 space-y-3">
-                    <h3 class="font-heading font-bold text-foreground text-sm">Tandai Titik Baru</h3>
+                <div id="add-form" class="hidden mtn-panel mtn-map-editor space-y-3">
+                    <h3 class="mtn-section-title">Tandai Titik Baru</h3>
                     <p id="add-coords" class="text-xs text-muted-fg"></p>
 
                     <div class="space-y-1">
@@ -79,25 +75,19 @@
                     </div>
                 </div>
 
-                <div class="bg-surface border border-border rounded-2xl overflow-hidden flex flex-col">
-                    <div class="p-5 border-b border-border bg-muted/40">
-                        <h3 class="font-heading font-bold text-foreground text-sm">Titik Terbaru</h3>
+                <div class="mtn-panel mtn-map-list-panel flex flex-col">
+                    <div class="mtn-context mtn-map-list-heading">
+                        <h3 class="mtn-section-title">Titik Terbaru</h3>
                     </div>
-                    <div id="pin-list" class="p-3 space-y-1 overflow-y-auto" style="max-height: 44vh"></div>
+                    <div id="pin-list" class="p-3 space-y-1 mtn-scroll-list"></div>
                 </div>
             </div>
 
             {{-- RIGHT: map (first on mobile) --}}
-            <div class="lg:col-span-2 order-1 lg:order-none">
-                <div class="bg-surface border border-border rounded-2xl p-3 mb-3">
-                    <div class="relative">
-                        <input id="search-location" type="text" placeholder="Cari lokasi..."
-                               class="w-full rounded-xl border border-border bg-surface pl-10 pr-3 py-2 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20">
-                        <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-muted-fg text-sm"></i>
-                        <div id="search-results" class="hidden absolute top-full left-0 right-0 mt-1 bg-surface border border-border rounded-xl shadow-lg max-h-64 overflow-y-auto z-10"></div>
-                    </div>
-                </div>
-                <div class="rounded-2xl overflow-hidden border border-border">
+            <div class="mtn-map-surface">
+
+                <div class="mtn-map-frame">
+                    <x-ui.map-search locate />
                     <div id="map" style="height: 68vh"></div>
                 </div>
             </div>
@@ -106,6 +96,7 @@
 
     @csrf
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    @include('partials.map-provider')
     <script src="{{ asset('js/map-common.js') }}?v={{ filemtime(public_path('js/map-common.js')) }}"></script>
     <script src="{{ asset('js/map-community.js') }}?v={{ filemtime(public_path('js/map-community.js')) }}"></script>
 </x-app-layout>

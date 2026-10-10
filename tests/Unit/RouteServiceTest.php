@@ -13,11 +13,11 @@ class RouteServiceTest extends TestCase
     public function test_route_returns_geometry_distance_and_duration(): void
     {
         Http::fake([
-            'api.openrouteservice.org/*' => Http::response([
-                'features' => [
+            'api.mapbox.com/directions/*' => Http::response([
+                'routes' => [
                     [
                         'geometry' => ['coordinates' => [[106.8, -6.2], [106.81, -6.21], [106.82, -6.22]]],
-                        'properties' => ['summary' => ['distance' => 1500.0, 'duration' => 300.0]],
+                        'distance' => 1500.0, 'duration' => 300.0,
                     ],
                 ],
             ], 200),
@@ -31,14 +31,14 @@ class RouteServiceTest extends TestCase
         $this->assertEquals(5, $result['duration_minutes']);
     }
 
-    public function test_route_sends_coordinates_to_ors_in_lng_lat_order(): void
+    public function test_route_sends_coordinates_to_mapbox_in_lng_lat_order(): void
     {
         Http::fake([
-            'api.openrouteservice.org/*' => Http::response([
-                'features' => [
+            'api.mapbox.com/directions/*' => Http::response([
+                'routes' => [
                     [
                         'geometry' => ['coordinates' => [[106.8, -6.2], [106.82, -6.22]]],
-                        'properties' => ['summary' => ['distance' => 1000.0, 'duration' => 200.0]],
+                        'distance' => 1000.0, 'duration' => 200.0,
                     ],
                 ],
             ], 200),
@@ -48,14 +48,14 @@ class RouteServiceTest extends TestCase
         $service->route([[-6.2, 106.8], [-6.22, 106.82]]);
 
         Http::assertSent(function ($request) {
-            return $request['coordinates'] === [[106.8, -6.2], [106.82, -6.22]];
+            return str_contains($request->url(), '/mapbox/driving/106.8,-6.2;106.82,-6.22') && $request['exclude'] === 'motorway';
         });
     }
 
-    public function test_route_throws_when_ors_request_fails(): void
+    public function test_route_throws_when_mapbox_request_fails(): void
     {
         Http::fake([
-            'api.openrouteservice.org/*' => Http::response(['error' => 'no route found'], 404),
+            'api.mapbox.com/directions/*' => Http::response(['error' => 'no route found'], 404),
         ]);
 
         $service = new RouteService();
@@ -64,10 +64,10 @@ class RouteServiceTest extends TestCase
         $service->route([[-6.2, 106.8], [-6.22, 106.82]]);
     }
 
-    public function test_route_throws_when_ors_response_has_no_features(): void
+    public function test_route_throws_when_mapbox_response_has_no_features(): void
     {
         Http::fake([
-            'api.openrouteservice.org/*' => Http::response(['features' => []], 200),
+            'api.mapbox.com/directions/*' => Http::response(['routes' => []], 200),
         ]);
 
         $service = new RouteService();
@@ -79,7 +79,7 @@ class RouteServiceTest extends TestCase
     public function test_route_throws_route_not_found_exception_on_connection_timeout(): void
     {
         Http::fake([
-            'api.openrouteservice.org/*' => fn () => throw new ConnectionException('cURL error 28: Connection timed out'),
+            'api.mapbox.com/directions/*' => fn () => throw new ConnectionException('cURL error 28: Connection timed out'),
         ]);
 
         $service = new RouteService();

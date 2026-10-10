@@ -12,13 +12,14 @@ class RouteService
 
     public function route(array $waypoints): array
     {
-        $coordinates = array_map(fn ($point) => [$point[1], $point[0]], $waypoints);
+        $coordinates = implode(';', array_map(fn ($point) => $point[1].','.$point[0], $waypoints));
 
         try {
-            $response = Http::withHeaders([
-                'Authorization' => config('services.ors.key'),
-            ])->timeout(8)->post('https://api.openrouteservice.org/v2/directions/cycling-regular/geojson', [
-                'coordinates' => $coordinates,
+            $response = Http::timeout(8)->get('https://api.mapbox.com/directions/v5/mapbox/driving/'.$coordinates, [
+                'access_token' => config('services.mapbox.access_token'),
+                'geometries' => 'geojson',
+                'overview' => 'full',
+                'exclude' => 'motorway',
             ]);
         } catch (ConnectionException) {
             throw new RouteNotFoundException(self::ERROR_MESSAGE);
@@ -28,14 +29,14 @@ class RouteService
             throw new RouteNotFoundException(self::ERROR_MESSAGE);
         }
 
-        $feature = $response->json('features.0');
+        $feature = $response->json('routes.0');
 
         if (!$feature) {
             throw new RouteNotFoundException(self::ERROR_MESSAGE);
         }
 
         $geometry = array_map(fn ($coord) => [$coord[1], $coord[0]], $feature['geometry']['coordinates']);
-        $summary = $feature['properties']['summary'];
+        $summary = $feature;
 
         return [
             'geometry' => $geometry,

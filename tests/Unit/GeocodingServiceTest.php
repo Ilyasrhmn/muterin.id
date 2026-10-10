@@ -10,13 +10,30 @@ use Tests\TestCase;
 
 class GeocodingServiceTest extends TestCase
 {
+    public function test_search_uses_mapbox_proximity_and_permanent_storage(): void
+    {
+        Http::fake(['api.mapbox.com/*' => Http::response(['features' => []])]);
+        (new GeocodingService())->search('Yogyakarta', -7.8, 110.3);
+        Http::assertSent(fn ($request) => $request['proximity'] === '110.3,-7.8'
+            && $request['permanent'] === 'true'
+            && $request['q'] === 'Yogyakarta');
+    }
+
+    public function test_reverse_uses_mapbox_coordinate_parameters(): void
+    {
+        Http::fake(['api.mapbox.com/*' => Http::response(['features' => []])]);
+        (new GeocodingService())->reverse(-7.8, 110.3);
+        Http::assertSent(fn ($request) => $request['latitude'] == -7.8
+            && $request['longitude'] == 110.3 && $request['permanent'] === 'true');
+    }
+
     public function test_search_parses_results_and_converts_coordinate_order(): void
     {
         Http::fake([
-            'api.openrouteservice.org/geocode/search*' => Http::response([
+            'api.mapbox.com/search/geocode/v6/forward*' => Http::response([
                 'features' => [
-                    ['properties' => ['label' => 'Jalan Bintaro, Jakarta'], 'geometry' => ['coordinates' => [106.75, -6.27]]],
-                    ['properties' => ['label' => 'Bintaro Plaza'], 'geometry' => ['coordinates' => [106.76, -6.28]]],
+                    ['properties' => ['full_address' => 'Jalan Bintaro, Jakarta'], 'geometry' => ['coordinates' => [106.75, -6.27]]],
+                    ['properties' => ['full_address' => 'Bintaro Plaza'], 'geometry' => ['coordinates' => [106.76, -6.28]]],
                 ],
             ], 200),
         ]);
@@ -29,14 +46,14 @@ class GeocodingServiceTest extends TestCase
 
     public function test_search_returns_empty_array_when_no_features(): void
     {
-        Http::fake(['api.openrouteservice.org/geocode/search*' => Http::response(['features' => []], 200)]);
+        Http::fake(['api.mapbox.com/search/geocode/v6/forward*' => Http::response(['features' => []], 200)]);
 
         $this->assertSame([], (new GeocodingService())->search('zzznowhere'));
     }
 
     public function test_search_throws_on_http_failure(): void
     {
-        Http::fake(['api.openrouteservice.org/geocode/search*' => Http::response(['error' => 'quota'], 429)]);
+        Http::fake(['api.mapbox.com/search/geocode/v6/forward*' => Http::response(['error' => 'quota'], 429)]);
 
         $this->expectException(GeocodingException::class);
         (new GeocodingService())->search('bintaro');
@@ -45,7 +62,7 @@ class GeocodingServiceTest extends TestCase
     public function test_search_throws_geocoding_exception_on_connection_timeout(): void
     {
         Http::fake([
-            'api.openrouteservice.org/geocode/search*' => fn () => throw new ConnectionException('cURL error 28: Connection timed out'),
+            'api.mapbox.com/search/geocode/v6/forward*' => fn () => throw new ConnectionException('cURL error 28: Connection timed out'),
         ]);
 
         $this->expectException(GeocodingException::class);
@@ -55,9 +72,9 @@ class GeocodingServiceTest extends TestCase
     public function test_reverse_returns_nearest_label(): void
     {
         Http::fake([
-            'api.openrouteservice.org/geocode/reverse*' => Http::response([
+            'api.mapbox.com/search/geocode/v6/reverse*' => Http::response([
                 'features' => [
-                    ['properties' => ['label' => 'Jalan Merpati, Bintaro'], 'geometry' => ['coordinates' => [106.75, -6.27]]],
+                    ['properties' => ['full_address' => 'Jalan Merpati, Bintaro'], 'geometry' => ['coordinates' => [106.75, -6.27]]],
                 ],
             ], 200),
         ]);
@@ -71,7 +88,7 @@ class GeocodingServiceTest extends TestCase
 
     public function test_reverse_falls_back_when_no_feature(): void
     {
-        Http::fake(['api.openrouteservice.org/geocode/reverse*' => Http::response(['features' => []], 200)]);
+        Http::fake(['api.mapbox.com/search/geocode/v6/reverse*' => Http::response(['features' => []], 200)]);
 
         $result = (new GeocodingService())->reverse(-6.5, 106.5);
 
@@ -82,7 +99,7 @@ class GeocodingServiceTest extends TestCase
 
     public function test_reverse_throws_on_http_failure(): void
     {
-        Http::fake(['api.openrouteservice.org/geocode/reverse*' => Http::response(['error' => 'down'], 500)]);
+        Http::fake(['api.mapbox.com/search/geocode/v6/reverse*' => Http::response(['error' => 'down'], 500)]);
 
         $this->expectException(GeocodingException::class);
         (new GeocodingService())->reverse(-6.27, 106.75);
@@ -91,7 +108,7 @@ class GeocodingServiceTest extends TestCase
     public function test_reverse_throws_geocoding_exception_on_connection_timeout(): void
     {
         Http::fake([
-            'api.openrouteservice.org/geocode/reverse*' => fn () => throw new ConnectionException('cURL error 28: Connection timed out'),
+            'api.mapbox.com/search/geocode/v6/reverse*' => fn () => throw new ConnectionException('cURL error 28: Connection timed out'),
         ]);
 
         $this->expectException(GeocodingException::class);

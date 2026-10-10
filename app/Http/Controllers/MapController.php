@@ -48,7 +48,7 @@ class MapController extends Controller
     public function previewRoute(Request $request, RouteService $routing)
     {
         $data = $request->validate([
-            'waypoints' => 'required|array|min:2',
+            'waypoints' => 'required|array|min:2|max:25',
             'waypoints.*' => 'required|array|size:2',
             'waypoints.*.0' => 'required|numeric|between:-90,90',
             'waypoints.*.1' => 'required|numeric|between:-180,180',

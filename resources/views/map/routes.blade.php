@@ -2,23 +2,22 @@
     <x-slot name="header">Peta Rute</x-slot>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
-    <div class="p-4 sm:p-6 lg:p-8 max-w-[1400px] mx-auto space-y-6">
-        <x-ui.hero badge="{{ $trips->count() }} perjalanan" title="Peta Rute Perjalanan"
-                    subtitle="Semua jalur GPS dari perjalanan yang pernah kamu rekam, tergambar di satu peta." />
+    <div class="mtn-page mtn-map-page mtn-map-routes space-y-6">
+        <header class="mtn-map-header"><div><p class="mtn-map-eyebrow">Riwayat perjalanan</p><h1>Peta Rute Perjalanan</h1><p class="mtn-map-description">Semua jalur GPS dari perjalanan yang pernah kamu rekam, tergambar di satu peta.</p></div><span class="mtn-map-count">{{ $trips->count() }} perjalanan</span></header>
 
-        <div class="grid lg:grid-cols-3 gap-6">
-            <div class="lg:col-span-2 rounded-2xl overflow-hidden border border-border">
+        <div class="mtn-map-workspace">
+            <div class="mtn-map-surface mtn-map-frame">
                 <div id="map" style="height: 60vh"></div>
             </div>
 
-            <div class="bg-surface border border-border rounded-2xl overflow-hidden flex flex-col">
-                <div class="p-5 border-b border-border bg-muted/40">
-                    <h3 class="font-heading font-bold text-foreground text-sm">Daftar Perjalanan</h3>
+            <div class="mtn-panel mtn-map-controls mtn-map-list-panel flex flex-col">
+                <div class="mtn-context mtn-map-list-heading">
+                    <h3 class="mtn-section-title">Daftar Perjalanan</h3>
                     <p class="text-xs text-muted-fg mt-0.5">Jalur ditampilkan di peta</p>
                 </div>
-                <div class="p-3 space-y-1 overflow-y-auto" style="max-height: 52vh">
+                <div class="p-3 space-y-1 mtn-scroll-list">
                     @forelse ($trips as $t)
-                        <div class="p-3 rounded-xl hover:bg-muted/60 transition">
+                        <div class="mtn-record p-3 hover:bg-muted/60 transition">
                             <div class="flex items-center justify-between">
                                 <p class="font-bold text-sm text-foreground">{{ $t->motorcycle->nickname }}</p>
                                 <span class="text-sm font-bold text-primary tabular-nums">{{ $t->distance_km }} km</span>
@@ -39,6 +38,7 @@
 
     @csrf
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    @include('partials.map-provider')
     <script src="{{ asset('js/map-common.js') }}?v={{ filemtime(public_path('js/map-common.js')) }}"></script>
     <script src="{{ asset('js/map-routes.js') }}?v={{ filemtime(public_path('js/map-routes.js')) }}"></script>
 </x-app-layout>

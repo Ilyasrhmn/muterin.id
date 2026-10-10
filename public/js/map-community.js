@@ -39,16 +39,7 @@
     });
   }
 
-  // Foto dengan placeholder+loader sampai gambar kelar dimuat (atau
-  // ilang aja kalau gagal, biar gak ninggalin ikon gambar rusak).
-  function photoHtml(url, height, marginBottom) {
-    if (!url) return '';
-    return `<div style="position:relative;width:100%;height:${height}px;border-radius:8px;overflow:hidden;background:#F1F5F9;margin-bottom:${marginBottom}px">
-      <div class="mtn-loader" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:20px;color:#94A3B8"></div>
-      <img src="${esc(url)}" alt="" style="width:100%;height:100%;object-fit:cover;position:relative;z-index:1;opacity:0;transition:opacity .25s"
-           onload="this.style.opacity=1;this.previousElementSibling.remove()" onerror="this.remove()">
-    </div>`;
-  }
+  const photoHtml = window.MuterinMap.photoHtml;
 
   // Kartu ringkas untuk hover: foto (jika ada) + judul + kategori.
   function tooltipHtml(p) {
@@ -106,6 +97,7 @@
             <i class="fas fa-heart"></i>
           </button>
         </div>
+        <button data-act="save" aria-label="Simpan titik" style="${iconBtnStyle()}color:${p.is_saved ? ICON_COLOR_ACTIVE.like : ICON_COLOR_IDLE};margin-top:10px;min-height:44px"><i class="fas fa-bookmark"></i><span>${p.is_saved ? 'Tersimpan' : 'Simpan titik'}</span></button>
         ${del}
       </div>`;
   }
@@ -138,6 +130,21 @@
     likeBtn.onclick = () => vote(true);
     dislikeBtn.onclick = () => vote(false);
 
+    const saveBtn = el.querySelector('[data-act="save"]');
+    saveBtn.onclick = async () => {
+      if (p.is_saved) { window.location.href = '/peta/titik'; return; }
+      saveBtn.disabled = true;
+      try {
+        const response = await fetch('/peta/komunitas/' + p.id + '/save', { method:'POST', headers:{'X-CSRF-TOKEN':token, Accept:'application/json'} });
+        if (!response.ok) throw new Error('save');
+        const body = await response.json();
+        p.is_saved = body.saved;
+        saveBtn.style.color = ICON_COLOR_ACTIVE.like;
+        saveBtn.querySelector('span').textContent = 'Tersimpan';
+        window.MuterinToast.success('Titik disimpan ke Titik Saya.');
+      } catch (error) { window.MuterinToast.error('Gagal menyimpan titik. Coba lagi.'); }
+      finally { saveBtn.disabled = false; }
+    };
     const favBtn = el.querySelector('[data-act="fav"]');
     favBtn.onclick = () => {
       fetch(`/peta/komunitas/${p.id}/favorite`, {
@@ -177,11 +184,12 @@
   function matchesScope(p) {
     if (scope === 'favorited') return p.is_favorited;
     if (scope === 'liked') return p.is_liked;
-    if (scope === 'mine') return p.is_mine;
+    if (scope === 'saved') return p.is_saved;
     return true;
   }
 
   function render() {
+    if (!hasLoaded) return;
     const shown = pins.filter((p) => (!filter || p.category === filter) && matchesScope(p));
     const keep = new Set(shown.map((p) => p.id));
 
@@ -222,15 +230,34 @@
   }
 
   // --- Fetch / refresh ---
+  let hasLoaded = false;
+  let refreshSeq = 0;
   function refresh() {
+    const seq = ++refreshSeq;
+    const containers = [$('pin-list')];
+    if (!hasLoaded) containers.forEach((el, i) => window.MuterinMap.loadingList(el, 3, i === 1));
     fetch('/peta/komunitas/data', { headers: { Accept: 'application/json' } })
-      .then((r) => r.json())
-      .then((b) => { pins = b.pins || []; render(); })
-      .catch(() => {});
+      .then((r) => {
+        if (!r.ok) throw new Error('Data request failed');
+        return r.json();
+      })
+      .then((b) => {
+        if (seq !== refreshSeq) return;
+        pins = b.pins || [];
+        hasLoaded = true;
+        containers.forEach(window.MuterinMap.finishLoading);
+        render();
+      })
+      .catch(() => {
+        if (seq !== refreshSeq) return;
+        if (!hasLoaded) containers.forEach((el) => window.MuterinMap.listError(el, 'Gagal memuat titik komunitas.', refresh));
+        else window.MuterinToast.error('Gagal memuat titik komunitas. Coba lagi sebentar.');
+      });
   }
 
   // --- Cari lokasi ---
   const searchInput = $('search-location');
+  $('search-btn').onclick = () => searchInput.dispatchEvent(new Event('input', { bubbles: true }));
   const searchResults = $('search-results');
   let searchTimer = null;
 
@@ -293,13 +320,23 @@
 
   map.on('click', (e) => pickLocation(e.latlng.lat, e.latlng.lng));
 
-  $('btn-my-location').onclick = () => {
-    if (!navigator.geolocation) return;
-    navigator.geolocation.getCurrentPosition((pos) => {
-      const { latitude, longitude } = pos.coords;
-      map.setView([latitude, longitude], 15);
-      pickLocation(latitude, longitude);
-    });
+  $('btn-my-location').onclick = async () => {
+    const button = $('btn-my-location');
+    button.disabled = true;
+    button.setAttribute('aria-busy', 'true');
+    const icon = button.innerHTML;
+    button.innerHTML = '<span class="mtn-loader" style="font-size:20px"></span>';
+    try {
+      const position = await window.MuterinGeolocation.getCurrentPosition();
+      map.setView([position.lat, position.lng], 15);
+      pickLocation(position.lat, position.lng);
+    } catch (error) {
+      window.MuterinToast.error(window.MuterinGeolocation.getErrorMessage(error));
+    } finally {
+      button.disabled = false;
+      button.removeAttribute('aria-busy');
+      button.innerHTML = icon;
+    }
   };
 
   $('add-cancel').onclick = () => { picked = null; $('add-form').classList.add('hidden'); };

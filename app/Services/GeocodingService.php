@@ -13,19 +13,19 @@ class GeocodingService
     public function search(string $query, ?float $focusLat = null, ?float $focusLng = null): array
     {
         $params = [
-            'text' => $query,
-            'size' => 5,
+            'q' => $query,
+            'limit' => 5,
+            'access_token' => config('services.mapbox.access_token'),
+            'permanent' => 'true',
+            'language' => 'id',
         ];
 
         if ($focusLat !== null && $focusLng !== null) {
-            $params['focus.point.lat'] = $focusLat;
-            $params['focus.point.lon'] = $focusLng;
+            $params['proximity'] = $focusLng.','.$focusLat;
         }
 
         try {
-            $response = Http::withHeaders([
-                'Authorization' => config('services.ors.key'),
-            ])->timeout(8)->get('https://api.openrouteservice.org/geocode/search', $params);
+            $response = Http::timeout(8)->get('https://api.mapbox.com/search/geocode/v6/forward', $params);
         } catch (ConnectionException) {
             throw new GeocodingException(self::ERROR_MESSAGE);
         }
@@ -36,7 +36,7 @@ class GeocodingService
 
         return collect($response->json('features', []))
             ->map(fn ($feature) => [
-                'label' => $feature['properties']['label'] ?? 'Lokasi tanpa nama',
+                'label' => $feature['properties']['full_address'] ?? 'Lokasi tanpa nama',
                 'lat' => $feature['geometry']['coordinates'][1],
                 'lng' => $feature['geometry']['coordinates'][0],
             ])
@@ -47,12 +47,13 @@ class GeocodingService
     public function reverse(float $lat, float $lng): array
     {
         try {
-            $response = Http::withHeaders([
-                'Authorization' => config('services.ors.key'),
-            ])->timeout(8)->get('https://api.openrouteservice.org/geocode/reverse', [
-                'point.lat' => $lat,
-                'point.lon' => $lng,
-                'size' => 1,
+            $response = Http::timeout(8)->get('https://api.mapbox.com/search/geocode/v6/reverse', [
+                'latitude' => $lat,
+                'longitude' => $lng,
+                'limit' => 1,
+                'access_token' => config('services.mapbox.access_token'),
+                'permanent' => 'true',
+                'language' => 'id',
             ]);
         } catch (ConnectionException) {
             throw new GeocodingException(self::ERROR_MESSAGE);
@@ -73,7 +74,7 @@ class GeocodingService
         }
 
         return [
-            'label' => $feature['properties']['label'] ?? 'Lokasi tanpa nama',
+            'label' => $feature['properties']['full_address'] ?? 'Lokasi tanpa nama',
             'lat' => $lat,
             'lng' => $lng,
         ];

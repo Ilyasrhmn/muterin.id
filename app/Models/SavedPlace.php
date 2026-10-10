@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class SavedPlace extends Model
 {
-    protected $fillable = ['user_id', 'place_list_id', 'lat', 'lng', 'title', 'description', 'photo_path'];
+    protected $fillable = ['user_id', 'place_list_id', 'lat', 'lng', 'title', 'description', 'photo_path', 'community_pin_id'];
 
     protected $casts = ['lat' => 'float', 'lng' => 'float'];
 

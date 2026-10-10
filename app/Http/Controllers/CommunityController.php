@@ -16,6 +16,8 @@ class CommunityController extends Controller
 
     private ?array $favoritedIds = null;
 
+    private array $savedIds = [];
+
     public function __construct(
         private CommunityPinService $service,
         private ImagePhotoService $photoService,
@@ -85,6 +87,21 @@ class CommunityController extends Controller
         return response()->json(['favorited' => $favorited]);
     }
 
+    public function save(Request $request, CommunityPin $pin)
+    {
+        $list = $request->user()->placeLists()->firstOrCreate(
+            ['name' => 'Dari Komunitas'],
+            ['icon' => 'fa-bookmark', 'color' => '#0F766E', 'is_default' => false],
+        );
+        $place = $request->user()->savedPlaces()->firstOrCreate(
+            ['community_pin_id' => $pin->id],
+            ['place_list_id' => $list->id, 'lat' => $pin->lat, 'lng' => $pin->lng,
+                'title' => $pin->title, 'description' => $pin->description],
+        );
+
+        return response()->json(['saved' => true, 'place_id' => $place->id]);
+    }
+
     public function nearRoute(Request $request)
     {
         $data = $request->validate([
@@ -108,6 +125,7 @@ class CommunityController extends Controller
         $this->likedIds = $this->service->likedPinIds(auth()->user());
         $this->dislikedIds = $this->service->dislikedPinIds(auth()->user());
         $this->favoritedIds = $this->service->favoritedPinIds(auth()->user());
+        $this->savedIds = auth()->user()->savedPlaces()->whereNotNull('community_pin_id')->pluck('community_pin_id')->all();
     }
 
     public function destroy(CommunityPin $pin)
@@ -139,6 +157,7 @@ class CommunityController extends Controller
             'is_liked' => in_array($p->id, $this->likedIds ?? [], true),
             'is_disliked' => in_array($p->id, $this->dislikedIds ?? [], true),
             'is_favorited' => in_array($p->id, $this->favoritedIds ?? [], true),
+            'is_saved' => in_array($p->id, $this->savedIds, true),
         ];
     }
 }

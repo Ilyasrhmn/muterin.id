@@ -18,6 +18,7 @@
   let lastRoute = null;
   let requestSeq = 0;
   let communityMarkers = [];
+  let communitySeq = 0;
 
   const CAT_LABEL = {
     sepi: 'sepi', gelap: 'gelap', rawan: 'rawan', rusak: 'rusak', banjir: 'banjir', momen: 'momen',
@@ -31,6 +32,9 @@
   };
 
   function clearCommunity() {
+    communitySeq++;
+    const text = $('community-warning-text');
+    if (text) { text.replaceChildren(); window.MuterinMap.finishLoading(text); }
     communityMarkers.forEach((m) => m.remove());
     communityMarkers = [];
     const w = document.getElementById('community-warning');
@@ -51,39 +55,41 @@
     });
   }
 
-  // Foto dengan placeholder+loader sampai gambar kelar dimuat (atau
-  // ilang aja kalau gagal, biar gak ninggalin ikon gambar rusak).
-  function photoHtml(url, height, marginBottom) {
-    if (!url) return '';
-    return `<div style="position:relative;width:100%;height:${height}px;border-radius:6px;overflow:hidden;background:#F1F5F9;margin-bottom:${marginBottom}px">
-      <div class="mtn-loader" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:18px;color:#94A3B8"></div>
-      <img src="${url}" alt="" style="width:100%;height:100%;object-fit:cover;position:relative;z-index:1;opacity:0;transition:opacity .25s"
-           onload="this.style.opacity=1;this.previousElementSibling.remove()" onerror="this.remove()">
-    </div>`;
-  }
+  const photoHtml = window.MuterinMap.photoHtml;
 
   function popupHtml(p) {
     const color = CAT_COLOR[p.category] || '#64748B';
     const label = CAT_LABEL[p.category] || p.category;
     const photo = photoHtml(p.photo_url, 80, 6);
-    return `<div style="min-width:160px;max-width:190px">
-      ${photo}
-      <span style="display:inline-block;font-size:9px;font-weight:700;color:#fff;background:${color};padding:1px 7px;border-radius:999px">${label}</span>
-      <p style="font-weight:700;font-size:13px;color:#0F172A;margin:4px 0 0">${p.title}</p>
-      <p style="font-size:11px;color:#64748B;margin:2px 0 0">${p.contributor || 'Anonim'} · ${p.still_count || 0} masih berlaku</p>
-    </div>`;
+    const el = document.createElement('div');
+    el.style.cssText = 'min-width:160px;max-width:190px';
+    el.innerHTML = photo + '<span style="display:inline-block;font-size:9px;font-weight:700;color:#fff;padding:1px 7px;border-radius:999px"></span><p style="font-weight:700;font-size:13px;color:#0F172A;margin:4px 0 0"></p><p style="font-size:11px;color:#64748B;margin:2px 0 0"></p>';
+    el.querySelector('span').style.background = color;
+    el.querySelector('span').textContent = label;
+    el.querySelectorAll('p')[0].textContent = p.title;
+    el.querySelectorAll('p')[1].textContent = `${p.contributor || 'Anonim'} · ${p.still_count || 0} masih berlaku`;
+    return el;
   }
 
   function checkCommunity(geometry) {
     clearCommunity();
+    const seq = communitySeq;
+    const warning = $('community-warning');
+    const text = $('community-warning-text');
+    if (warning && text) {
+      warning.classList.remove('hidden');
+      window.MuterinMap.loadingList(text, 1, true);
+    }
     fetch('/peta/komunitas/near-route', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': token, Accept: 'application/json' },
       body: JSON.stringify({ geometry }),
     })
-      .then((r) => (r.ok ? r.json() : null))
+      .then((r) => { if (!r.ok) throw new Error('Community request failed'); return r.json(); })
       .then((b) => {
-        if (!b || !b.pins || !b.pins.length) return;
+        if (seq !== communitySeq) return;
+        if (text) { text.replaceChildren(); window.MuterinMap.finishLoading(text); }
+        if (!b || !b.pins || !b.pins.length) { warning?.classList.add('hidden'); return; }
         const counts = {};
         b.pins.forEach((p) => {
           counts[p.category] = (counts[p.category] || 0) + 1;
@@ -100,7 +106,10 @@
           el.classList.remove('hidden');
         }
       })
-      .catch(() => {}); // ponytail: non-fatal, jangan ganggu alur rute
+      .catch(() => {
+        if (seq !== communitySeq) return;
+        if (text) window.MuterinMap.listError(text, 'Gagal memuat titik komunitas di rute ini.', () => checkCommunity(geometry));
+      });
   }
 
   /**
@@ -178,7 +187,7 @@
     const el = document.createElement('div');
     el.style.minWidth = '190px';
     el.innerHTML = `
-      <p style="font-weight:600;font-size:13px;color:#0F172A;margin:0 0 8px">${loc.label}</p>
+      <p data-location-label style="font-weight:600;font-size:13px;color:#0F172A;margin:0 0 8px"></p>
       <div style="display:flex;flex-direction:column;gap:6px">
         <button data-act="start" style="display:flex;align-items:center;gap:7px;text-align:left;font-size:12px;font-weight:600;padding:7px 10px;border-radius:8px;border:0;cursor:pointer;background:#ECFDF5;color:#047857">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2" fill="currentColor" stroke="none"/></svg>
@@ -193,6 +202,7 @@
           Jadikan Titik Tujuan
         </button>
       </div>`;
+    el.querySelector('[data-location-label]').textContent = loc.label;
     el.querySelector('[data-act="start"]').onclick = () => { setStart(loc); map.closePopup(); };
     el.querySelector('[data-act="end"]').onclick = () => { setEnd(loc); map.closePopup(); };
     el.querySelector('[data-act="via"]').onclick = () => { addVia(loc); map.closePopup(); };
@@ -255,7 +265,8 @@
       row.innerHTML =
         '<span class="w-3 h-3 rounded-full bg-amber-500 shrink-0"></span>' +
         '<div class="flex-1 min-w-0"><p class="text-[10px] font-bold uppercase tracking-wider text-muted-fg">Titik Singgah</p>' +
-        `<p class="text-sm text-foreground truncate">${v.label}</p></div>`;
+        '<p data-via-label class="text-sm text-foreground truncate"></p></div>';
+      row.querySelector('[data-via-label]').textContent = v.label;
       const rm = document.createElement('button');
       rm.type = 'button';
       rm.className = 'text-muted-fg hover:text-accent shrink-0 text-lg leading-none';
@@ -287,6 +298,8 @@
   };
 
   function clearRoute() {
+    requestSeq++;
+    finishRouteLoading();
     if (routeLine) { routeLine.remove(); routeLine = null; }
     lastRoute = null;
     $('route-summary').classList.add('hidden');
@@ -294,12 +307,28 @@
     clearCommunity();
   }
 
+  function finishRouteLoading() {
+    ['route-distance', 'route-duration'].forEach((id) => {
+      const el = $(id);
+      if (el.getAttribute('aria-busy')) el.replaceChildren();
+      window.MuterinMap.finishLoading(el);
+    });
+  }
+
   // --- Route ---
   function maybeRoute() {
     if (!(start && end)) { clearRoute(); return; }
     const waypoints = [start, ...via, end].map((p) => [p.lat, p.lng]);
     const seq = ++requestSeq;
+    lastRoute = null;
+    clearCommunity();
     setStatus('Menghitung rute…', false);
+    $('route-summary').classList.remove('hidden');
+    ['route-distance', 'route-duration'].forEach((id) => {
+      const el = $(id);
+      el.setAttribute('aria-busy', 'true');
+      el.innerHTML = '<span class="mtn-skeleton" aria-hidden="true" style="display:inline-block;width:80px;height:14px;border-radius:4px"></span>';
+    });
     fetch('/map/route', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': token, Accept: 'application/json' },
@@ -308,6 +337,7 @@
       .then((r) => r.json().then((body) => ({ ok: r.ok, body })))
       .then(({ ok, body }) => {
         if (seq !== requestSeq) return;
+        finishRouteLoading();
         if (!ok) {
           setStatus(body.error || 'Gagal menghitung rute jalan. Coba lagi sebentar.', true);
           lastRoute = null;
@@ -326,7 +356,9 @@
       })
       .catch(() => {
         if (seq !== requestSeq) return;
-        setStatus('Gagal menghitung rute jalan. Coba lagi sebentar.', true);
+        finishRouteLoading();
+        setStatus('Gagal menghitung rute jalan. Pilih ulang titik awal atau tujuan untuk mencoba lagi.', true);
+        $('route-summary').classList.add('hidden');
         lastRoute = null;
       });
   }
@@ -408,6 +440,9 @@
     btn.addEventListener('click', () => {
       const plan = saved.find((p) => String(p.id) === btn.dataset.viewPlan);
       if (!plan) return;
+      requestSeq++;
+      finishRouteLoading();
+      clearCommunity();
       const pts = plan.route_geometry_json || plan.points_json;
       if (routeLine) routeLine.remove();
       routeLine = L.polyline(pts, { color: '#EF4444', weight: 4, dashArray: '6 6' }).addTo(map);

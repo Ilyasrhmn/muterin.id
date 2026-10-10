@@ -1,0 +1,86 @@
+.mtn-map-page {
+    --map-border: #d9ded6;
+    width: 100%;
+    max-width: none;
+    padding: 32px;
+    background: #f6f5ef;
+    color: #202923;
+    font-family: 'Manrope', sans-serif;
+}
+.mtn-map-page .mtn-map-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; }
+.mtn-map-page .mtn-map-eyebrow { margin-bottom: 8px; color: #086b59; font-size: 12px; font-weight: 700; }
+.mtn-map-page h1 { font-size: clamp(24px, 2.5vw, 32px); font-weight: 750; line-height: 1.2; letter-spacing: -.035em; }
+.mtn-map-page .mtn-map-description { margin-top: 12px; max-width: 72ch; color: #59645c; font-size: 14px; line-height: 1.7; }
+.mtn-map-page .mtn-map-count { flex-shrink: 0; padding: 8px 12px; border: 1px solid var(--map-border); border-radius: 6px; font-size: 12px; font-weight: 600; }
+.mtn-map-page .mtn-map-workspace { display: grid; grid-template-columns: 340px minmax(0, 1fr); gap: 24px; align-items: start; }
+.mtn-map-page .mtn-map-controls { grid-column: 1; grid-row: 1; min-width: 0; }
+.mtn-map-page .mtn-map-surface { grid-column: 2; grid-row: 1; min-width: 0; }
+.mtn-map-page .mtn-panel { padding: 20px; background: #fff; border: 1px solid var(--map-border); border-radius: 8px; box-shadow: none; }
+.mtn-map-page .mtn-context { padding: 20px; background: #f0f2ec; }
+.mtn-map-page .mtn-section-title { font-size: 14px; font-weight: 750; color: #202923; }
+.mtn-map-page .mtn-map-frame { overflow: hidden; border: 1px solid var(--map-border); border-radius: 8px; background: #e9ede5; }
+.mtn-map-page #map { height: 72vh !important; min-height: 480px; width: 100%; }
+.mtn-map-page .mtn-map-list-panel { padding: 0; overflow: hidden; }
+.mtn-map-page .mtn-map-list-heading { border-bottom: 1px solid var(--map-border); }
+.mtn-map-page .mtn-record,
+.mtn-map-page #place-list > button,
+.mtn-map-page #pin-list > button { border-bottom: 1px solid var(--map-border); border-radius: 0; padding: 16px 12px; }
+.mtn-map-page .mtn-record:last-child,
+.mtn-map-page #place-list > button:last-child,
+.mtn-map-page #pin-list > button:last-child { border-bottom: 0; }
+.mtn-map-page .mtn-map-category { border-top: 1px solid var(--map-border); padding-top: 16px; }
+.mtn-map-page .scope-chip { min-height: 52px; border-radius: 6px; }
+.mtn-map-page .mtn-map-toolbar > .flex { flex-wrap: wrap; }
+.mtn-map-page :is(input:not([type=checkbox]), textarea, select) { min-width: 0; border-radius: 6px; }
+.mtn-map-page :is(.rounded-xl, .rounded-2xl) { border-radius: 8px; }
+.mtn-map-page .text-primary { color: #086b59; }
+.mtn-map-page .text-muted-fg { color: #59645c; }
+.mtn-map-page :is(button, a, input, textarea, select):focus-visible { outline: 2px solid #086b59; outline-offset: 3px; }
+.mtn-map-page #search-results { z-index: 1100; }
+.mtn-map-page .leaflet-container { font-family: 'Manrope', sans-serif; }
+@media (max-width: 1099px) {
+    .mtn-map-page .mtn-map-workspace { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+    .mtn-map-page .mtn-map-surface { grid-column: 1; grid-row: 1; }
+    .mtn-map-page .mtn-map-controls { grid-column: 1; grid-row: 2; }
+    .mtn-map-page #map { height: 55vh !important; min-height: 340px; }
+    .mtn-map-page :is(#pin-list, #place-list) { max-height: none !important; }
+}
+@media (max-width: 639px) {
+    .mtn-map-page { padding: 20px; }
+    .mtn-map-page .mtn-map-header { flex-direction: column; gap: 12px; }
+    .mtn-map-page .mtn-map-description { font-size: 13px; }
+    .mtn-map-page .mtn-map-count { padding: 6px 10px; }
+    .mtn-map-page #map { min-height: 320px; height: 50vh !important; }
+    .mtn-map-page .mtn-map-personal { gap: 6px; }
+}
+
+.mtn-map-page .mtn-map-frame { position:relative; isolation:isolate; z-index:0; }
+.mtn-map-page .mtn-map-search { position:absolute; top:16px; left:64px; right:16px; max-width:460px; z-index:1100; }
+.mtn-map-page .mtn-map-search input { min-height:48px; font-size:16px; }
+.mtn-map-page .mtn-map-search > div { margin:0; }
+.mtn-map-page .mtn-map-search > div > .flex { background:#fff; box-shadow:0 3px 12px #17251f1a; }
+.mtn-map-page .mtn-map-search #search-results { position:absolute; top:100%; left:0; right:0; max-height:240px; overflow-y:auto; }
+.mtn-map-page .mtn-map-search #search-btn { min-height:44px; min-width:44px; }
+.mtn-map-page .mtn-map-search input#search-location { box-shadow:0 3px 12px #17251f1a; }
+@media(max-width:639px) { .mtn-map-page .mtn-map-search { top:12px; left:56px; right:12px; } }
+
+.mtn-map-page .mtn-map-search-with-location { display:flex; align-items:flex-start; gap:8px; }
+.mtn-map-page .mtn-map-locate { flex-shrink:0; width:48px; height:48px; display:flex; justify-content:center; align-items:center; border:1px solid var(--map-border); border-radius:8px; background:#fff; box-shadow:0 3px 12px #17251f1a; color:#202923; }
+.mtn-map-page .mtn-map-locate:disabled { opacity:.6; cursor:wait; }
+
+.mtn-map-page .mtn-map-search-form { position:relative; flex:1; min-width:0; margin:0; }
+.mtn-map-page .mtn-map-search-field { display:flex; align-items:center; gap:10px; height:48px; padding:0 12px; background:#fff; border:1px solid var(--map-border); border-radius:8px; box-shadow:0 3px 12px #17251f1a; }
+.mtn-map-page .mtn-map-search-field:focus-within { border-color:#086b59; box-shadow:0 0 0 2px #086b5933; }
+.mtn-map-page .mtn-map-search-field input { flex:1; width:0; min-width:0; min-height:44px; height:44px; padding:0; border:0; border-radius:0; background:transparent; box-shadow:none !important; font-size:16px; outline:none; }
+.mtn-map-page .mtn-map-search-field input:focus-visible { outline:none; }
+.mtn-map-page .mtn-map-search-field #search-btn { flex-shrink:0; min-width:44px; min-height:44px; color:#086b59; font-size:14px; font-weight:700; }
+.mtn-map-page .mtn-map-search #search-results { margin-top:8px; }
+
+.mtn-map-page .mtn-section-title { font-size:16px; line-height:1.5; }
+.mtn-map-page h1 { font-size:32px; line-height:1.2; }
+@media(max-width:639px) { .mtn-map-page h1 { font-size:28px; } }
+
+.mtn-map-page .mtn-scroll-list { max-height:340px; overflow-y:auto; scrollbar-gutter:stable; }
+.mtn-map-page .mtn-map-controls { min-height:480px; }
+.mtn-map-page.mtn-map-routes .mtn-scroll-list { flex:1; max-height:520px; }
+@media(max-width:1099px) { .mtn-map-page .mtn-map-controls { min-height:0; } }

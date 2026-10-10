@@ -2,9 +2,40 @@
 window.MuterinMap = {
   init(elId, center = [-6.2, 106.8], zoom = 12) {
     const map = L.map(elId).setView(center, zoom);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap',
-    }).addTo(map);
+    const config = window.MuterinMapConfig || {};
+    const mapbox = typeof config.accessToken === 'string' && config.accessToken.startsWith('pk.');
+    const tiles = mapbox
+      ? 'https://api.mapbox.com/styles/v1/' + config.style + '/tiles/512/{z}/{x}/{y}?access_token=' + encodeURIComponent(config.accessToken)
+      : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+    const layer = L.tileLayer(tiles, mapbox ? {
+      tileSize: 512,
+      zoomOffset: -1,
+      minZoom: 1,
+      maxZoom: 22,
+      attribution: '© <a href="https://www.mapbox.com/about/maps/">Mapbox</a> © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> <a href="https://www.mapbox.com/map-feedback/" target="_blank" rel="noopener">Improve this map</a>',
+    } : { attribution: '© OpenStreetMap' });
+    let tileErrorReported = false;
+    layer.on('tileerror', () => {
+      if (tileErrorReported) return;
+      tileErrorReported = true;
+      window.MuterinToast?.error('Peta gagal dimuat. Periksa koneksi atau konfigurasi layanan peta.');
+    });
+    layer.addTo(map);
+    const element = document.getElementById(elId);
+    const controls = element.closest('.mtn-map-workspace')?.querySelector('.mtn-map-controls');
+    if (controls) {
+      const syncHeight = () => {
+        if (window.matchMedia('(min-width:1100px)').matches) {
+          element.style.setProperty('height', controls.getBoundingClientRect().height + 'px', 'important');
+        } else {
+          element.style.removeProperty('height');
+        }
+        map.invalidateSize({ pan: false });
+      };
+      new ResizeObserver(syncHeight).observe(controls);
+      window.addEventListener('resize', syncHeight);
+      syncHeight();
+    }
     return map;
   },
   token() {
@@ -17,7 +48,6 @@ window.MuterinMap = {
     if (latlngs.length) map.fitBounds(L.latLngBounds(latlngs), { padding: [40, 40] });
   },
 };
-
 // Selector yang bisa dilipat (accordion inline) — dipakai untuk memilih dari
 // daftar ber-icon tanpa native <select> (yang tidak bisa merender <i> icon
 // font) dan tanpa menumpuk chip kalau opsinya banyak/bisa nambah sendiri.
@@ -131,4 +161,51 @@ window.MuterinFoldSelect = {
       setItems(newItems) { items = newItems; renderHeader(); renderOptions(); },
     };
   },
+};
+
+window.MuterinMap.loadingList = function (container, count = 3, compact = false) {
+  container.replaceChildren();
+  container.setAttribute('aria-busy', 'true');
+  container.setAttribute('aria-label', 'Memuat data');
+  for (let i = 0; i < count; i++) {
+    const row = document.createElement('div');
+    row.className = compact ? 'flex items-center gap-2 px-3 py-2' : 'flex items-center gap-2 p-3 rounded-xl';
+    row.setAttribute('aria-hidden', 'true');
+    row.innerHTML = '<span class="mtn-skeleton" style="width:20px;height:20px;border-radius:50%;flex-shrink:0"></span>' +
+      '<div style="flex:1"><div class="mtn-skeleton" style="width:65%;height:14px;border-radius:4px"></div>' +
+      (compact ? '' : '<div class="mtn-skeleton" style="width:85%;height:11px;margin-top:6px;border-radius:4px"></div>') + '</div>';
+    container.appendChild(row);
+  }
+};
+window.MuterinMap.finishLoading = function (container) {
+  container.removeAttribute('aria-busy');
+  container.removeAttribute('aria-label');
+};
+window.MuterinMap.listError = function (container, message, retry) {
+  window.MuterinMap.finishLoading(container);
+  container.replaceChildren();
+  const text = document.createElement('p');
+  text.className = 'p-3 text-sm text-muted-fg';
+  text.textContent = message;
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'px-3 py-2 text-sm text-primary';
+  button.textContent = 'Coba lagi';
+  button.onclick = retry;
+  container.append(text, button);
+};
+window.MuterinMap.photoHtml = function (url, height, marginBottom) {
+  if (!url) return '';
+  const box = document.createElement('div');
+  box.style.cssText = `position:relative;width:100%;height:${height}px;border-radius:8px;overflow:hidden;margin-bottom:${marginBottom}px`;
+  box.setAttribute('aria-busy', 'true');
+  box.innerHTML = '<div class="mtn-skeleton" aria-hidden="true" style="position:absolute;inset:0"></div>';
+  const image = document.createElement('img');
+  image.setAttribute('src', url);
+  image.alt = '';
+  image.style.cssText = 'width:100%;height:100%;object-fit:cover;position:relative;opacity:0';
+  image.setAttribute('onload', "this.style.opacity=1;this.previousElementSibling.remove();this.parentElement.removeAttribute('aria-busy')");
+  image.setAttribute('onerror', "const box=this.parentElement;box.removeAttribute('aria-busy');box.textContent='Foto tidak tersedia';box.style.display='flex';box.style.alignItems='center';box.style.justifyContent='center';box.style.fontSize='12px'");
+  box.appendChild(image);
+  return box.outerHTML;
 };

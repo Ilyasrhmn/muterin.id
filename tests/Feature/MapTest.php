@@ -24,9 +24,9 @@ class MapTest extends TestCase
     public function test_geocode_search_returns_results(): void
     {
         Http::fake([
-            'api.openrouteservice.org/geocode/search*' => Http::response([
+            'api.mapbox.com/search/geocode/v6/forward*' => Http::response([
                 'features' => [
-                    ['properties' => ['label' => 'Bintaro'], 'geometry' => ['coordinates' => [106.75, -6.27]]],
+                    ['properties' => ['full_address' => 'Bintaro'], 'geometry' => ['coordinates' => [106.75, -6.27]]],
                 ],
             ], 200),
         ]);
@@ -45,7 +45,7 @@ class MapTest extends TestCase
 
     public function test_geocode_search_returns_422_on_failure(): void
     {
-        Http::fake(['api.openrouteservice.org/geocode/search*' => Http::response(['error' => 'quota'], 429)]);
+        Http::fake(['api.mapbox.com/search/geocode/v6/forward*' => Http::response(['error' => 'quota'], 429)]);
 
         $user = User::factory()->create();
         $this->actingAs($user)->getJson('/map/geocode/search?q=bintaro')
@@ -55,8 +55,8 @@ class MapTest extends TestCase
     public function test_geocode_reverse_returns_label(): void
     {
         Http::fake([
-            'api.openrouteservice.org/geocode/reverse*' => Http::response([
-                'features' => [['properties' => ['label' => 'Jalan Merpati'], 'geometry' => ['coordinates' => [106.75, -6.27]]]],
+            'api.mapbox.com/search/geocode/v6/reverse*' => Http::response([
+                'features' => [['properties' => ['full_address' => 'Jalan Merpati'], 'geometry' => ['coordinates' => [106.75, -6.27]]]],
             ], 200),
         ]);
 
@@ -79,10 +79,10 @@ class MapTest extends TestCase
     public function test_preview_route_returns_geometry_for_authenticated_user(): void
     {
         Http::fake([
-            'api.openrouteservice.org/*' => Http::response([
-                'features' => [[
+            'api.mapbox.com/directions/*' => Http::response([
+                'routes' => [[
                     'geometry' => ['coordinates' => [[106.8, -6.2], [106.82, -6.22]]],
-                    'properties' => ['summary' => ['distance' => 1000.0, 'duration' => 200.0]],
+                    'distance' => 1000.0, 'duration' => 200.0,
                 ]],
             ], 200),
         ]);
@@ -107,7 +107,7 @@ class MapTest extends TestCase
     public function test_preview_route_returns_422_when_routing_fails(): void
     {
         Http::fake([
-            'api.openrouteservice.org/*' => Http::response(['error' => 'no route'], 404),
+            'api.mapbox.com/directions/*' => Http::response(['error' => 'no route'], 404),
         ]);
 
         $user = User::factory()->create();

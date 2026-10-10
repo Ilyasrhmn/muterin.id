@@ -2,31 +2,19 @@
     <x-slot name="header">Rencana Rute</x-slot>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
-    <div class="p-4 sm:p-6 lg:p-8 max-w-[1400px] mx-auto space-y-6">
-        <x-ui.hero badge="{{ $plans->count() }} rencana" title="Rencanakan Rute"
-                    subtitle="Cari tempat atau klik di peta, lalu pilih titik awal & tujuan, rute jalan otomatis dihitung." />
+    <div class="mtn-page mtn-map-page mtn-map-plans space-y-6">
+        <header class="mtn-map-header"><div><p class="mtn-map-eyebrow">Perencanaan perjalanan</p><h1>Rencanakan Rute</h1><p class="mtn-map-description">Cari tempat atau klik di peta, lalu pilih titik awal & tujuan, rute jalan otomatis dihitung.</p></div><span class="mtn-map-count">{{ $plans->count() }} rencana</span></header>
 
-        <div class="grid lg:grid-cols-3 gap-6 items-start">
+        <div class="mtn-map-workspace">
             {{-- LEFT: persistent planning panel + saved plans (below the map on mobile, since the map is the primary surface there) --}}
-            <div class="space-y-6 order-2 lg:order-none">
-                <div class="bg-surface border border-border rounded-2xl p-5 space-y-4">
-                    <h3 class="font-heading font-bold text-foreground text-sm">Rencana Perjalanan</h3>
-
-                    {{-- Search --}}
-                    <div>
-                        <div class="bg-muted/50 rounded-xl border border-border flex items-center gap-2 px-3 py-2">
-                            <x-icon.search class="w-4 h-4 text-muted-fg shrink-0"/>
-                            <input id="search-input" type="text" placeholder="Cari tempat…" autocomplete="off"
-                                   class="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-fg">
-                            <button id="search-btn" type="button" class="text-sm font-semibold text-primary hover:underline shrink-0">Cari</button>
-                        </div>
-                        <div id="search-results" class="mt-1 bg-surface rounded-xl shadow-soft border border-border overflow-hidden hidden"></div>
-                    </div>
+            <div class="mtn-map-controls space-y-5">
+                <div class="mtn-panel space-y-4">
+                    <h3 class="mtn-section-title">Rencana Perjalanan</h3>
 
                     {{-- Titik Awal --}}
                     <div>
                         <div class="flex items-center gap-3 p-3 rounded-xl bg-muted/50">
-                            <span class="w-3 h-3 rounded-full bg-status-green shrink-0"></span>
+                            <x-icon.map-pin class="w-5 h-5 text-primary shrink-0"/>
                             <div class="flex-1 min-w-0">
                                 <p class="text-[10px] font-bold uppercase tracking-wider text-muted-fg">Titik Awal</p>
                                 <p id="start-label" class="text-sm text-muted-fg truncate">Belum dipilih</p>
@@ -47,7 +35,7 @@
                     {{-- Titik Tujuan --}}
                     <div>
                         <div class="flex items-center gap-3 p-3 rounded-xl bg-muted/50">
-                            <span class="w-3 h-3 rounded-full bg-accent shrink-0"></span>
+                            <x-icon.navigation class="w-5 h-5 text-accent shrink-0"/>
                             <div class="flex-1 min-w-0">
                                 <p class="text-[10px] font-bold uppercase tracking-wider text-muted-fg">Titik Tujuan</p>
                                 <p id="end-label" class="text-sm text-muted-fg truncate">Belum dipilih</p>
@@ -94,14 +82,14 @@
                     </p>
                 </div>
 
-                <div class="bg-surface border border-border rounded-2xl overflow-hidden flex flex-col">
-                    <div class="p-5 border-b border-border bg-muted/40">
-                        <h3 class="font-heading font-bold text-foreground text-sm">Rencana Tersimpan</h3>
+                <div class="mtn-panel mtn-map-list-panel flex flex-col">
+                    <div class="mtn-context mtn-map-list-heading">
+                        <h3 class="mtn-section-title">Rencana Tersimpan</h3>
                         <p class="text-xs text-muted-fg mt-0.5">Klik untuk pratinjau di peta</p>
                     </div>
-                    <div class="p-3 space-y-1 overflow-y-auto" style="max-height: 40vh">
+                    <div class="p-3 space-y-1 mtn-scroll-list">
                         @forelse ($plans as $plan)
-                            <div class="p-3 rounded-xl hover:bg-muted/60 transition flex items-center justify-between gap-3">
+                            <div class="mtn-record p-3 hover:bg-muted/60 transition flex items-center justify-between gap-3">
                                 <button data-view-plan="{{ $plan->id }}" class="min-w-0 text-left flex-1">
                                     <p class="font-bold text-sm text-foreground truncate">{{ $plan->name }}</p>
                                     <p class="text-[11px] text-muted-fg mt-0.5">
@@ -112,7 +100,7 @@
                                         @endif
                                     </p>
                                 </button>
-                                <button data-delete-plan="{{ $plan->id }}" class="p-1.5 rounded-lg text-muted-fg hover:text-accent hover:bg-accent/10 transition shrink-0">
+                                <button aria-label="Hapus rencana {{ $plan->name }}" data-delete-plan="{{ $plan->id }}" class="p-1.5 rounded-lg text-muted-fg hover:text-accent hover:bg-accent/10 transition shrink-0">
                                     <x-icon.trash class="w-4 h-4"/>
                                 </button>
                             </div>
@@ -127,8 +115,9 @@
             </div>
 
             {{-- RIGHT: map (first on mobile) --}}
-            <div class="lg:col-span-2 order-1 lg:order-none">
-                <div class="rounded-2xl overflow-hidden border border-border">
+            <div class="mtn-map-surface">
+                <div class="mtn-map-frame">
+                    <x-ui.map-search inputId="search-input" />
                     <div id="map" style="height: 72vh"></div>
                 </div>
             </div>
@@ -138,6 +127,7 @@
     <script type="application/json" id="plans-data">{!! $plans->map(fn ($p) => ['id' => $p->id, 'points_json' => $p->points_json, 'route_geometry_json' => $p->route_geometry_json, 'start_label' => $p->start_label, 'end_label' => $p->end_label, 'distance_km' => $p->distance_km, 'duration_minutes' => $p->duration_minutes])->toJson() !!}</script>
     @csrf
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    @include('partials.map-provider')
     <script src="{{ asset('js/map-common.js') }}?v={{ filemtime(public_path('js/map-common.js')) }}"></script>
     <script src="{{ asset('js/map-plans.js') }}?v={{ filemtime(public_path('js/map-plans.js')) }}"></script>
 </x-app-layout>

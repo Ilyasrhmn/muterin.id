@@ -13,6 +13,28 @@ class CommunityPinTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_saving_community_pin_creates_private_place_without_duplicates(): void
+    {
+        $author = User::factory()->create();
+        $user = User::factory()->create();
+        $pin = $this->pin($author);
+        $this->actingAs($user)->postJson(route('map.community.save', $pin))->assertOk()->assertJson(['saved' => true]);
+        $this->postJson(route('map.community.save', $pin))->assertOk();
+        $this->assertDatabaseCount('saved_places', 1);
+        $this->assertDatabaseHas('saved_places', ['user_id' => $user->id, 'community_pin_id' => $pin->id, 'title' => $pin->title]);
+        $this->getJson(route('map.community.data'))->assertJsonFragment(['is_saved' => true]);
+        $this->actingAs($author)->getJson(route('map.community.data'))->assertJsonFragment(['is_saved' => false]);
+        $this->assertDatabaseCount('community_pin_favorites', 0);
+    }
+
+    public function test_private_saved_copy_survives_removal_of_original_pin(): void
+    {
+        $pin = $this->pin(User::factory()->create());
+        $this->actingAs(User::factory()->create())->postJson(route('map.community.save', $pin))->assertOk();
+        $pin->delete();
+        $this->assertDatabaseHas('saved_places', ['community_pin_id' => null, 'title' => 'Jalan sepi']);
+    }
+
     private function pin(User $u, array $attrs = []): CommunityPin
     {
         return $u->communityPins()->create(array_merge([
