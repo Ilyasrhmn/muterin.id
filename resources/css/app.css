@@ -1,7 +1,67 @@
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
+@import './landing.css';
+@import './dashboard-v2.css';
+@import './records-v2.css';
+@import './map-v2.css';
+@import './subscription.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --mtn-paper: #F6F5EF;
+  --mtn-ink: #202923;
+  --mtn-muted: #59635B;
+  --mtn-teal: #086B59;
+  --mtn-rule: #D6DBD3;
+  --mtn-radius: 8px;
+}
+
+.mtn-skip-link { position: fixed; top: -80px; left: 16px; z-index: 100000; padding: 12px 18px; background: #fff; color: var(--mtn-teal); }
+.mtn-skip-link:focus { top: 12px; }
+.mtn-page-heading { padding: 12px 0 24px; border-bottom: 1px solid var(--mtn-rule); }
+.mtn-app #app-sidebar { background: #ECEEE6; }
+.mtn-app #app-sidebar nav a, .mtn-app #app-sidebar nav button { min-height: 44px; border-radius: 6px; }
+.mtn-app #app-sidebar .text-slate-500 { color: var(--mtn-muted); }
+.mtn-appbar { background: var(--mtn-paper); }
+.mtn-appbar button { min-width: 44px; min-height: 44px; }
+.mtn-app main .bg-surface.rounded-2xl { border-radius: var(--mtn-radius); }
+.mtn-dashboard { display: grid; gap: 32px; width: 100%; padding: 32px; }
+.mtn-dashboard-title { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px; }
+.mtn-dashboard-title h1 { font-size: clamp(28px, 3vw, 40px); font-weight: 800; letter-spacing: -.04em; line-height: 1.15; }
+.mtn-dashboard-title p { color: var(--mtn-muted); margin-top: 10px; }
+.mtn-priority { background: #E8EDE1; padding: 24px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px; }
+.mtn-priority h2 { font-size: 24px; font-weight: 800; margin: 8px 0; }
+.mtn-priority p { color: var(--mtn-muted); font-size: 14px; }
+.mtn-metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; padding-bottom: 24px; border-bottom: 1px solid var(--mtn-rule); }
+.mtn-metrics dt { color: var(--mtn-muted); font-size: 12px; margin-bottom: 8px; }
+.mtn-metrics dd { font-size: clamp(20px, 2vw, 28px); font-weight: 700; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.mtn-motor-record { border-bottom: 1px solid var(--mtn-rule); padding: 24px 0; }
+.mtn-motor-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; align-items: center; margin-bottom: 20px; }
+.mtn-motor-head h3 { font-size: 21px; font-weight: 800; overflow-wrap: anywhere; }
+.mtn-motor-head p { font-size: 13px; color: var(--mtn-muted); margin: 4px 0; }
+.mtn-maintenance-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; }
+.mtn-maintenance-grid > div { min-width: 0; }
+.mtn-skeleton { display: block; position: relative; overflow: hidden; background: #DDE2D9; border-radius: 4px; }
+.mtn-skeleton::after { content: ''; position: absolute; inset: 0; transform: translateX(-100%); background: linear-gradient(90deg, transparent, #ffffff80, transparent); animation: mtn-skeleton-sweep 1.6s ease-in-out infinite; }
+.mtn-skeleton-photo { position: absolute; inset: 0; border-radius: inherit; }
+@keyframes mtn-skeleton-sweep { to { transform: translateX(100%); } }
+@media (max-width: 767px) {
+  .mtn-dashboard { padding: 24px 16px; gap: 24px; }
+  .mtn-metrics, .mtn-maintenance-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+  .mtn-dashboard-title > a { width: 100%; }
+}
+@media (display-mode: standalone) {
+  .mtn-appbar { height: auto; min-height: 64px; padding-top: env(safe-area-inset-top); }
+  .mtn-app main { padding-bottom: env(safe-area-inset-bottom); }
+  .mtn-app .mtn-dashboard-title h1 { font-size: 28px; }
+  .mtn-app .mtn-motor-record { padding: 20px 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto !important; }
+  .mtn-skeleton::after { animation: none; transform: none; }
+  .mtn-app *, .mtn-app *::before, .mtn-app *::after { scroll-behavior: auto !important; transition-duration: 0s !important; }
+}
 
 @layer base {
   html { scroll-behavior: smooth; }
@@ -13,17 +73,9 @@
 @layer utilities {
   [x-cloak] { display: none !important; }
 
-  [data-reveal] { opacity: 0; transform: translateY(24px); }
-  [data-reveal].is-visible { opacity: 1; transform: none; transition: opacity .6s ease-out, transform .6s ease-out; }
+  [data-reveal] { opacity: 1; transform: none; }
   @media (prefers-reduced-motion: reduce) {
     [data-reveal] { opacity: 1 !important; transform: none !important; transition: none !important; }
-  }
-
-  /* Subtle grid overlay for hero banners */
-  .hero-grid {
-    background-image: linear-gradient(to right, #ffffff14 1px, transparent 1px),
-                      linear-gradient(to bottom, #ffffff14 1px, transparent 1px);
-    background-size: 28px 28px;
   }
 
   /* Leaflet's internal panes/controls use z-index up to 1000 (tiles, markers,

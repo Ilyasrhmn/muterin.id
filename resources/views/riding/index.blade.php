@@ -2,10 +2,10 @@
     <x-slot name="header">Riding</x-slot>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
-    <div class="max-w-lg mx-auto p-4 sm:p-6 lg:p-8" id="riding-app">
+    <div class="mtn-page mtn-records-page space-y-6" id="riding-app">
         @isset($unfinished)
             @if ($unfinished)
-                <div class="mb-4 bg-amber-50 border border-amber-200 rounded-2xl p-4"
+                <div class="mb-4 bg-amber-50 border border-amber-200 rounded-lg p-4"
                      data-recover-trip="{{ $unfinished->id }}">
                     <p class="text-sm font-semibold text-amber-800">Ada perjalanan yang belum selesai</p>
                     <p class="text-xs text-amber-700 mt-0.5">
@@ -29,7 +29,9 @@
                 </x-ui.button>
             </x-ui.card>
         @else
-            <x-ui.card class="space-y-6">
+            <div class="mtn-map-workspace">
+            <section class="mtn-panel mtn-recorder space-y-6">
+                <h1 class="mtn-section-title">Rekam perjalanan</h1>
                 <label class="block space-y-1.5">
                     <span class="text-sm font-medium text-foreground">Pilih motor</span>
                     <select id="motor-select" class="w-full rounded-token border border-border bg-surface px-3.5 py-2.5 text-foreground focus:border-primary focus:ring-2 focus:ring-primary/30 transition">
@@ -39,7 +41,7 @@
                     </select>
                 </label>
 
-                <div id="ride-map" class="rounded-token overflow-hidden border border-border" style="height: 40vh"></div>
+
 
                 <div class="text-center py-10 rounded-token bg-muted">
                     <p class="text-6xl font-heading font-bold text-primary tabular-nums"><span id="distance">0.00</span></p>
@@ -54,7 +56,9 @@
                     <x-icon.stop class="w-5 h-5"/> Selesai Perjalanan
                 </button>
                 <p id="gps-msg" class="text-sm text-accent text-center"></p>
-            </x-ui.card>
+            </section>
+            <div id="ride-map" class="mtn-ride-map border border-border" aria-label="Peta perjalanan"></div>
+            </div>
         @endif
     </div>
     @csrf

@@ -19,7 +19,7 @@ class FuelController extends Controller
             ->with('motorcycle')
             ->orderByDesc('filled_at')
             ->orderByDesc('id')
-            ->get();
+            ->paginate(10)->withQueryString();
 
         $motorStats = $motorcycles->map(function ($m) use ($stats) {
             $efficiency = $stats->efficiencySummary($m);
@@ -32,7 +32,7 @@ class FuelController extends Controller
             ];
         });
 
-        $totalCost = $logs->sum('total_cost');
+        $totalCost = FuelLog::whereHas('motorcycle', fn ($q) => $q->where('user_id', auth()->id()))->sum('total_cost');
 
         return view('bbm.index', compact('motorcycles', 'logs', 'motorStats', 'totalCost'));
     }

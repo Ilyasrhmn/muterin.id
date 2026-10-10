@@ -7,6 +7,7 @@ export default {
         './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
         './storage/framework/views/*.php',
         './resources/views/**/*.blade.php',
+        './public/js/*.js',
     ],
 
     // These classes are never literally written in a .blade.php file (either
@@ -19,23 +20,23 @@ export default {
     theme: {
         extend: {
             colors: {
-                primary: { DEFAULT: '#0F766E', hover: '#0B5D57', soft: '#F0FDFA' },
-                hero: '#134E4A',
-                background: '#F4F7FA',
+                primary: { DEFAULT: '#086B59', hover: '#075545', soft: '#E5ECE1' },
+                hero: '#E8EDE1',
+                background: '#F6F5EF',
                 surface: '#FFFFFF',
-                foreground: '#0F172A',
-                muted: '#F1F5F9',
-                'muted-fg': '#64748B',
-                border: '#E2E8F0',
+                foreground: '#202923',
+                muted: '#ECEEE6',
+                'muted-fg': '#59635B',
+                border: '#D6DBD3',
                 accent: { DEFAULT: '#DC2626', hover: '#B91C1C' },
                 status: { green: '#059669', yellow: '#D97706', red: '#DC2626' },
             },
             fontFamily: {
-                heading: ['Poppins', ...defaultTheme.fontFamily.sans],
-                sans: ['"Open Sans"', ...defaultTheme.fontFamily.sans],
+                heading: ['Manrope', ...defaultTheme.fontFamily.sans],
+                sans: ['Manrope', ...defaultTheme.fontFamily.sans],
             },
             borderRadius: {
-                token: '0.75rem',
+                token: '0.5rem',
             },
             boxShadow: {
                 soft: '0 1px 2px rgba(15,23,42,0.04), 0 4px 12px -2px rgba(15,23,42,0.06)',

@@ -79,12 +79,14 @@ class LandingPageTest extends TestCase
         $response->assertSee('Riwayat Awal');
     }
 
-    public function test_cta_has_trust_badges(): void
+    public function test_cta_describes_first_action_without_unverified_promises(): void
     {
         $response = $this->get('/');
 
         $response->assertOk();
-        $response->assertSee('Gratis selamanya');
-        $response->assertSee('Setup di bawah 2 menit');
+        $response->assertSee('Tambahkan motormu');
+        $response->assertSee('Siapkan odometer dan riwayat servis');
+        $response->assertDontSee('Gratis selamanya');
+        $response->assertDontSee('Setup di bawah 2 menit');
     }
 }

@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Muterin') }}</title>
+        <title>Muterin</title>
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         @include('partials.pwa-head')
@@ -17,7 +17,7 @@
                 <div data-parallax class="absolute bottom-10 right-0 w-56 h-56 rounded-full bg-accent/20 blur-3xl pointer-events-none"></div>
 
                 <a href="{{ route('home') }}" class="relative flex items-center gap-2 font-heading font-bold text-xl">
-                    <img src="{{ asset('images/muterin-logo.webp') }}" alt="Muterin" class="w-7 h-7 rounded-lg"> Muterin
+                    <img src="{{ asset('images/muterin-mark.svg') }}" alt="Muterin" class="w-7 h-7 rounded-lg"> Muterin
                 </a>
                 <div class="relative">
                     <p class="text-2xl font-heading font-semibold leading-snug">
@@ -32,7 +32,7 @@
 
             <div class="flex flex-col justify-center items-center px-6 py-12">
                 <a href="{{ route('home') }}" class="md:hidden flex items-center gap-2 font-heading font-bold text-lg text-primary mb-8">
-                    <img src="{{ asset('images/muterin-logo.webp') }}" alt="Muterin" class="w-6 h-6 rounded-md"> Muterin
+                    <img src="{{ asset('images/muterin-mark.svg') }}" alt="Muterin" class="w-6 h-6 rounded-md"> Muterin
                 </a>
                 <div class="w-full max-w-sm">
                     {{ $slot }}

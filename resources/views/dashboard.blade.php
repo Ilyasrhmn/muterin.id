@@ -1,182 +1,80 @@
 <x-app-layout>
-    <x-slot name="header">Dashboard</x-slot>
-
-    @php $activeMotor = optional($dashboard->firstWhere(fn ($r) => $r['motor']->is_active))['motor'] ?? optional($dashboard->first())['motor']; @endphp
-
-    <div class="p-4 sm:p-6 lg:p-8 max-w-[1400px] mx-auto space-y-6">
-
-        <x-ui.hero :badge="$activeMotor ? $activeMotor->nickname.' aktif' : 'Belum ada motor aktif'"
-                   title="Halo, {{ Auth::user()->name }}"
-                   subtitle="Pantau kondisi perawatan motormu berdasarkan jarak tempuh asli, dihitung otomatis dari GPS saat riding.">
-            @if ($activeMotor)
-                <x-slot:side>
-                    <div class="flex bg-black/15 backdrop-blur-md rounded-2xl border border-white/10 p-4 gap-6">
-                        <div>
-                            <p class="text-[10px] font-bold text-teal-200 uppercase tracking-[0.15em]">Odometer</p>
-                            <p class="text-white font-bold mt-1 tabular-nums">{{ number_format($activeMotor->current_odometer_km) }} km</p>
-                        </div>
-                        <div class="w-px bg-white/15"></div>
-                        <div>
-                            <p class="text-[10px] font-bold text-teal-200 uppercase tracking-[0.15em]">Motor</p>
-                            <p class="text-white font-bold mt-1">{{ $activeMotor->brand ?: $activeMotor->nickname }}</p>
-                        </div>
-                    </div>
-                </x-slot:side>
-            @endif
-        </x-ui.hero>
-
-        {{-- Ajakan pasang aplikasi (PWA) --}}
+    <x-slot name="header">Beranda</x-slot>
+    @php
+        $activeRow = $dashboard->first(fn ($row) => $row['motor']->is_active) ?? $dashboard->first();
+        $activeMotor = $activeRow['motor'] ?? null;
+        $nextService = $activeRow ? $activeRow['items']->sortBy(fn ($i) => $i['status']['remaining'])->first() : null;
+    @endphp
+    <div class="mtn-dashboard">
+        <div class="mtn-dashboard-title">
+            <div><h1>Catatan perjalananmu.</h1><p>{{ $kpi['motor_count'] }} motor. Satu tempat untuk merawat semuanya.</p></div>
+            <x-ui.button href="{{ route($activeMotor ? 'riding' : 'motorcycles.create') }}">
+                <x-icon.navigation class="w-5 h-5"/>{{ $activeMotor ? 'Mulai perjalanan' : 'Tambahkan motor pertama' }}
+            </x-ui.button>
+        </div>
+        @if ($nextService)
+            <section class="mtn-priority" aria-labelledby="next-service-title">
+                <div>
+                    <p>Perawatan berikutnya · {{ $activeMotor->nickname }}</p>
+                    <h2 id="next-service-title">{{ $nextService['item']->name }},
+                        @if ($nextService['status']['remaining'] <= 0) sudah waktunya servis.
+                        @else {{ number_format($nextService['status']['remaining']) }} km lagi.
+                        @endif
+                    </h2>
+                    <p>Catat penggantian setelah servis agar pengingat tetap akurat.</p>
+                </div>
+                <x-ui.button variant="outline" href="{{ route('motorcycles.show', $activeMotor) }}"><x-icon.wrench class="w-4 h-4"/>Catat servis</x-ui.button>
+            </section>
+        @endif
         <div x-data="{ show: false }" x-show="show" x-cloak
              @mtn:install-available.window="if (!localStorage.getItem('mtn_install_dismissed')) show = true"
-             @mtn:install-done.window="show = false"
-             class="flex flex-col sm:flex-row sm:items-center gap-4 bg-primary text-white rounded-2xl p-5">
-            <div class="size-11 rounded-xl bg-white/15 flex items-center justify-center shrink-0">
-                <x-icon.motorcycle class="w-6 h-6"/>
-            </div>
-            <div class="flex-1">
-                <p class="font-heading font-semibold">Pasang aplikasi Muterin di HP kamu</p>
-                <p class="text-sm text-white/80 mt-0.5">Akses lebih cepat dari layar utama.</p>
-            </div>
-            <div class="flex flex-col gap-1.5 shrink-0">
-                <button type="button" @click="window.mtnInstallApp()"
-                        class="px-4 py-2 rounded-xl bg-white text-primary text-sm font-semibold hover:bg-white/90 transition">
-                    Unduh Aplikasi
-                </button>
-                <button type="button" @click="localStorage.setItem('mtn_install_dismissed', '1'); show = false"
-                        class="px-3 py-1.5 rounded-xl text-sm text-white/80 hover:bg-white/10 transition text-center">
-                    Nanti saja
-                </button>
-            </div>
+             @mtn:install-done.window="show = false" class="flex flex-wrap items-center gap-4 border border-border rounded-token p-4">
+            <div class="flex-1 min-w-0"><p class="font-semibold">Pasang Muterin di layar utama</p><p class="text-sm text-muted-fg">Akses catatan motormu dari HP.</p></div>
+            <button type="button" @click="window.mtnInstallApp()" class="min-h-11 px-4 text-primary font-semibold">Pasang aplikasi</button>
+            <button type="button" @click="localStorage.setItem('mtn_install_dismissed', '1'); show = false" class="min-h-11 px-4 text-muted-fg">Nanti saja</button>
         </div>
-
-        {{-- Stat cards --}}
-        <div data-reveal-group class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <div data-reveal class="bg-primary-soft border border-primary/15 rounded-2xl p-5">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="size-10 rounded-xl bg-white text-primary flex items-center justify-center">
-                        <x-icon.motorcycle class="w-5 h-5"/>
-                    </div>
-                </div>
-                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-[0.15em]">Total Motor</p>
-                <p class="text-2xl font-heading font-extrabold text-foreground mt-1 tracking-tight"><span data-countup="{{ $kpi['motor_count'] }}">0</span></p>
+        <dl class="mtn-metrics">
+            <div><dt>Motor terdaftar</dt><dd>{{ $kpi['motor_count'] }}</dd></div>
+            <div><dt>Total odometer</dt><dd>{{ number_format($kpi['total_km']) }} km</dd></div>
+            <div><dt>Perawatan perlu perhatian</dt><dd>{{ $kpi['attention'] }}</dd></div>
+            <div><dt>Total biaya servis</dt><dd>Rp{{ number_format($kpi['total_cost'], 0, ',', '.') }}</dd></div>
+        </dl>
+        <div class="mtn-dashboard-workspace"><section aria-labelledby="motors-title">
+            <div class="flex flex-wrap items-center justify-between gap-4">
+                <h2 id="motors-title" class="text-2xl font-extrabold">Motor saya</h2>
+                <a href="{{ route('motorcycles.create') }}" class="min-h-11 inline-flex items-center text-sm font-semibold text-primary hover:underline">Tambah motor</a>
             </div>
-
-            @php
-                $stats = [
-                    ['label' => 'Total KM Ditempuh', 'value' => $kpi['total_km'], 'suffix' => ' km', 'icon' => 'gauge', 'chip' => 'bg-blue-50 text-blue-600'],
-                    ['label' => 'Perlu Perhatian', 'value' => $kpi['attention'], 'suffix' => '', 'icon' => 'bell', 'chip' => 'bg-amber-50 text-amber-600'],
-                    ['label' => 'Total Biaya Servis', 'value' => $kpi['total_cost'], 'suffix' => '', 'prefix' => 'Rp ', 'icon' => 'wallet', 'chip' => 'bg-primary-soft text-primary'],
-                ];
-            @endphp
-            @foreach ($stats as $s)
-                <div data-reveal class="bg-surface border border-border rounded-2xl p-5">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="size-10 rounded-xl flex items-center justify-center {{ $s['chip'] }}">
-                            <x-dynamic-component :component="'icon.'.$s['icon']" class="w-5 h-5"/>
+            @forelse ($dashboard as $row)
+                @php $needsAttention = $row['items']->contains(fn ($i) => $i['status']['color'] !== 'green'); @endphp
+                <article class="mtn-motor-record">
+                    <div class="mtn-motor-head">
+                        <div class="flex items-center gap-4 min-w-0">
+                            <x-icon.motorcycle class="w-8 h-8 shrink-0"/>
+                            <div class="min-w-0"><h3>{{ $row['motor']->nickname }}</h3><p>{{ $row['motor']->brand }} {{ $row['motor']->model }} · {{ $row['motor']->plat_nomor }}</p></div>
                         </div>
+                        <div><p class="!text-foreground !text-lg font-bold tabular-nums">{{ number_format($row['motor']->current_odometer_km) }} km</p><a href="{{ route('motorcycles.show', $row['motor']) }}#update-km" class="inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-primary hover:underline"><x-icon.gauge class="w-4 h-4"/>Update KM</a></div>
+                        <div class="text-sm {{ $needsAttention ? 'text-amber-800' : 'text-primary' }}"><p>{{ $needsAttention ? 'Perlu perhatian' : 'Servis masih aman' }}</p><p>Skor {{ $row['health']['score'] }} · {{ $row['health']['label'] }}</p></div>
                     </div>
-                    <p class="text-[10px] font-bold text-slate-500 uppercase tracking-[0.15em]">{{ $s['label'] }}</p>
-                    <p class="text-2xl font-heading font-extrabold text-foreground mt-1 tracking-tight">{{ $s['prefix'] ?? '' }}<span data-countup="{{ $s['value'] }}">0</span>{{ $s['suffix'] }}</p>
-                </div>
-            @endforeach
-        </div>
-
-        {{-- Motor cards --}}
-        <div class="space-y-4">
-            <div class="flex items-center justify-between">
-                <h2 class="font-heading font-bold text-base text-foreground">Status Perawatan Motor</h2>
-                <a href="{{ route('motorcycles.create') }}" class="text-sm font-semibold text-primary hover:underline">Tambah motor</a>
-            </div>
-
-            <div data-reveal-group class="grid gap-4 lg:grid-cols-2">
-                @forelse ($dashboard as $row)
-                    @php $needsAttention = $row['items']->contains(fn ($i) => $i['status']['color'] !== 'green'); @endphp
-                    <div data-reveal class="bg-surface border border-border rounded-2xl overflow-hidden">
-                        <div class="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 p-5 border-b border-border bg-muted/40">
-                            <div class="flex items-center gap-3 min-w-0">
-                                <div class="size-10 rounded-xl bg-primary-soft text-primary flex items-center justify-center shrink-0">
-                                    <x-icon.motorcycle class="w-5 h-5"/>
-                                </div>
-                                <div class="min-w-0">
-                                    <p class="font-heading font-bold text-foreground text-sm truncate">{{ $row['motor']->nickname }}</p>
-                                    <p class="text-[11px] text-muted-fg tabular-nums truncate">{{ $row['motor']->plat_nomor }} &middot; {{ number_format($row['motor']->current_odometer_km) }} km</p>
-                                    <a href="{{ route('motorcycles.show', $row['motor']) }}#update-km" class="text-[11px] text-primary font-semibold hover:underline">Update KM</a>
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-2 shrink-0">
-                                @if ($needsAttention)
-                                    <span class="text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-lg bg-red-50 text-red-600 whitespace-nowrap">Perhatian</span>
-                                @else
-                                    <span class="text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 whitespace-nowrap">Aman</span>
+                    <div class="mtn-maintenance-grid">
+                        @foreach ($row['items'] as $i)
+                            <div data-item-id="{{ $i['item']->id }}" data-item-name="{{ $i['item']->name }}" data-color="{{ $i['status']['color'] }}" class="space-y-2">
+                                <p class="text-sm font-semibold">{{ $i['item']->name }}</p><p class="text-xs text-muted-fg tabular-nums">{{ $i['status']['used'] }} / {{ $i['item']->interval_km }} km</p>
+                                <x-ui.progress :percent="$i['status']['percent']" :color="$i['status']['color']" />
+                                @if ($i['prediction']['days_left'] !== null)
+                                    <p class="text-xs text-muted-fg">@if ($i['prediction']['days_left'] === 0) Sudah waktunya servis
+                                        @else Estimasi {{ $i['prediction']['days_left'] }} hari lagi ({{ $i['prediction']['predicted_date']->translatedFormat('d M Y') }}) @endif</p>
                                 @endif
-                                <span class="text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-lg whitespace-nowrap
-                                    {{ $row['health']['color'] === 'green' ? 'bg-emerald-50 text-emerald-700' : ($row['health']['color'] === 'yellow' ? 'bg-amber-50 text-amber-700' : 'bg-red-50 text-red-600') }}">
-                                    Skor {{ $row['health']['score'] }}
-                                </span>
                             </div>
-                        </div>
-                        <div class="p-5 space-y-3">
-                            @foreach ($row['items'] as $i)
-                                <div data-item-id="{{ $i['item']->id }}" data-item-name="{{ $i['item']->name }}" data-color="{{ $i['status']['color'] }}" class="space-y-1">
-                                    <div class="flex justify-between text-xs">
-                                        <span class="font-medium text-foreground">{{ $i['item']->name }}</span>
-                                        <span class="text-muted-fg tabular-nums">{{ $i['status']['used'] }} / {{ $i['item']->interval_km }} km</span>
-                                    </div>
-                                    <x-ui.progress :percent="$i['status']['percent']" :color="$i['status']['color']" />
-                                    @if ($i['prediction']['days_left'] !== null)
-                                        <p class="text-[11px] {{ $i['prediction']['days_left'] === 0 ? 'text-red-600 font-semibold' : ($i['prediction']['days_left'] <= 14 ? 'text-amber-600' : 'text-muted-fg') }}">
-                                            @if ($i['prediction']['days_left'] === 0)
-                                                Sudah lewat batas
-                                            @else
-                                                Estimasi ~{{ $i['prediction']['days_left'] }} hari lagi ({{ $i['prediction']['predicted_date']->translatedFormat('d M Y') }})
-                                            @endif
-                                        </p>
-                                    @endif
-                                </div>
-                            @endforeach
-                            <a href="{{ route('motorcycles.show', $row['motor']) }}" class="inline-flex items-center gap-1 text-sm text-primary font-semibold hover:underline pt-1">
-                                Detail &amp; tandai servis <span aria-hidden="true">&rarr;</span>
-                            </a>
-                        </div>
+                        @endforeach
                     </div>
-                @empty
-                    <div class="lg:col-span-2 bg-surface border border-border rounded-2xl text-center py-14">
-                        <div class="size-14 rounded-2xl bg-primary-soft text-primary flex items-center justify-center mx-auto mb-4">
-                            <x-icon.motorcycle class="w-7 h-7"/>
-                        </div>
-                        <p class="font-heading font-semibold text-foreground mb-1">Belum ada motor</p>
-                        <p class="text-sm text-muted-fg mb-5">Tambahkan motor pertamamu untuk mulai memantau.</p>
-                        <x-ui.button variant="primary" href="{{ route('motorcycles.create') }}">Tambah Motor</x-ui.button>
-                    </div>
-                @endforelse
-            </div>
-        </div>
+                    <a href="{{ route('motorcycles.show', $row['motor']) }}" class="inline-flex min-h-11 items-center mt-4 text-sm text-primary font-semibold hover:underline">Detail &amp; tandai servis</a>
+                </article>
+            @empty
+                <div class="py-12 space-y-4"><p class="text-lg font-bold">Belum ada motor</p><p class="text-muted-fg">Tambahkan motor pertamamu untuk mulai memantau kilometer dan perawatan.</p><x-ui.button href="{{ route('motorcycles.create') }}">Tambah motor</x-ui.button></div>
+            @endforelse
+        </section>
 
-        <div class="bg-surface border border-border rounded-2xl overflow-hidden">
-            <div class="p-5 border-b border-border bg-muted/40 flex items-center gap-2">
-                <x-icon.activity class="w-4 h-4 text-primary"/>
-                <h3 class="font-heading font-bold text-foreground text-sm">Pusat Perhatian</h3>
-            </div>
-            <div class="p-3 space-y-1">
-                @forelse ($attentionItems as $a)
-                    <a href="{{ $a['url'] }}" class="flex items-center gap-3 p-3 rounded-xl hover:bg-muted/60 transition">
-                        <div class="size-8 rounded-lg flex items-center justify-center shrink-0 {{ $a['severity'] === 'red' ? 'bg-red-50 text-red-600' : 'bg-amber-50 text-amber-600' }}">
-                            @if ($a['severity'] === 'red')
-                                <x-icon.alert-triangle class="w-4 h-4"/>
-                            @else
-                                <x-icon.clock class="w-4 h-4"/>
-                            @endif
-                        </div>
-                        <p class="text-sm text-foreground">{{ $a['text'] }}</p>
-                    </a>
-                @empty
-                    <div class="p-6 text-center">
-                        <p class="text-sm text-emerald-700 font-medium">Semua motor terkendali ✓</p>
-                    </div>
-                @endforelse
-            </div>
         </div>
     </div>
 
-    <script src="{{ asset('js/notify.js') }}?v={{ filemtime(public_path('js/notify.js')) }}"></script>
 </x-app-layout>

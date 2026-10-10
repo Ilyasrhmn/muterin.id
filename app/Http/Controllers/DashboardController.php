@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\MaintenanceLog;
-use App\Services\AttentionService;
 use App\Services\HealthScoreService;
 use App\Services\MaintenancePredictionService;
 use App\Services\MaintenanceStatusService;
@@ -13,8 +12,7 @@ class DashboardController extends Controller
     public function __invoke(
         MaintenanceStatusService $status,
         MaintenancePredictionService $prediction,
-        HealthScoreService $healthScore,
-        AttentionService $attention
+        HealthScoreService $healthScore
     ) {
         $motorcycles = auth()->user()->motorcycles()->with('maintenanceItems')->get();
 
@@ -39,8 +37,6 @@ class DashboardController extends Controller
             'total_cost' => MaintenanceLog::whereHas('item.motorcycle', fn ($q) => $q->where('user_id', auth()->id()))->sum('cost'),
         ];
 
-        $attentionItems = $attention->forUser($motorcycles);
-
-        return view('dashboard', ['dashboard' => $dashboard, 'kpi' => $kpi, 'attentionItems' => $attentionItems]);
+        return view('dashboard', ['dashboard' => $dashboard, 'kpi' => $kpi]);
     }
 }

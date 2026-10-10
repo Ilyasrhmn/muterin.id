@@ -1,6 +1,9 @@
 <x-guest-layout>
     <h1 class="text-2xl font-heading font-bold text-foreground mb-1">Buat akun</h1>
-    <p class="text-sm text-muted-fg mb-6">Gratis, mulai rawat motormu sekarang.</p>
+    <p class="text-sm text-muted-fg mb-6">Buat akun untuk mulai mencatat perawatan motormu.</p>
+    @if (in_array(request('plan'), ['free', 'monthly', 'annual'], true))
+        <p class="text-sm text-muted-fg mb-6">Pilihanmu: {{ request('plan') === 'free' ? 'Gratis' : 'Muterin Pro '.(request('plan') === 'annual' ? 'Tahunan' : 'Bulanan') }}. Paket masih dalam pratinjau; pendaftaran belum mengaktifkan langganan.</p>
+    @endif
 
     <a href="{{ route('auth.google.redirect') }}"
        class="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl border border-border bg-surface text-sm font-semibold text-foreground hover:bg-muted transition mb-5">

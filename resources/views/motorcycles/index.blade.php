@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">Motor Saya</x-slot>
 
-    <div class="p-4 sm:p-6 lg:p-8 max-w-[1400px] mx-auto space-y-6">
+    <div class="mtn-page mtn-records-page space-y-6">
 
         <x-ui.hero badge="{{ $motorcycles->count() }} motor terdaftar" title="Motor Saya"
                     subtitle="Kelola semua motormu di sini dan pilih mana yang sedang kamu pakai riding.">
@@ -10,12 +10,12 @@
             </x-slot:side>
         </x-ui.hero>
 
-        <div data-reveal-group class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div data-reveal-group class="mtn-panel mtn-motor-list">
             @forelse ($motorcycles as $motor)
-                <div data-reveal class="bg-surface border rounded-2xl overflow-hidden {{ $motor->is_active ? 'border-primary/40' : 'border-border' }}">
-                    <div class="p-5">
+                <div data-reveal class="mtn-record mtn-motor-record {{ $motor->is_active ? 'mtn-active-record' : '' }}">
+                    <div class="mtn-motor-identity">
                         <div class="flex items-start justify-between mb-3">
-                            <div class="size-11 rounded-xl bg-primary-soft text-primary flex items-center justify-center">
+                            <div class="size-11 rounded-md bg-primary-soft text-primary flex items-center justify-center">
                                 <x-icon.motorcycle class="w-6 h-6"/>
                             </div>
                             @if ($motor->is_active)
@@ -27,24 +27,25 @@
                         @if ($motor->plat_nomor)
                             <span class="inline-block mt-2 text-[11px] font-bold font-heading tracking-wider text-foreground bg-muted px-2 py-1 rounded-md border border-border">{{ $motor->plat_nomor }}</span>
                         @endif
-                        <p class="text-xs text-muted-fg flex items-center gap-1.5 mt-3 tabular-nums">
+                        </div>
+                    <div class="mtn-motor-odometer"><p class="text-xs text-muted-fg mb-2">Odometer saat ini</p>
+                        <p class="text-xl font-bold flex items-center gap-1.5 tabular-nums">
                             <x-icon.gauge class="w-4 h-4"/> {{ number_format($motor->current_odometer_km) }} km
                         </p>
                     </div>
-                    <div class="px-5 pb-5">
+                    <div class="mtn-record-actions">
+                        <x-ui.button variant="outline" size="sm" href="{{ route('motorcycles.show', $motor) }}">Detail & Perawatan</x-ui.button>
                         @unless ($motor->is_active)
                             <form method="POST" action="{{ route('motorcycles.activate', $motor) }}">
                                 @csrf
                                 <x-ui.button variant="outline" size="sm" type="submit" class="w-full">Jadikan Aktif</x-ui.button>
                             </form>
-                        @else
-                            <x-ui.button variant="ghost" size="sm" href="{{ route('motorcycles.show', $motor) }}" class="w-full">Lihat Detail</x-ui.button>
                         @endunless
                     </div>
                 </div>
             @empty
-                <div class="col-span-full bg-surface border border-border rounded-2xl text-center py-14">
-                    <div class="size-14 rounded-2xl bg-primary-soft text-primary flex items-center justify-center mx-auto mb-4">
+                <div class="col-span-full bg-surface border border-border rounded-lg text-center py-14">
+                    <div class="size-14 rounded-lg bg-primary-soft text-primary flex items-center justify-center mx-auto mb-4">
                         <x-icon.motorcycle class="w-7 h-7"/>
                     </div>
                     <p class="font-heading font-semibold text-foreground mb-1">Belum ada motor</p>

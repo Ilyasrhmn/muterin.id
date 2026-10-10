@@ -1,0 +1,150 @@
+.lp-page { background: #F6F5EF; color: #202923; font-family: inherit; line-height: 1.65; --lp-ink: #202923; --lp-teal: #086B59; --lp-line: #cdd0c6; }
+.lp-page *, .lp-page *::before, .lp-page *::after { box-sizing: border-box; }
+.lp-page [x-cloak] { display: none !important; }
+.lp-page h1, .lp-page h2, .lp-page h3, .lp-page p, .lp-page figure, .lp-page dl { margin: 0; }
+.lp-page a { color: inherit; text-decoration: none; }
+.lp-page button, .lp-page summary { font: inherit; }
+.lp-page a:focus-visible, .lp-page button:focus-visible, .lp-page summary:focus-visible { outline: 3px solid #086B59; outline-offset: 5px; }
+.lp-page a:hover { text-decoration: none; }
+.lp-wrap { width: min(1184px, calc(100% - 96px)); margin-inline: auto; }
+.lp-header { border-bottom: 1px solid var(--lp-line); }
+.lp-nav { display: flex; align-items: center; justify-content: space-between; gap: 28px; min-height: 100px; }
+.lp-brand { display: inline-flex; align-items: center; gap: 10px; font-size: 25px; font-weight: 800; letter-spacing: -.8px; }
+.lp-brand img { border-radius: 6px; }
+.lp-brand-note { font-size: 11px; font-weight: 500; letter-spacing: 0; max-width: 76px; line-height: 1.4; border-left: 1px solid var(--lp-line); padding-left: 12px; margin-left: 7px; }
+.lp-nav-links, .lp-nav-account { display: flex; align-items: center; gap: 24px; }
+.lp-nav-links a, .lp-nav-account > .lp-text-link { display: inline-flex; align-items: center; min-height: 44px; font-size: 14px; font-weight: 600; }
+.lp-page .lp-button { display: inline-flex; align-items: center; justify-content: center; gap: 22px; min-height: 52px; padding: 13px 23px; border: 1px solid #086B59; border-radius: 6px; color: #fff; background: #086B59; font-weight: 700; font-size: 14px; cursor: pointer; text-align: center; }
+.lp-page .lp-button:hover { background: #075443; text-decoration: none; }
+.lp-page .lp-button-small { min-height: 44px; padding: 10px 16px; }
+.lp-menu-toggle { display: none; min-height: 44px; min-width: 64px; border: 1px solid var(--lp-line); border-radius: 4px; background: transparent; color: inherit; cursor: pointer; }
+.lp-mobile-nav { padding-block: 12px 24px; }
+.lp-mobile-nav a { display: flex; align-items: center; min-height: 48px; border-top: 1px solid var(--lp-line); }
+.lp-skip { position: absolute; left: 16px; top: -100px; z-index: 10; padding: 12px 18px; background: #F6F5EF; }
+.lp-skip:focus { top: 12px; }
+.lp-hero { display: flex; align-items: center; gap: 8%; padding-block: 86px 96px; }
+.lp-hero-copy { flex: 1.22; min-width: 0; }
+.lp-kicker { font-size: 12px; font-weight: 700; }
+.lp-hero h1 { font-size: clamp(42px, 4.5vw, 66px); line-height: 1.09; letter-spacing: -.055em; margin-top: 25px; font-weight: 800; }
+.lp-hero h1 span { color: #086B59; }
+.lp-lead { max-width: 530px; font-size: 17px; margin-top: 27px !important; }
+.lp-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 24px; margin-top: 31px; }
+.lp-text-link { display: inline-flex; align-items: center; min-height: 44px; font-size: 14px; font-weight: 700; text-decoration: none; }
+.lp-note { font-size: 12px; color: #525d54; }
+.lp-hero-copy > .lp-note { margin-top: 17px; }
+.lp-book { flex: 1; min-width: 0; border-left: 7px solid #086B59; background: #e8e9df; border-radius: 4px 12px 12px 4px; padding: 22px 23px 16px; }
+.lp-book-caption { font-weight: 700; font-size: 13px; margin-bottom: 18px; }
+.lp-book-caption span, .lp-receipt figcaption span { display: block; font-weight: 500; font-size: 11px; color: #525d54; margin-top: 3px; }
+.lp-book-page { background: #fffef9; border: 1px solid #cdd0c6; border-radius: 3px; padding: 22px; }
+.lp-book-heading { display: flex; flex-direction: column; gap: 4px; border-bottom: 1px solid var(--lp-line); padding-bottom: 16px; margin-bottom: 19px; }
+.lp-book-heading span { font-size: 11px; }
+.lp-book-heading strong { font-size: 22px; }
+.lp-odometer { font-size: clamp(40px, 4vw, 56px); font-weight: 800; letter-spacing: -.04em; font-variant-numeric: tabular-nums; line-height: 1.2; }
+.lp-odometer span { font-size: 16px; font-weight: 500; letter-spacing: 0; }
+.lp-service { margin-block: 22px 12px; padding: 16px; background: #e5eee7; border-left: 3px solid #086B59; }
+.lp-service > span { font-size: 12px; }
+.lp-service strong { display: block; font-size: 31px; line-height: 1.3; }
+.lp-service small { font-size: 14px; font-weight: 500; }
+.lp-service p { font-size: 11px; margin-top: 6px; }
+.lp-demo-list > div { display: flex; justify-content: space-between; gap: 12px; padding-block: 10px; border-bottom: 1px solid var(--lp-line); font-size: 11px; }
+.lp-demo-list dd { margin: 0; font-weight: 700; text-align: right; }
+.lp-demo-details summary { min-height: 44px; padding-block: 12px; font-size: 11px; cursor: pointer; }
+.lp-demo-details p { font-size: 12px; padding-bottom: 12px; }
+.lp-book-foot { font-size: 11px; margin-top: 12px !important; }
+.lp-page h2 { font-size: clamp(30px, 3.2vw, 44px); line-height: 1.18; letter-spacing: -.04em; font-weight: 750; }
+.lp-section-intro h2, .lp-cost-layout h2, .lp-community h2, .lp-faq h2, .lp-closing h2 { margin-top: 18px; }
+.lp-section-intro > p:not(.lp-kicker), .lp-cost-layout > div > p:not(.lp-kicker), .lp-community-body > div > p { margin-top: 22px; font-size: 15px; }
+.lp-maintenance { display: flex; align-items: flex-start; gap: 10%; border-top: 1px solid var(--lp-ink); padding-block: 64px 96px; }
+.lp-section-intro { flex: .9; min-width: 0; }
+.lp-features { flex: 1.2; min-width: 0; }
+.lp-feature { border-bottom: 1px solid var(--lp-line); }
+.lp-feature summary { display: flex; justify-content: space-between; align-items: center; gap: 20px; min-height: 64px; padding-block: 18px; font-weight: 700; font-size: 17px; cursor: pointer; list-style: none; }
+.lp-feature summary::-webkit-details-marker { display: none; }
+.lp-feature summary::after { content: '+'; font-size: 24px; font-weight: 400; flex: none; }
+.lp-feature[open] > summary::after { content: '−'; }
+.lp-detail-body { padding: 0 24px 24px 0; font-size: 14px; }
+.lp-detail-body ul { padding-left: 20px; margin-bottom: 0; }
+.lp-detail-body li + li { margin-top: 9px; }
+.lp-feature-index { font-size: 11px; font-weight: 700; margin-top: 15px !important; color: #086B59; }
+.lp-costs { background: #e8e9df; padding-block: 70px; }
+.lp-cost-layout { display: flex; align-items: center; justify-content: space-between; gap: 11%; }
+.lp-cost-layout > div { flex: 1.1; min-width: 0; }
+.lp-cost-layout .lp-text-link { margin-top: 20px; }
+.lp-receipt { flex: .85; min-width: 0; background: #fffef9; padding: 30px; border-top: 5px solid #202923; border-bottom: 1px dashed #90978c; }
+.lp-receipt figcaption { font-size: 12px; }
+.lp-receipt-title { font-size: 19px; font-weight: 700; margin-block: 24px !important; }
+.lp-receipt dl > div { display: flex; justify-content: space-between; gap: 15px; padding-block: 12px; font-size: 14px; }
+.lp-receipt dd { margin: 0; font-variant-numeric: tabular-nums; }
+.lp-receipt-total { border-top: 1px dashed #90978c; margin-top: 14px; font-weight: 800; }
+.lp-receipt > p:last-child { font-size: 12px; margin-top: 24px; }
+.lp-community { padding-block: 88px 72px; }
+.lp-community-body { display: flex; gap: 10%; }
+.lp-community-body h2 { flex: 1; }
+.lp-community-body > div { flex: 1.2; min-width: 0; }
+.lp-community-body .lp-text-link { margin-top: 15px; }
+.lp-how { display: flex; gap: 10%; padding-block: 55px 80px; border-top: 1px solid var(--lp-line); }
+.lp-steps { flex: 1.2; min-width: 0; list-style: decimal-leading-zero; margin: 0; padding-left: 32px; }
+.lp-steps li { padding: 0 0 24px 12px; }
+.lp-steps li::marker { font-size: 12px; font-weight: 700; color: #086B59; }
+.lp-steps h3 { font-size: 18px; font-weight: 700; }
+.lp-steps p { font-size: 14px; margin-top: 8px; }
+.lp-faq { display: flex; gap: 10%; border-top: 1px solid var(--lp-ink); padding-block: 60px 90px; }
+.lp-faq > div:first-child { flex: .9; }
+.lp-faq > div:last-child { flex: 1.2; min-width: 0; }
+.lp-faq .lp-feature summary { font-size: 15px; }
+.lp-closing { border-top: 1px solid var(--lp-line); display: flex; align-items: center; justify-content: space-between; gap: 40px; padding-block: 55px 75px; }
+.lp-closing p:not(.lp-kicker) { margin-top: 15px; max-width: 480px; }
+.lp-closing > .lp-button { flex-shrink: 0; }
+.lp-footer { border-top: 1px solid var(--lp-line); }
+.lp-footer-inner { display: flex; gap: 8%; padding-block: 40px; }
+.lp-footer-inner > div { flex: 1; }
+.lp-footer-inner > div > p { margin-top: 10px; font-size: 13px; }
+.lp-footer nav a { display: flex; align-items: center; min-height: 44px; font-size: 13px; }
+.lp-footer nav .lp-kicker { margin-bottom: 8px; }
+.lp-page section[id] { scroll-margin-top: 24px; }
+.lp-pricing { display: flex; align-items: center; justify-content: space-between; gap: 32px; padding-block: 48px; border-top: 1px solid var(--lp-line); }
+.lp-pricing > .lp-section-intro { max-width: 680px; }
+.lp-pricing > .lp-button { flex-shrink: 0; }
+.lp-pricing .lp-note { font-size: 12px; }
+@media(max-width:700px) { .lp-pricing { flex-direction: column; align-items: flex-start; gap: 24px; } }
+.lp-preview-note { margin-top: 20px !important; padding: 12px 16px; border-left: 3px solid #086b59; background: #e5eee7; font-size: 13px; }
+.lp-subscription { padding-block: 40px 64px; }
+.lp-page:has(.lp-plan-page) { --lp-ink: #edf5f1; --lp-line: #3d524b; background: #14221e; color: #edf5f1; }
+.lp-plan-intro { text-align: center; margin-bottom: 36px; }
+.lp-plan-intro h1 { font-size: clamp(28px,3vw,40px); line-height: 1.2; font-weight: 700; margin-block: 12px; }
+.lp-plan-intro > p:last-child { color: #c3d2ca; font-size: 15px; }
+.lp-plan-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 24px; align-items: stretch; }
+.lp-plan-card { padding: 28px; border: 1px solid #4b6058; border-radius: 24px; background: #1e2e28; color: #f0f6f2; min-width: 0; }
+.lp-plan-featured { border-color: #52c5a2; background: linear-gradient(160deg,#1e2e28 30%,#17483c); }
+.lp-plan-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; min-height: 32px; }
+.lp-plan-top h3 { font-size: 18px; font-weight: 700; }
+.lp-plan-tag { display: inline-flex; align-items: center; gap: 6px; padding: 6px 9px; border-radius: 16px; background: #294f42; color: #b8f0d7; font-size: 11px; font-weight: 700; }
+.lp-plan-tag svg { width: 14px; height: 14px; }
+.lp-plan-card h4 { margin-block: 26px 12px; font-size: 25px; line-height: 1.3; font-weight: 700; letter-spacing: -.03em; min-height: 65px; }
+.lp-plan-description { font-size: 14px; line-height: 1.65; color: #c3d2ca; min-height: 48px; }
+.lp-plan-price { display: flex; flex-wrap: wrap; align-items: baseline; gap: 7px; margin-top: 28px !important; font-variant-numeric: tabular-nums; }
+.lp-plan-price strong { font-size: clamp(32px,3vw,44px); font-weight: 600; letter-spacing: -.04em; line-height: 1.2; }
+.lp-plan-price span { font-size: 14px; color: #d2dfd7; }
+.lp-plan-price-note { font-size: 12px; color: #c3d2ca; min-height: 40px; margin-top: 8px !important; }
+.lp-page .lp-plan-cta { display: flex; justify-content: center; align-items: center; min-height: 48px; padding: 10px 14px; margin-block: 20px 30px; border-radius: 28px; background: #eaf3ed; color: #14221e; font-size: 14px; font-weight: 700; text-align: center; }
+.lp-page .lp-plan-featured .lp-plan-cta { background: #69d3ad; color: #0d2a1f; }
+.lp-plan-card a:focus-visible { outline-color: #83dfbd; }
+.lp-plan-cta:hover { background: #cbe5d5; }
+.lp-plan-featured .lp-plan-cta:hover { background: #8de4c4; }
+.lp-plan-list-title { font-size: 13px; font-weight: 700; margin-bottom: 14px !important; }
+.lp-plan-features { list-style: none; margin: 0; padding: 0; display: grid; gap: 16px; }
+.lp-plan-features li { display: flex; align-items: start; gap: 12px; font-size: 14px; line-height: 1.5; }
+.lp-plan-features svg { width: 20px; height: 20px; flex-shrink: 0; margin-top: 1px; }
+.lp-plan-featured .lp-plan-features svg { color: #83dfbd; }
+.lp-plan-excluded { color: #bdc9c3; }
+.lp-plan-excluded small { display: block; font-size: 11px; }
+.lp-plan-disclaimer { text-align: center; font-size: 12px; color: #c3d2ca; margin-top: 24px !important; }
+.lp-plan-faq { max-width: 640px; margin: 20px auto 0; font-size: 13px; }
+.lp-plan-faq summary { min-height: 44px; padding-block: 12px; cursor: pointer; text-align: center; }
+.lp-plan-faq p { color: #c3d2ca; padding-block: 12px; }
+@media(max-width:1000px) { .lp-plan-grid { gap: 16px; } .lp-plan-card { padding: 20px; } .lp-plan-card h4 { font-size: 22px; } }
+@media(max-width:760px) { .lp-plan-grid { grid-template-columns: minmax(0,1fr); } .lp-plan-card h4,.lp-plan-description,.lp-plan-price-note { min-height: 0; } .lp-plan-card { padding: 24px; } .lp-plan-intro { text-align: start; } .lp-pricing { padding-block: 40px; } }
+@media (min-width: 901px) { .lp-mobile-nav { display: none !important; } }
+@media (max-width: 1050px) { .lp-brand-note { display: none; } .lp-nav { gap: 18px; } .lp-nav-links, .lp-nav-account { gap: 16px; } .lp-wrap { width: calc(100% - 64px); } .lp-hero { gap: 5%; } .lp-book { padding: 18px 16px 14px; } .lp-book-page { padding: 18px; } }
+@media (max-width: 900px) { .lp-nav { min-height: 80px; } .lp-nav-links, .lp-nav-account { display: none; } .lp-menu-toggle { display: inline-block; } .lp-hero { align-items: flex-start; } .lp-hero h1 { font-size: 44px; } .lp-hero-copy, .lp-book { flex: 1; } .lp-demo-list > div { flex-wrap: wrap; } }
+@media (max-width: 700px) { .lp-wrap { width: calc(100% - 40px); } .lp-hero { flex-direction: column; gap: 40px; padding-block: 42px 56px; } .lp-hero h1 { font-size: clamp(39px, 9vw, 56px); max-width: 570px; } .lp-lead { font-size: 16px; } .lp-book { width: 100%; max-width: 470px; align-self: center; } .lp-book-page { padding: 22px; } .lp-odometer { font-size: 52px; } .lp-maintenance, .lp-how, .lp-faq { flex-direction: column; gap: 28px; padding-block: 42px 54px; } .lp-features, .lp-faq > div, .lp-steps { width: 100%; } .lp-costs { padding-block: 46px; } .lp-cost-layout { flex-direction: column-reverse; gap: 30px; } .lp-receipt { width: 100%; max-width: 440px; padding: 25px; } .lp-community { padding-block: 52px 44px; } .lp-community-body { flex-direction: column; gap: 5px; } .lp-closing { flex-direction: column; align-items: flex-start; gap: 28px; padding-block: 40px 52px; } .lp-footer-inner { flex-wrap: wrap; gap: 22px 44px; } .lp-footer-inner > div { flex-basis: 100%; } .lp-feature summary { font-size: 16px; } }

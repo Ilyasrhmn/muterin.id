@@ -26,20 +26,20 @@
     ];
 @endphp
 
-<aside :class="mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
+<aside x-cloak id="app-sidebar" aria-label="Navigasi Muterin" :inert="!mobileOpen && window.innerWidth < 1024" :class="mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
        class="fixed inset-y-0 left-0 w-[260px] bg-surface border-r border-border flex flex-col z-50 transition-transform duration-200">
     {{-- Logo --}}
     <div class="h-16 flex items-center justify-between px-5 border-b border-border shrink-0">
         <a href="{{ route('dashboard') }}" class="flex items-center gap-3">
-            <div class="size-9 rounded-xl overflow-hidden">
-                <img src="{{ asset('images/muterin-logo.webp') }}" alt="Muterin" class="w-full h-full object-cover">
+            <div class="w-11 h-8 shrink-0">
+                <img src="{{ asset('images/muterin-mark.svg') }}" alt="Muterin" class="w-full h-full object-contain">
             </div>
             <div class="leading-none">
                 <p class="font-heading font-bold text-foreground text-base tracking-tight">Muterin</p>
                 <p class="text-[9px] font-bold text-primary uppercase tracking-[0.15em] mt-0.5">Motor Care</p>
             </div>
         </a>
-        <button @click="mobileOpen = false" class="lg:hidden p-1.5 rounded-token text-muted-fg hover:bg-muted">
+        <button id="drawer-close" type="button" aria-label="Tutup navigasi" @click="mobileOpen = false; $nextTick(() => document.getElementById('drawer-trigger').focus())" class="lg:hidden p-1.5 rounded-token text-muted-fg hover:bg-muted">
             <x-icon.x class="w-5 h-5"/>
         </button>
     </div>
@@ -60,7 +60,7 @@
         @foreach ($groups as $group)
             @php $groupActive = collect($group['children'])->contains(fn ($c) => request()->routeIs($c['pattern'])); @endphp
             <div x-data="{ open: {{ $groupActive ? 'true' : 'false' }} }" class="space-y-1 pt-1">
-                <button type="button" @click="open = !open"
+                <button type="button" @click="open = !open" :aria-expanded="open"
                         class="w-full flex items-center gap-3 px-3 h-10 rounded-xl text-[13px] transition {{ $groupActive ? 'text-foreground font-semibold' : 'text-slate-500 hover:text-foreground hover:bg-muted font-medium' }}">
                     <x-dynamic-component :component="'icon.'.$group['icon']" class="w-[17px] h-[17px] shrink-0"/>
                     <span class="flex-1 text-left truncate">{{ $group['label'] }}</span>
@@ -68,7 +68,7 @@
                         <x-icon.chevron-down class="w-4 h-4 opacity-50"/>
                     </span>
                 </button>
-                <div class="grid transition-[grid-template-rows] duration-200 ease-out" :class="open ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'">
+                <div :inert="!open" class="grid transition-[grid-template-rows] duration-200 ease-out" :class="open ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'">
                     <div class="overflow-hidden">
                         <div class="space-y-1">
                             @foreach ($group['children'] as $child)

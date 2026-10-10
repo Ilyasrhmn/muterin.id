@@ -11,8 +11,10 @@ class HistoryController extends Controller
     {
         \App\Models\ExpenseCategory::ensureDefaultsFor(auth()->user());
 
-        $logs = $this->serviceLogs();
-        $otherExpenses = $this->otherExpenses();
+        $period = in_array(request('period'), ['7', '30'], true) ? request('period') : 'all';
+        $since = $period === 'all' ? null : now()->startOfDay()->subDays((int) $period - 1);
+        $logs = $this->serviceLogs($since);
+        $otherExpenses = $this->otherExpenses($since);
 
         $serviceCost = $logs->sum('cost');
         $otherCost = $otherExpenses->sum('amount');
@@ -32,7 +34,7 @@ class HistoryController extends Controller
             ->map(fn ($value) => is_array($value) ? array_sum($value) : $value)
             ->sortDesc();
 
-        return view('history.index', compact('logs', 'otherExpenses', 'totalCost', 'servicedCount', 'avgCost', 'thisMonthCost', 'breakdown'));
+        return view('history.index', compact('logs', 'otherExpenses', 'totalCost', 'servicedCount', 'avgCost', 'thisMonthCost', 'breakdown', 'period'));
     }
 
     public function exportPdf()
@@ -45,19 +47,21 @@ class HistoryController extends Controller
         return $pdf->download('riwayat-servis.pdf');
     }
 
-    private function serviceLogs()
+    private function serviceLogs($since = null)
     {
         $userId = auth()->id();
 
         return MaintenanceLog::whereHas('item.motorcycle', fn ($q) => $q->where('user_id', $userId))
+            ->when($since, fn ($q) => $q->whereDate('serviced_at', '>=', $since)->whereDate('serviced_at', '<=', now()))
             ->with('item.motorcycle')->latest('serviced_at')->get();
     }
 
-    private function otherExpenses()
+    private function otherExpenses($since = null)
     {
         $userId = auth()->id();
 
         return \App\Models\OtherExpense::whereHas('motorcycle', fn ($q) => $q->where('user_id', $userId))
+            ->when($since, fn ($q) => $q->whereDate('expense_date', '>=', $since)->whereDate('expense_date', '<=', now()))
             ->with('motorcycle')->latest('expense_date')->get();
     }
 }
