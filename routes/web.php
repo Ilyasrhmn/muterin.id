@@ -20,6 +20,17 @@ Route::get('/', function () {
     return auth()->check() ? redirect()->route('dashboard') : view('landing');
 })->name('home');
 
+Route::get('/langganan', fn () => redirect()->route(auth()->check() ? 'dashboard' : 'home', ['upgrade' => 1]))->name('subscription');
+Route::post('/midtrans/notification', [\App\Http\Controllers\BillingController::class, 'notification'])->name('midtrans.notification');
+Route::middleware('auth')->group(function () {
+    Route::get('/langganan/checkout/{plan}', [\App\Http\Controllers\BillingController::class, 'checkout'])->name('billing.checkout');
+    Route::get('/langganan/pembayaran', [\App\Http\Controllers\BillingController::class, 'index'])->name('billing.index');
+    Route::get('/langganan/summary', [\App\Http\Controllers\BillingController::class, 'summary'])->name('billing.summary');
+    Route::post('/langganan/pay', [\App\Http\Controllers\BillingController::class, 'pay'])->middleware('throttle:10,1')->name('billing.pay');
+    Route::post('/langganan/payments/{payment}/refresh', [\App\Http\Controllers\BillingController::class, 'refresh'])->middleware('throttle:30,1')->name('billing.refresh');
+    Route::post('/langganan/payments/{payment}/resume', [\App\Http\Controllers\BillingController::class, 'resume'])->middleware('throttle:10,1')->name('billing.resume');
+});
+
 Route::get('/dashboard', DashboardController::class)->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {

@@ -16,6 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // HTTP ke container — tanpa ini Laravel generate semua URL absolut pakai
         // http:// dan browser nge-block sebagai mixed content.
         $middleware->trustProxies(at: '*');
+        $middleware->validateCsrfTokens(except: ['midtrans/notification']);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
